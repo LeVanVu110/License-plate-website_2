@@ -1094,9 +1094,16 @@
 })();
     // ----------------------------- section 1 ----------------------------- //
     gsap.registerPlugin(ScrollTrigger);
-    
-    // 2. Initial Animation & Scroll
-    window.addEventListener('load', () => {
+    // 1. CHẠY NGAY LẬP TỨC (IIFE)
+(function() {
+    // Ép trình duyệt không tự động cuộn (Fix lỗi F5 nhảy trang)
+    if (history.scrollRestoration) {
+        history.scrollRestoration = 'manual';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 2. TIMELINE KHỞI TẠO (Chạy ngay không đợi load)
         const mainTl = gsap.timeline();
         mainTl.to("#headline", {
                 opacity: 1,
@@ -1115,14 +1122,14 @@
                 duration: 0.8
             }, "-=0.5");
 
-        // Fixed Scroll disappearance
+        // 3. SCROLLTRIGGER CHO HERO
         gsap.to("#headline, #sub-headline", {
             scrollTrigger: {
                 trigger: "#hero-stage",
                 start: "top top",
                 end: "30% top",
                 scrub: 1,
-                toggleActions: "play reverse play reverse"
+                invalidateOnRefresh: true // Quan trọng: Tính lại khi refresh
             },
             y: -50,
             opacity: 0,
@@ -1140,10 +1147,20 @@
             scale: 1.1,
             force3D: true
         });
+
+        // 4. FIX LỖI TỌA ĐỘ BẰNG REFRESH NHANH
+        // Thay vì 'load', ta dùng 2 nhịp Refresh để ép trình duyệt tính toán lại
+        ScrollTrigger.refresh();
+        
+        // Nhịp phụ sau 200ms khi trình duyệt đã render xong CSS
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
     });
 
-
-    // 3. Magnetic Search FIXED
+    // 5. MAGNETIC SEARCH & GLINT (Giữ nguyên logic nhưng chạy độc lập)
+    // ... (Phần code Magnetic và Glint của bạn giữ nguyên)
+     // 3. Magnetic Search FIXED
     const searchWrapper = document.getElementById('search-wrapper');
     const searchBox = document.querySelector('.crystal-search');
 
@@ -1183,6 +1200,11 @@
         repeatDelay: 5,
         ease: "power2.inOut"
     });
+})();
+    
+    
+
+   
 
     // ----------------------------- section 2 ----------------------------- //
     window.addEventListener('load', () => {
