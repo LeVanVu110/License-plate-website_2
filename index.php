@@ -182,8 +182,127 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-   
+     <section id="infinite-vault" class="relative py-24 bg-[#F8FAFC] min-h-screen overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03]" 
+         style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 100px 100px;">
+    </div>
+
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="mb-16 max-w-2xl" id="vault-header">
+            <h2 class="serif-title text-4xl md:text-5xl text-[#001F3F] mb-4 tracking-tight">
+                BỘ SƯU TẬP TINH HOA
+            </h2>
+            <div class="w-20 h-1 bg-[#007FFF] mb-6"></div>
+            <p class="sans-text text-gray-500 uppercase tracking-[0.2em] text-sm md:text-base">
+                Những con số mang tính biểu tượng, được tuyển chọn cho những chủ nhân xứng tầm.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mb-12" id="quick-filter">
+            <button class="filter-btn active px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest transition-all">TẤT CẢ</button>
+            <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">NGŨ QUÝ</button>
+            <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">SẢN TIẾN</button>
+            <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">PHÁT LỘC</button>
+        </div>
+
+        <div id="cards-container" class="flex md:grid md:grid-cols-3 lg:grid-cols-3 gap-10 overflow-x-auto pb-10 md:pb-0 scrollbar-hide snap-x snap-mandatory">
+            
+            <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
+                <div class="flex justify-between items-start mb-8">
+                    <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Limited Edition</span>
+                    <i class="ri-vip-crown-fill text-[#007FFF]"></i>
+                </div>
+                <div class="plate-3d mb-10 transform translate-z-20">
+                    <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="w-full h-1 bg-gray-300 absolute top-4 opacity-50"></div>
+                        <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">30K - 999.99</span>
+                        <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-end">
+                        <div class="sans-text">
+                            <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
+                            <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="2500000000">0</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-md">ĐẠI CÁT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10">
+                 <div class="flex justify-between items-start mb-8">
+                    <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Legacy Series</span>
+                    <i class="ri-shield-flash-fill text-[#007FFF]"></i>
+                </div>
+                <div class="plate-3d mb-10 transform translate-z-20">
+                    <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
+                        <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">51L - 888.88</span>
+                        <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-end">
+                    <div class="sans-text">
+                        <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
+                        <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="1800000000">0</h3>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-50 text-[#007FFF] text-[10px] font-bold rounded-md">PHÁT LỘC</span>
+                </div>
+            </div>
+
+            <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10">
+                <div class="flex justify-between items-start mb-8">
+                    <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Celestial</span>
+                    <i class="ri-star-smile-fill text-[#007FFF]"></i>
+                </div>
+                <div class="plate-3d mb-10 transform translate-z-20">
+                    <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
+                        <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">60A - 666.66</span>
+                        <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-end">
+                    <div class="sans-text">
+                        <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
+                        <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="950000000">0</h3>
+                    </div>
+                    <span class="px-3 py-1 bg-purple-50 text-purple-600 text-[10px] font-bold rounded-md">TRƯỜNG CỬU</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    .filter-btn.active {
+        background: #001F3F;
+        color: white;
+        border-color: #001F3F;
+    }
     
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .plate-3d {
+        transform-style: preserve-3d;
+        transition: transform 0.1s;
+    }
+
+    .glass-card {
+        transform-style: preserve-3d;
+    }
+
+    @media (max-width: 768px) {
+        /* Tắt tilt trên mobile để tránh rối mắt */
+        .glass-card {
+            transform: none !important;
+        }
+    }
+</style>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -287,7 +406,71 @@
     });
 
     // ----------------------------- section 2 ----------------------------- //
+    window.addEventListener('load', () => {
+    // 1. Reveal Header & Filter
+    gsap.from("#vault-header > *", {
+        scrollTrigger: {
+            trigger: "#infinite-vault",
+            start: "top 80%",
+        },
+        y: 30,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 1,
+        ease: "power3.out"
+    });
 
+    // 2. The Floating Emergence (Staggered Cards)
+    gsap.from(".glass-card", {
+        scrollTrigger: {
+            trigger: "#cards-container",
+            start: "top 85%",
+        },
+        y: 60,
+        opacity: 0,
+        scale: 0.9,
+        stagger: 0.15,
+        duration: 1.2,
+        ease: "expo.out"
+    });
+
+    // 3. The Price Counter & Focus Scale
+    document.querySelectorAll('.glass-card').forEach((card) => {
+        const priceTag = card.querySelector('.price-tag');
+        const finalPrice = parseInt(priceTag.getAttribute('data-target'));
+
+        ScrollTrigger.create({
+            trigger: card,
+            start: "top 70%",
+            onEnter: () => {
+                // Nhảy số giá tiền
+                let obj = { val: 0 };
+                gsap.to(obj, {
+                    val: finalPrice,
+                    duration: 2,
+                    ease: "power3.out",
+                    onUpdate: () => {
+                        priceTag.innerHTML = Math.floor(obj.val).toLocaleString('vi-VN') + ' VNĐ';
+                    }
+                });
+            }
+        });
+
+        // Phóng đại tâm điểm khi cuộn qua (giữa màn hình)
+        gsap.to(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: "top 50%",
+                end: "bottom 50%",
+                toggleActions: "play reverse play reverse",
+            },
+            scale: 1.05,
+            borderColor: "#007FFF",
+            boxShadow: "0 20px 40px rgba(0, 127, 255, 0.15)",
+            duration: 0.4
+        });
+    });
+});
 
     // ----------------------------- section 3 ----------------------------- //
 
