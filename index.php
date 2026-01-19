@@ -134,32 +134,139 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
-        .filter-btn.active {
-            background: #001F3F;
-            color: white;
-            border-color: #001F3F;
+        /* Font mô phỏng biển số thực tế */
+        @font-face {
+            font-family: 'PlateFont';
+            src: url('https://fonts.cdnfonts.com/s/14144/DIN-Bold.woff');
         }
 
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+        #infinite-vault {
+            min-height: 100vh;
         }
 
-        .plate-3d {
-            transform-style: preserve-3d;
-            transition: transform 0.1s;
+        .plate-number h3,
+        .plate-number-moto p {
+            font-family: 'PlateFont', 'Inter', sans-serif;
         }
 
-        .glass-card {
-            transform-style: preserve-3d;
+        /* Custom Cursor Icons */
+        #gallery-auto {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 3l0 6"/><path d="M12 15l0 6"/><path d="M3 12l6 0"/><path d="M15 12l6 0"/></svg>'), auto;
         }
 
+        #gallery-moto {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M19 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 15h3.5l2.5 -4h3.5"/><path d="M9 15c1.5 -4 4 -4 4 -4h-3"/></svg>'), auto;
+        }
+
+        /* Plate Card Styling */
+        .plate-card {
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .plate-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 127, 255, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 127, 255, 0.2);
+        }
+
+        .auto:hover {
+            border-color: #007FFF;
+        }
+
+        .moto:hover {
+            border-color: #C0C0C0;
+        }
+
+        .gallery-wrapper {
+            grid-column: 1;
+            grid-row: 1;
+            width: 100%;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Mobile Stacked Cards Effect */
         @media (max-width: 768px) {
+            .gallery-wrapper {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 20px;
+                scroll-snap-type: x mandatory;
+                height: 65% !important;
+            }
 
-            /* Tắt tilt trên mobile để tránh rối mắt */
-            .glass-card {
-                transform: none !important;
+            .plate-card {
+                min-width: 280px;
+                scroll-snap-align: center;
+            }
+
+        }
+
+        /* 2. Responsive Grid cho Mobile */
+        @media (max-width: 640px) {
+
+            /* Hiệu ứng Stacked Cards cho Xe máy trên Mobile */
+            #gallery-moto {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 15px;
+                padding: 20px 5px;
+                scrollbar-width: none;
+                padding-bottom: 20px;
+                /* Ẩn scrollbar */
+            }
+
+            #gallery-moto.absolute {
+                position: relative;
+                /* Trên mobile nên để relative để dễ cuộn swipe */
+            }
+
+            #gallery-moto::-webkit-scrollbar {
+                display: none;
+            }
+
+            #gallery-moto .plate-card {
+                min-width: 200px;
+                scroll-snap-align: center;
+                transform: rotate(-2deg);
+                /* Tạo cảm giác xếp chồng hơi lệch */
+            }
+
+            #gallery-moto:not(.invisible) {
+                display: flex !important;
+                /* Khi hiện thì dùng flex để swipe ngang */
+                overflow-x: auto;
+                padding-bottom: 20px;
+            }
+
+            /* Đảm bảo khi ẩn thì không chiếm diện tích */
+            .invisible {
+                display: none !important;
             }
         }
+
+        /* 3. Hiệu ứng Hover chung */
+        .plate-card {
+            will-change: transform, opacity;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .plate-card:active {
+            transform: scale(0.95);
+        }
+
+        /* 4. Font Biển số */
+        .plate-number h3,
+        .plate-number-moto p {
+            font-family: sans-serif;
+            /* Bạn hãy thay bằng font Plate thực tế */
+            font-weight: 800;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+
 
         /* ----------------------------- section 3 -----------------------------  */
         /* Nền lưới Matrix */
@@ -730,96 +837,139 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="infinite-vault" class="relative py-24 bg-[#F8FAFC] min-h-screen overflow-hidden">
-        <div class="absolute inset-0 pointer-events-none opacity-[0.03]"
-            style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 100px 100px;">
-        </div>
 
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="mb-16 max-w-2xl" id="vault-header">
-                <h2 class="serif-title text-4xl md:text-5xl text-[#001F3F] mb-4 tracking-tight">
-                    BỘ SƯU TẬP TINH HOA
-                </h2>
-                <div class="w-20 h-1 bg-[#007FFF] mb-6"></div>
-                <p class="sans-text text-gray-500 uppercase tracking-[0.2em] text-sm md:text-base">
-                    Những con số mang tính biểu tượng, được tuyển chọn cho những chủ nhân xứng tầm.
-                </p>
+    <section id="infinite-vault" class="relative py-16 md:py-24 bg-[#000D1A] overflow-hidden">
+        <div class="container mx-auto px-4 md:px-6 relative z-10">
+
+            <div class="flex justify-center mb-12 md:mb-16">
+                <div class="glass-tab-container relative p-1 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center scale-90 md:scale-100">
+                    <div id="tab-slider" class="absolute h-[calc(100%-8px)] w-[120px] md:w-[140px] bg-blue-600 rounded-full transition-all duration-500 ease-out"></div>
+                    <button onclick="switchGallery('auto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white uppercase">Ô TÔ</button>
+                    <button onclick="switchGallery('moto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">XE MÁY</button>
+                </div>
             </div>
-
-            <div class="flex flex-wrap gap-4 mb-12" id="quick-filter">
-                <button class="filter-btn active px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest transition-all">TẤT CẢ</button>
-                <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">NGŨ QUÝ</button>
-                <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">SẢN TIẾN</button>
-                <button class="filter-btn px-8 py-3 rounded-full border border-gray-200 text-sm font-semibold tracking-widest hover:border-[#007FFF] transition-all">PHÁT LỘC</button>
-            </div>
-
-            <div id="cards-container" class="flex md:grid md:grid-cols-3 lg:grid-cols-3 gap-10 overflow-x-auto pb-10 md:pb-0 scrollbar-hide snap-x snap-mandatory">
-
-                <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-                    <div class="flex justify-between items-start mb-8">
-                        <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Limited Edition</span>
-                        <i class="ri-vip-crown-fill text-[#007FFF]"></i>
-                    </div>
-                    <div class="plate-3d mb-10 transform translate-z-20">
-                        <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
-                            <div class="w-full h-1 bg-gray-300 absolute top-4 opacity-50"></div>
-                            <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">30K - 999.99</span>
-                            <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
+            <div class=" grid grid-cols-1 relative min-h-[600px] md:min-h-[500px]">
+                <div id="gallery-auto" class="gallery-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
+                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
                         </div>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-end">
-                            <div class="sans-text">
-                                <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
-                                <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="2500000000">0</h3>
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
                             </div>
-                            <div class="text-right">
-                                <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-md">ĐẠI CÁT</span>
+                            <div class="plate-number text-center">
+                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="price">
+                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                </div>
+                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
                             </div>
                         </div>
+
                     </div>
+                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                        </div>
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
+                            </div>
+                            <div class="plate-number text-center">
+                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="price">
+                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                </div>
+                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                        </div>
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
+                            </div>
+                            <div class="plate-number text-center">
+                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="price">
+                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                </div>
+                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    
                 </div>
 
-                <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10">
-                    <div class="flex justify-between items-start mb-8">
-                        <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Legacy Series</span>
-                        <i class="ri-shield-flash-fill text-[#007FFF]"></i>
-                    </div>
-                    <div class="plate-3d mb-10 transform translate-z-20">
-                        <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
-                            <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">51L - 888.88</span>
-                            <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
+                <div id="gallery-moto" class="gallery-wrapper hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                        </div>
+                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                            <div class="plate-number-moto leading-tight py-2">
+                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            </div>
+                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
                         </div>
                     </div>
-                    <div class="flex justify-between items-end">
-                        <div class="sans-text">
-                            <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
-                            <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="1800000000">0</h3>
+                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
                         </div>
-                        <span class="px-3 py-1 bg-blue-50 text-[#007FFF] text-[10px] font-bold rounded-md">PHÁT LỘC</span>
+                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                            <div class="plate-number-moto leading-tight py-2">
+                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            </div>
+                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                        </div>
+                    </div>
+                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                        </div>
+                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                            <div class="plate-number-moto leading-tight py-2">
+                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            </div>
+                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                        </div>
+                    </div>
+                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                        </div>
+                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                            <div class="plate-number-moto leading-tight py-2">
+                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            </div>
+                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                        </div>
                     </div>
                 </div>
-
-                <div class="glass-card snap-center min-w-[300px] bg-white rounded-[2rem] p-8 shadow-xl shadow-gray-200/50 border border-white relative group" data-tilt data-tilt-max="10">
-                    <div class="flex justify-between items-start mb-8">
-                        <span class="text-[10px] tracking-[0.3em] text-[#007FFF] font-bold uppercase">Celestial</span>
-                        <i class="ri-star-smile-fill text-[#007FFF]"></i>
-                    </div>
-                    <div class="plate-3d mb-10 transform translate-z-20">
-                        <div class="bg-gray-100 rounded-lg p-6 border-2 border-gray-300 shadow-inner flex flex-col items-center justify-center relative overflow-hidden">
-                            <span class="text-[#001F3F] text-4xl md:text-5xl font-bold tracking-tighter serif-title">60A - 666.66</span>
-                            <div class="text-[10px] tracking-[0.5em] text-gray-400 mt-2">THE GRAND GALLERY</div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div class="sans-text">
-                            <p class="text-gray-400 text-[10px] uppercase tracking-widest">Giá sở hữu</p>
-                            <h3 class="text-2xl font-bold text-[#007FFF] price-tag" data-target="950000000">0</h3>
-                        </div>
-                        <span class="px-3 py-1 bg-purple-50 text-purple-600 text-[10px] font-bold rounded-md">TRƯỜNG CỬU</span>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
@@ -1069,211 +1219,252 @@
 </body>
 <script>
     // Sử dụng IIFE để chạy ngay nhưng kiểm soát được trình tự
-(function() {
-    // 1. Ngăn trình duyệt tự động cuộn về vị trí cũ khi F5 (Nguyên nhân chính gây lỗi tọa độ)
-    if (history.scrollRestoration) {
-        history.scrollRestoration = 'manual';
-    }
+    (function() {
+        // 1. Ngăn trình duyệt tự động cuộn về vị trí cũ khi F5 (Nguyên nhân chính gây lỗi tọa độ)
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Khởi tạo các hiệu ứng
-        initSection4();
-        initSection5();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Khởi tạo các hiệu ứng
+            initSection4();
+            initSection5();
 
-        // 2. Kỹ thuật "Double Refresh": Đảm bảo tọa độ chuẩn sau khi render
-        let refreshSlider = setTimeout(() => {
-            ScrollTrigger.refresh();
-        }, 100);
+            // 2. Kỹ thuật "Double Refresh": Đảm bảo tọa độ chuẩn sau khi render
+            let refreshSlider = setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 100);
 
-        // 3. Tự động tính toán lại nếu có sự thay đổi về kích thước (do ảnh load muộn)
-        const ro = new ResizeObserver(() => {
-            ScrollTrigger.refresh();
+            // 3. Tự động tính toán lại nếu có sự thay đổi về kích thước (do ảnh load muộn)
+            const ro = new ResizeObserver(() => {
+                ScrollTrigger.refresh();
+            });
+            ro.observe(document.body);
         });
-        ro.observe(document.body);
-    });
-})();
+    })();
     // ----------------------------- section 1 ----------------------------- //
     gsap.registerPlugin(ScrollTrigger);
     // 1. CHẠY NGAY LẬP TỨC (IIFE)
-(function() {
-    // Ép trình duyệt không tự động cuộn (Fix lỗi F5 nhảy trang)
-    if (history.scrollRestoration) {
-        history.scrollRestoration = 'manual';
-    }
+    (function() {
+        // Ép trình duyệt không tự động cuộn (Fix lỗi F5 nhảy trang)
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        
-        // 2. TIMELINE KHỞI TẠO (Chạy ngay không đợi load)
-        const mainTl = gsap.timeline();
-        mainTl.to("#headline", {
-                opacity: 1,
-                y: 0,
-                duration: 1.2,
-                ease: "power4.out"
-            })
-            .to("#sub-headline", {
-                opacity: 1,
-                y: 0,
-                duration: 0.8
-            }, "-=0.8")
-            .to("#search-wrapper", {
-                opacity: 1,
-                y: 0,
-                duration: 0.8
-            }, "-=0.5");
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // 3. SCROLLTRIGGER CHO HERO
-        gsap.to("#headline, #sub-headline", {
-            scrollTrigger: {
-                trigger: "#hero-stage",
-                start: "top top",
-                end: "30% top",
-                scrub: 1,
-                invalidateOnRefresh: true // Quan trọng: Tính lại khi refresh
-            },
-            y: -50,
-            opacity: 0,
-            immediateRender: false
-        });
+            // 2. TIMELINE KHỞI TẠO (Chạy ngay không đợi load)
+            const mainTl = gsap.timeline();
+            mainTl.to("#headline", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.2,
+                    ease: "power4.out"
+                })
+                .to("#sub-headline", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                }, "-=0.8")
+                .to("#search-wrapper", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8
+                }, "-=0.5");
 
-        gsap.to("#video-wrap video", {
-            scrollTrigger: {
-                trigger: "#hero-stage",
-                start: "top top",
-                end: "bottom top",
-                scrub: 1
-            },
-            filter: "blur(15px) brightness(0.4)",
-            scale: 1.1,
-            force3D: true
-        });
+            // 3. SCROLLTRIGGER CHO HERO
+            gsap.to("#headline, #sub-headline", {
+                scrollTrigger: {
+                    trigger: "#hero-stage",
+                    start: "top top",
+                    end: "30% top",
+                    scrub: 1,
+                    invalidateOnRefresh: true // Quan trọng: Tính lại khi refresh
+                },
+                y: -50,
+                opacity: 0,
+                immediateRender: false
+            });
 
-        // 4. FIX LỖI TỌA ĐỘ BẰNG REFRESH NHANH
-        // Thay vì 'load', ta dùng 2 nhịp Refresh để ép trình duyệt tính toán lại
-        ScrollTrigger.refresh();
-        
-        // Nhịp phụ sau 200ms khi trình duyệt đã render xong CSS
-        setTimeout(() => {
+            gsap.to("#video-wrap video", {
+                scrollTrigger: {
+                    trigger: "#hero-stage",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1
+                },
+                filter: "blur(15px) brightness(0.4)",
+                scale: 1.1,
+                force3D: true
+            });
+
+            // 4. FIX LỖI TỌA ĐỘ BẰNG REFRESH NHANH
+            // Thay vì 'load', ta dùng 2 nhịp Refresh để ép trình duyệt tính toán lại
             ScrollTrigger.refresh();
-        }, 200);
-    });
 
-    // 5. MAGNETIC SEARCH & GLINT (Giữ nguyên logic nhưng chạy độc lập)
-    // ... (Phần code Magnetic và Glint của bạn giữ nguyên)
-     // 3. Magnetic Search FIXED
-    const searchWrapper = document.getElementById('search-wrapper');
-    const searchBox = document.querySelector('.crystal-search');
+            // Nhịp phụ sau 200ms khi trình duyệt đã render xong CSS
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 200);
+        });
 
-    // Chỉ chạy hiệu ứng hút khi chuột KHÔNG đè trực tiếp lên ô input
-    document.addEventListener('mousemove', (e) => {
-        const rect = searchWrapper.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        // 5. MAGNETIC SEARCH & GLINT (Giữ nguyên logic nhưng chạy độc lập)
+        // ... (Phần code Magnetic và Glint của bạn giữ nguyên)
+        // 3. Magnetic Search FIXED
+        const searchWrapper = document.getElementById('search-wrapper');
+        const searchBox = document.querySelector('.crystal-search');
 
-        // Kiểm tra nếu chuột nằm trong vùng ô search
-        const isInside = e.clientX >= rect.left && e.clientX <= rect.right &&
-            e.clientY >= rect.top && e.clientY <= rect.bottom;
+        // Chỉ chạy hiệu ứng hút khi chuột KHÔNG đè trực tiếp lên ô input
+        document.addEventListener('mousemove', (e) => {
+            const rect = searchWrapper.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
 
-        if (dist < 400 && !isInside) {
-            gsap.to(searchBox, {
-                x: (e.clientX - centerX) * 0.12,
-                y: (e.clientY - centerY) * 0.12,
-                duration: 0.5,
+            // Kiểm tra nếu chuột nằm trong vùng ô search
+            const isInside = e.clientX >= rect.left && e.clientX <= rect.right &&
+                e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+            if (dist < 400 && !isInside) {
+                gsap.to(searchBox, {
+                    x: (e.clientX - centerX) * 0.12,
+                    y: (e.clientY - centerY) * 0.12,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            } else {
+                gsap.to(searchBox, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.4,
+                    ease: "power3.out"
+                });
+            }
+        });
+
+        // 4. Glint Effect
+        gsap.to("#glint", {
+            left: "150%",
+            duration: 2.5,
+            repeat: -1,
+            repeatDelay: 5,
+            ease: "power2.inOut"
+        });
+    })();
+    // ----------------------------- section 2 ----------------------------- //
+    (function() {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Khởi tạo ScrollTrigger cho Section 2
+            gsap.from("#infinite-vault .plate-card", {
+                scrollTrigger: {
+                    trigger: "#infinite-vault",
+                    start: "top 80%",
+                    invalidateOnRefresh: true
+                },
+                y: 50,
+                opacity: 0,
+                scale: 0.9,
+                stagger: 0.1,
+                duration: 1,
                 ease: "power2.out"
             });
-        } else {
-            gsap.to(searchBox, {
-                x: 0,
-                y: 0,
-                duration: 0.4,
-                ease: "power3.out"
-            });
-        }
-    });
 
-    // 4. Glint Effect
-    gsap.to("#glint", {
-        left: "150%",
-        duration: 2.5,
-        repeat: -1,
-        repeatDelay: 5,
-        ease: "power2.inOut"
-    });
-})();
-    
-    
+            // Xử lý chuyển đổi Tab
+            window.switchGallery = (type) => {
+                const slider = document.getElementById('tab-slider');
+                const autoG = document.getElementById('gallery-auto');
+                const motoG = document.getElementById('gallery-moto');
+                const isDesktop = window.innerWidth > 1024;
 
-   
-
-    // ----------------------------- section 2 ----------------------------- //
-    window.addEventListener('load', () => {
-        // 1. Reveal Header & Filter
-        gsap.from("#vault-header > *", {
-            scrollTrigger: {
-                trigger: "#infinite-vault",
-                start: "top 80%",
-            },
-            y: 30,
-            opacity: 0,
-            stagger: 0.2,
-            duration: 1,
-            ease: "power3.out"
-        });
-
-        // 2. The Floating Emergence (Staggered Cards)
-        gsap.from(".glass-card", {
-            scrollTrigger: {
-                trigger: "#cards-container",
-                start: "top 85%",
-            },
-            y: 60,
-            opacity: 0,
-            scale: 0.9,
-            stagger: 0.15,
-            duration: 1.2,
-            ease: "expo.out"
-        });
-
-        // 3. The Price Counter & Focus Scale
-        document.querySelectorAll('.glass-card').forEach((card) => {
-            const priceTag = card.querySelector('.price-tag');
-            const finalPrice = parseInt(priceTag.getAttribute('data-target'));
-
-            ScrollTrigger.create({
-                trigger: card,
-                start: "top 70%",
-                onEnter: () => {
-                    // Nhảy số giá tiền
-                    let obj = {
-                        val: 0
-                    };
-                    gsap.to(obj, {
-                        val: finalPrice,
-                        duration: 2,
-                        ease: "power3.out",
-                        onUpdate: () => {
-                            priceTag.innerHTML = Math.floor(obj.val).toLocaleString('vi-VN') + ' VNĐ';
-                        }
+                // 1. Di chuyển thanh slider
+                if (type === 'auto') {
+                    gsap.to(slider, {
+                        x: 0,
+                        duration: 0.4,
+                        ease: "back.out"
                     });
+                    animateTransition(motoG, autoG);
+                } else {
+                    const moveVal = isDesktop ? 144 : 124;
+                    gsap.to(slider, {
+                        x: moveVal,
+                        duration: 0.4,
+                        ease: "back.out"
+                    });
+                    animateTransition(autoG, motoG);
                 }
-            });
+            };
 
-            // Phóng đại tâm điểm khi cuộn qua (giữa màn hình)
-            gsap.to(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 50%",
-                    end: "bottom 50%",
-                    toggleActions: "play reverse play reverse",
-                },
-                scale: 1.05,
-                borderColor: "#007FFF",
-                boxShadow: "0 20px 40px rgba(0, 127, 255, 0.15)",
-                duration: 0.4
-            });
+            function hideGallery(el, callback) {
+                gsap.to(el.querySelectorAll('.plate-card'), {
+                    opacity: 0,
+                    y: 20,
+                    scale: 0.95,
+                    stagger: 0.05,
+                    duration: 0.3,
+                    onComplete: () => {
+                        el.classList.add('hidden');
+                        if (callback) callback();
+                    }
+                });
+            }
+
+            function animateTransition(fadeOutEl, fadeInEl) {
+                // 1. Thu nhỏ và ẩn gallery cũ
+                gsap.to(fadeOutEl.querySelectorAll('.plate-card'), {
+                    opacity: 0,
+                    scale: 0.9,
+                    y: 20,
+                    stagger: 0.05,
+                    duration: 0.3,
+                    onComplete: () => {
+                        fadeOutEl.classList.add('hidden');
+                        fadeOutEl.classList.remove('absolute'); // Bỏ absolute để không chiếm chỗ ngầm
+
+                        // 2. Hiện gallery mới
+                        fadeInEl.classList.remove('hidden');
+                        // Nếu là moto thì cho absolute để đè đúng vị trí nếu cần, 
+                        // hoặc để tự nhiên nếu auto là chính. Ở đây ta để mặc định là grid
+
+                        gsap.fromTo(fadeInEl.querySelectorAll('.plate-card'), {
+                            opacity: 0,
+                            scale: 1.1,
+                            y: -20
+                        }, {
+                            opacity: 1,
+                            scale: 1,
+                            y: 0,
+                            stagger: 0.08,
+                            duration: 0.5,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+            }
+
+            function showGallery(el) {
+                el.classList.remove('hidden');
+                // Force display cho mobile nếu đang ở dạng flex
+                if (window.innerWidth <= 640 && el.id === 'gallery-moto') {
+                    el.style.display = 'flex';
+                } else {
+                    el.style.display = 'grid';
+                }
+
+                gsap.fromTo(el.querySelectorAll('.plate-card'), {
+                    opacity: 0,
+                    y: -20,
+                    scale: 1.05
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    stagger: 0.1,
+                    duration: 0.5
+                });
+            }
         });
-    });
+    })();
 
     // ----------------------------- section 3 ----------------------------- //
     window.addEventListener('load', () => {
@@ -1451,92 +1642,101 @@
 
     // ----------------------------- section 5 ----------------------------- //
     // Sử dụng IIFE để cô lập code và chạy ngay
-(function() {
-    // Ngăn trình duyệt nhảy về vị trí cũ khi F5 (Nguyên nhân gây lệch ScrollTrigger)
-    if (history.scrollRestoration) {
-        history.scrollRestoration = 'manual';
-    }
+    (function() {
+        // Ngăn trình duyệt nhảy về vị trí cũ khi F5 (Nguyên nhân gây lệch ScrollTrigger)
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // 1. Khởi tạo thanh Progress trước (Vì nó đơn giản)
-        gsap.to("#hub-progress", {
-            width: "100%",
-            ease: "none",
-            scrollTrigger: {
-                trigger: "#intelligence-hub",
-                start: "top center",
-                end: "bottom center",
-                scrub: true
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Khởi tạo thanh Progress trước (Vì nó đơn giản)
+            gsap.to("#hub-progress", {
+                width: "100%",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#intelligence-hub",
+                    start: "top center",
+                    end: "bottom center",
+                    scrub: true
+                }
+            });
+
+            // 2. Hiệu ứng Mở lối tri thức (3D Flip)
+            gsap.from(".knowledge-card", {
+                scrollTrigger: {
+                    trigger: "#intelligence-hub",
+                    start: "top 80%",
+                    // Tự động tính lại tọa độ khi cửa sổ resize hoặc ảnh load xong
+                    invalidateOnRefresh: true
+                },
+                rotateY: 45,
+                opacity: 0,
+                x: 100,
+                stagger: 0.2,
+                duration: 1.2,
+                ease: "power3.out"
+            });
+
+            // 3. Parallax Image Hover (Tối ưu performance)
+            const featuredPost = document.getElementById('featured-post');
+            const parallaxImg = featuredPost?.querySelector('.parallax-img');
+
+            if (featuredPost && parallaxImg) {
+                featuredPost.addEventListener('mousemove', (e) => {
+                    const {
+                        left,
+                        top,
+                        width,
+                        height
+                    } = featuredPost.getBoundingClientRect();
+                    const xVal = (e.clientX - left) / width;
+                    const yVal = (e.clientY - top) / height;
+
+                    gsap.to(parallaxImg, {
+                        x: (xVal - 0.5) * 30,
+                        y: (yVal - 0.5) * 30,
+                        duration: 0.6,
+                        ease: "power2.out",
+                        overwrite: 'auto' // Tránh xung đột hiệu ứng
+                    });
+                });
+
+                featuredPost.addEventListener('mouseleave', () => {
+                    gsap.to(parallaxImg, {
+                        x: 0,
+                        y: 0,
+                        duration: 1
+                    });
+                });
+
+                featuredPost.addEventListener('mouseenter', () =>
+                    document.getElementById('intelligence-hub').classList.add('reading-mode'));
+                featuredPost.addEventListener('mouseleave', () =>
+                    document.getElementById('intelligence-hub').classList.remove('reading-mode'));
             }
-        });
 
-        // 2. Hiệu ứng Mở lối tri thức (3D Flip)
-        gsap.from(".knowledge-card", {
-            scrollTrigger: {
-                trigger: "#intelligence-hub",
-                start: "top 80%",
-                // Tự động tính lại tọa độ khi cửa sổ resize hoặc ảnh load xong
-                invalidateOnRefresh: true 
-            },
-            rotateY: 45,
-            opacity: 0,
-            x: 100,
-            stagger: 0.2,
-            duration: 1.2,
-            ease: "power3.out"
-        });
-
-        // 3. Parallax Image Hover (Tối ưu performance)
-        const featuredPost = document.getElementById('featured-post');
-        const parallaxImg = featuredPost?.querySelector('.parallax-img');
-
-        if (featuredPost && parallaxImg) {
-            featuredPost.addEventListener('mousemove', (e) => {
-                const { left, top, width, height } = featuredPost.getBoundingClientRect();
-                const xVal = (e.clientX - left) / width;
-                const yVal = (e.clientY - top) / height;
-
-                gsap.to(parallaxImg, {
-                    x: (xVal - 0.5) * 30,
-                    y: (yVal - 0.5) * 30,
-                    duration: 0.6,
-                    ease: "power2.out",
-                    overwrite: 'auto' // Tránh xung đột hiệu ứng
+            // 4. Custom Cursor (Tách biệt khỏi load để chạy mượt)
+            const readCursor = document.getElementById('custom-read-cursor');
+            if (readCursor) {
+                document.addEventListener('mousemove', (e) => {
+                    gsap.to(readCursor, {
+                        x: e.clientX - 30,
+                        y: e.clientY - 30,
+                        duration: 0.1,
+                        overwrite: 'auto'
+                    });
                 });
-            });
+            }
 
-            featuredPost.addEventListener('mouseleave', () => {
-                gsap.to(parallaxImg, { x: 0, y: 0, duration: 1 });
-            });
-
-            featuredPost.addEventListener('mouseenter', () => 
-                document.getElementById('intelligence-hub').classList.add('reading-mode'));
-            featuredPost.addEventListener('mouseleave', () => 
-                document.getElementById('intelligence-hub').classList.remove('reading-mode'));
-        }
-
-        // 4. Custom Cursor (Tách biệt khỏi load để chạy mượt)
-        const readCursor = document.getElementById('custom-read-cursor');
-        if (readCursor) {
-            document.addEventListener('mousemove', (e) => {
-                gsap.to(readCursor, {
-                    x: e.clientX - 30,
-                    y: e.clientY - 30,
-                    duration: 0.1,
-                    overwrite: 'auto'
-                });
-            });
-        }
-
-        // QUAN TRỌNG: Ép trình duyệt Refresh lại ScrollTrigger sau 2 nhịp
-        // Nhịp 1: Ngay khi DOM xong
-        ScrollTrigger.refresh();
-        // Nhịp 2: Sau 500ms (Lúc này các CSS/Ảnh thường đã chiếm chỗ xong)
-        setTimeout(() => {
+            // QUAN TRỌNG: Ép trình duyệt Refresh lại ScrollTrigger sau 2 nhịp
+            // Nhịp 1: Ngay khi DOM xong
             ScrollTrigger.refresh();
-        }, 500);
-    });
-})();
+            // Nhịp 2: Sau 500ms (Lúc này các CSS/Ảnh thường đã chiếm chỗ xong)
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 500);
+        });
+    })();
     // ----------------------------- section 6 ----------------------------- //
 </script>
 
