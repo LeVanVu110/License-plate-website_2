@@ -1,4 +1,6 @@
-<?php include "header.php"; ?>
+<?php
+include "header.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,27 +16,31 @@
         /* ----------------------------- section 1 -----------------------------  */
         /* 1. Dynamic Grid Animation */
         .grid-lines {
-            animation: grid-zoom 20s linear infinite;
+            /* Sử dụng translate3d để đẩy việc render lên card đồ họa */
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            animation: grid-zoom 15s linear infinite;
         }
 
         @keyframes grid-zoom {
             from {
-                transform: perspective(500px) rotateX(20deg) translateY(0);
+                transform: perspective(1000px) rotateX(20deg) translate3d(0, 0, 0);
             }
 
             to {
-                transform: perspective(500px) rotateX(20deg) translateY(50px);
+                transform: perspective(1000px) rotateX(20deg) translate3d(0, 50px, 0);
             }
         }
 
-        /* 2. Data Streams Animation */
+        /* 2. Optimized Data Streams */
         .stream-line {
+            will-change: transform;
             animation: stream-flow 3s linear infinite;
         }
 
         @keyframes stream-flow {
             to {
-                transform: translateY(100vh);
+                transform: translate3d(0, 100vh, 0);
                 opacity: 0;
             }
         }
@@ -42,14 +48,9 @@
         /* 3. Sticky Morphing Class (Kích hoạt bởi GSAP) */
         #crystal-console.sticky-mode {
             position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.85);
-            width: 90%;
-            padding: 1rem 2rem;
-            border-radius: 100px;
+            top: 20px;
+            /* Cách header một khoảng để không bị đè */
             z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         #crystal-console.sticky-mode label,
@@ -57,6 +58,16 @@
         #crystal-console.sticky-mode .lg\:col-span-3 {
             display: none !important;
             /* Thu gọn khi dính */
+        }
+
+        #crystal-console {
+            /* Hạn chế backdrop-filter quá cao trên mobile */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            /* Giảm shadow phức tạp khi cuộn */
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                padding 0.4s ease,
+                border-radius 0.4s ease;
         }
 
         #crystal-console.is-morphing {
@@ -87,57 +98,156 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
-        /* Hiệu ứng Masonry Offset */
-        @media (min-width: 768px) {
-            #destiny-container>div:nth-child(even) {
+        /* Masonry Logic cho Desktop */
+        @media (min-width: 1024px) {
+
+
+            .legacy-card:nth-child(3) {
                 margin-top: 40px;
-                /* Tạo độ lệch so le */
             }
         }
 
-        /* Digital Case - Thẻ Ô tô (Chrome) */
-        .auto-case {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        /* Digital Case Style */
+        .digital-case {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .auto-case::before {
-            content: '';
+        .chrome-border {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .silver-border {
+            border-color: rgba(192, 192, 192, 0.2);
+        }
+
+        .legacy-card:hover .digital-case {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #007FFF;
+            box-shadow: 0 20px 40px rgba(0, 127, 255, 0.15);
+        }
+
+        /* Hiệu ứng Zoom Silhouette */
+        .car-silhouette {
             position: absolute;
             inset: 0;
-            border-radius: 1rem;
-            padding: 1px;
-            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), transparent, rgba(0, 127, 255, 0.2));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.05;
+            filter: grayscale(1) invert(1);
+            transition: all 1s ease;
+            pointer-events: none;
         }
 
-        /* Thẻ Xe máy (Matte Silver) */
-        .moto-case {
-            border: 1px solid rgba(192, 192, 192, 0.1);
+        .legacy-card:hover .car-silhouette {
+            opacity: 0.15;
+            transform: scale(1.2) rotate(-3deg);
         }
 
-        /* Plate Font mô phỏng */
-        .plate-number,
-        .plate-number-moto {
-            font-family: 'Inter', sans-serif;
-            letter-spacing: -0.05em;
+        /* Typography */
+        .plate-num {
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
         }
 
-        /* Glow Line animation */
-        .glow-line {
-            box-shadow: inset 0 0 20px rgba(0, 127, 255, 0);
+        .tag-ribbon {
+            position: absolute;
+            top: 20px;
+            left: -10px;
+            background: #007FFF;
+            color: white;
+            padding: 4px 15px;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 0 4px 4px 0;
+            transform: rotate(-5deg);
+            z-index: 20;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .group:hover .glow-line {
-            box-shadow: inset 0 0 20px rgba(0, 127, 255, 0.2);
-        }
-
-        /* Mobile Swipe Animations */
-        @media (max-width: 768px) {
-            .legacy-card {
-                transition: transform 0.3s ease-out !important;
+        /* Tối ưu Mobile */
+        @media (max-width: 640px) {
+            #destiny-grid {
+                gap: 12px;
             }
+
+            .digital-case {
+                border-radius: 20px;
+                padding: 1.5rem !important;
+            }
+
+            .plate-num {
+                font-size: 2rem !important;
+            }
+        }
+
+        #destiny-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            align-items: start;
+            will-change: transform;
+            /* Bật tăng tốc phần cứng */
+        }
+
+        @media (min-width: 1024px) {
+            #destiny-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 30px;
+            }
+
+            /* Tạo Masonry bằng CSS thay vì JS để giảm lag */
+            .legacy-card:nth-child(even) {
+                transform: translateY(40px) !important;
+            }
+        }
+
+        .digital-case {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            /* Giảm độ nhòe để mượt hơn */
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Chỉ hover trên thiết bị có chuột mới chạy hiệu ứng nặng */
+        @media (hover: hover) {
+            .legacy-card:hover .digital-case {
+                border-color: #007FFF;
+                box-shadow: 0 15px 30px rgba(0, 127, 255, 0.1);
+            }
+
+            .legacy-card:hover .car-silhouette {
+                transform: scale(1.1) translateZ(0);
+                opacity: 0.15;
+            }
+        }
+
+        .car-silhouette {
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            filter: grayscale(1) invert(1);
+            transition: transform 0.6s ease, opacity 0.6s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plate-num {
+            font-size: clamp(1.2rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         /* ----------------------------- section 3 -----------------------------  */
@@ -152,7 +262,7 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section id="command-center" class="relative min-h-screen bg-[#000D1A] flex items-center pt-20 overflow-hidden">
+    <!-- <section id="command-center" class="relative min-h-screen bg-[#000D1A] flex items-center pt-20 overflow-hidden">
         <div class="absolute inset-0 pointer-events-none">
             <div class="grid-lines absolute inset-0 opacity-20"
                 style="background-image: linear-gradient(var(--electric-blue) 1px, transparent 1px), linear-gradient(90deg, var(--electric-blue) 1px, transparent 1px); background-size: 50px 50px;"></div>
@@ -229,10 +339,102 @@
                 <i class="ri-equalizer-fill"></i>
             </button>
         </div>
-    </section>
+    </section> -->
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="grid-destiny" class="relative py-20 bg-[#000D1A] overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="mb-16 text-left max-w-2xl">
+                <h2 class="text-blue-400 text-xs tracking-[0.5em] uppercase mb-4 font-bold">The Digital Inventory</h2>
+                <h3 class="serif-title text-4xl md:text-5xl text-white">Lưới Phân Định <span class="text-blue-500 italic">Vận Mệnh</span></h3>
+            </div>
 
+            <div id="destiny-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-start">
+
+                <div class="legacy-card auto group col-span-2" data-tilt>
+                    <div class="digital-case chrome-border p-6 md:p-10 min-h-[220px] flex flex-col justify-between" style="margin: 30px;">
+                        <div class="tag-ribbon">VIP HERITAGE</div>
+                        <div class="car-silhouette">
+                            <img src="https://fumo.com.vn/wp-content/uploads/2025/06/ly-do-hinh-nen-lamborghini-duoc-tim-kiem-nhieu.jpg" class="w-2/3">
+                        </div>
+                        <div class="card-inner relative z-10 text-center py-4">
+                            <h4 class="plate-num text-4xl md:text-6xl font-black text-white tracking-tighter">30K - 888.88</h4>
+                        </div>
+                        <div class="relative z-10 flex justify-between items-end">
+                            <div class="actions flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-600 flex items-center justify-center"><i class="ri-search-eye-line text-white"></i></button>
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 flex items-center justify-center"><i class="ri-heart-fill text-white"></i></button>
+                            </div>
+                            <div class="price-box text-right">
+                                <p class="text-[10px] text-white/40 uppercase tracking-widest">Giá sở hữu</p>
+                                <p class="price text-xl md:text-2xl font-bold text-[#007FFF]">2.450.000.000đ</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="digital-case chrome-border p-6 md:p-10 min-h-[220px] flex flex-col justify-between" style="margin: 30px;">
+                        <div class="tag-ribbon">VIP HERITAGE</div>
+                        <div class="car-silhouette">
+                            <img src="https://fumo.com.vn/wp-content/uploads/2025/06/ly-do-hinh-nen-lamborghini-duoc-tim-kiem-nhieu.jpg" class="w-2/3">
+                        </div>
+                        <div class="card-inner relative z-10 text-center py-4">
+                            <h4 class="plate-num text-4xl md:text-6xl font-black text-white tracking-tighter">30K - 888.88</h4>
+                        </div>
+                        <div class="relative z-10 flex justify-between items-end">
+                            <div class="actions flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-600 flex items-center justify-center"><i class="ri-search-eye-line text-white"></i></button>
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 flex items-center justify-center"><i class="ri-heart-fill text-white"></i></button>
+                            </div>
+                            <div class="price-box text-right">
+                                <p class="text-[10px] text-white/40 uppercase tracking-widest">Giá sở hữu</p>
+                                <p class="price text-xl md:text-2xl font-bold text-[#007FFF]">2.450.000.000đ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="legacy-card moto group" data-tilt>
+                    <div class="digital-case silver-border p-6 aspect-[4/5] flex flex-col justify-between">
+                        <div class="tag-ribbon !bg-gray-600">SẢNH TIẾN</div>
+                        <div class="car-silhouette">
+                            <img src="https://hoangvietauto.vn/wp-content/uploads/E1BAA2nh-siC3AAu-xe-C491E1BAB9p-chE1BAA5t-lC6B0E1BBA3ng-cao.jpg" class="w-3/4">
+                        </div>
+                        <div class="card-inner relative z-10 text-center moto-style">
+                            <p class="plate-top text-lg text-white/60 font-mono">29-G1</p>
+                            <p class="plate-bottom text-3xl text-white font-black tracking-widest">567.89</p>
+                        </div>
+                        <div class="price-box text-center relative z-10">
+                            <p class="price text-lg font-bold text-[#007FFF]">385.000.000đ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legacy-card moto group" data-tilt>
+                    <div class="digital-case silver-border p-6 aspect-[4/5] flex flex-col justify-between">
+                        <div class="tag-ribbon">PHÁT LỘC</div>
+                        <div class="car-silhouette">
+                            <img src="https://hoangvietauto.vn/wp-content/uploads/E1BAA2nh-siC3AAu-xe-C491E1BAB9p-chE1BAA5t-lC6B0E1BBA3ng-cao.jpg" class="w-3/4">
+                        </div>
+                        <div class="card-inner relative z-10 text-center moto-style pt-10">
+                            <p class="plate-top text-lg text-white/60 font-mono">59-S3</p>
+                            <p class="plate-bottom text-3xl text-white font-black tracking-widest">868.68</p>
+                        </div>
+                        <div class="price-box text-center relative z-10">
+                            <p class="price text-lg font-bold text-[#007FFF]">125.000.000đ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 text-center">
+                <button id="btn-load-more" class="group relative px-10 py-4 overflow-hidden rounded-full border border-blue-500/50">
+                    <span class="relative z-10 text-blue-400 font-bold tracking-widest text-xs uppercase group-hover:text-white transition-colors duration-300">Mở rộng kho di sản</span>
+                    <div class="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                </button>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -242,166 +444,118 @@
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
-    <?php include "footer.php"; ?>
+    <?php
+    include "footer.php";
+    ?>
 </body>
 <script>
     // ----------------------------- section 1 ----------------------------- //
-    // ----------------------------- SECTION 1: THE COMMAND CENTER SCRIPT ----------------------------- //
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Đăng ký ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
-
         const consoleElem = document.getElementById('crystal-console');
         const wrapper = document.getElementById('crystal-console-wrapper');
 
-        // 1. HIỆU ỨNG KHỞI ĐỘNG (SYSTEM BOOT)
-        // Chạy ngay khi trang web sẵn sàng
+        // 1. BOOT ANIMATION: Sử dụng force3D để mượt hơn
+        const bootTl = gsap.timeline({
+            defaults: {
+                force3D: true
+            }
+        });
         bootTl.from(consoleElem, {
-                clipPath: "inset(0 50% 0 50%)",
+                scaleX: 0,
                 opacity: 0,
-                duration: 1.5,
-                ease: "expo.inOut"
+                duration: 1,
+                ease: "expo.out"
             })
-            .from("#crystal-console > div", {
+            .from("#crystal-console > div > div", {
                 opacity: 0,
-                y: 20,
-                stagger: 0.1,
-                duration: 0.8,
-                ease: "power3.out"
+                y: 15,
+                stagger: 0.05,
+                duration: 0.5
             }, "-=0.5");
 
+        
 
-        // 2. HIỆU ỨNG STICKY MORPHING (THU NHỎ KHI CUỘN)
-        // Timeline này điều khiển việc thu nhỏ thanh Console thành thanh Search gọn nhẹ
-        const morphTl = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#command-center",
-            start: "bottom 60%", // Bắt đầu thu nhỏ sớm hơn một chút
-            end: "bottom 20%",
-            scrub: 1,            // Mượt mà theo tay cuộn
-            onEnter: () => consoleElem.classList.add('sticky-mode'),
-            onLeaveBack: () => consoleElem.classList.remove('sticky-mode'),
-        }
-    });
-
-        morphTl.to(consoleElem, {
-        width: (window.innerWidth > 1024) ? "75%" : "92%",
-        padding: "10px 20px",
-        borderRadius: "100px",
-        backgroundColor: "rgba(0, 13, 26, 0.85)",
-        ease: "none"
-    })
-    // Ẩn các label và các thành phần không cần thiết để biến thành thanh search mini
-    .to(".hide-on-sticky", {
-        opacity: 0,
-        height: 0,
-        margin: 0,
-        padding: 0,
-        duration: 0.2
-    }, 0);
-
-
-        // 3. LOGIC GHIM THANH SEARCH (PINNING)
-        // Đảm bảo thanh Search dính ở trên đầu khi xem các Section tiếp theo
-        ScrollTrigger.create({
-        trigger: wrapper,
-        start: "top 20px",    // Vị trí ghim cách đỉnh màn hình 20px
-        endTrigger: "html",   // Ghim cho đến hết trang
-        end: "bottom bottom",
-        pin: true,            // GSAP tự xử lý position: fixed cực chuẩn
-        pinSpacing: false,    // Không đẩy Section 2 xuống dưới
-        anticipatePin: 1,
-        onUpdate: (self) => {
-            // Nếu cuộn ngược lên trên cùng, trả lại trạng thái ban đầu
-            if (self.progress === 0) {
-                gsap.to(consoleElem, { width: "100%", borderRadius: "2.5rem" });
-            }
-        }
-    });
-    ScrollTrigger.refresh();
-
-        // 4. HIỆU ỨNG MAGNETIC INPUT (CẢM ỨNG DỮ LIỆU)
+        // 3. TỐI ƯU INPUT (Chỉ chạy khi thực sự cần)
         const searchInput = consoleElem.querySelector('input');
         searchInput.addEventListener('focus', () => {
-            gsap.to(".grid-lines", {
-                scale: 1.1,
-                opacity: 0.4,
-                duration: 0.8,
-                ease: "power2.out"
-            });
             gsap.to(consoleElem, {
                 borderColor: "rgba(0, 127, 255, 0.6)",
-                boxShadow: "0 0 30px rgba(0, 127, 255, 0.2)",
-                duration: 0.4
+                boxShadow: "0 0 20px rgba(0, 127, 255, 0.2)",
+                duration: 0.3
             });
         });
-
         searchInput.addEventListener('blur', () => {
-            gsap.to(".grid-lines", {
-                scale: 1,
-                opacity: 0.2,
-                duration: 0.8
-            });
             gsap.to(consoleElem, {
                 borderColor: "rgba(255, 255, 255, 0.1)",
-                boxShadow: "0 0 50px rgba(0,127,255,0.1)",
-                duration: 0.4
+                boxShadow: "none",
+                duration: 0.3
             });
         });
 
-
-        // 5. MOBILE FLOATING HUB REVEAL
-        // Nút tròn điều khiển trên Mobile sẽ hiện ra khi thanh search chính đã thu nhỏ
-        const mobileHub = document.getElementById('mobile-hub');
-        if (mobileHub) {
-            gsap.from(mobileHub, {
-                scrollTrigger: {
-                    trigger: "#command-center",
-                    start: "bottom center",
-                    toggleActions: "play reverse play reverse"
-                },
-                scale: 0,
-                opacity: 0,
-                duration: 0.5,
-                ease: "back.out(1.7)"
+        // 4. PREVENT LAYOUT SHIFT
+        ScrollTrigger.addEventListener("refreshInit", () => {
+            // Giữ vị trí console ổn định khi trình duyệt tính toán lại
+            gsap.set(consoleElem, {
+                clearProps: "all"
             });
-        }
-
-        // Refresh lại toàn bộ để cập nhật tọa độ chính xác nhất
-        ScrollTrigger.refresh();
+        });
     });
-
-    // Hàm chuyển đổi Ô tô / Xe máy (Phần cơ học)
-    function toggleDevice(type) {
-        const slider = document.getElementById('toggle-active');
-        const buttons = document.querySelectorAll('#crystal-console button');
-
-        if (type === 'auto') {
-            gsap.to(slider, {
-                x: "0%",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            buttons[0].classList.replace('text-white/40', 'text-white');
-            buttons[1].classList.replace('text-white', 'text-white/40');
-        } else {
-            gsap.to(slider, {
-                x: "100%",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            buttons[1].classList.replace('text-white/40', 'text-white');
-            buttons[0].classList.replace('text-white', 'text-white/40');
-        }
-
-        // Đồng bộ với việc lọc dữ liệu ở Section 2 (nếu có)
-        if (typeof switchGallery === "function") {
-            switchGallery(type);
-        }
-    }
     // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Reveal & Glide (Các con số trượt vào khi cuộn)
+        gsap.utils.toArray('.legacy-card').forEach((card, i) => {
+            const plateContent = card.querySelector('.card-inner');
 
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            tl.from(card, {
+                y: 60,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }).from(plateContent, {
+                x: -40,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            }, "-=0.4");
+        });
+
+        // 2. 3D Tilt Effect
+        if (window.innerWidth > 1024) {
+            VanillaTilt.init(document.querySelectorAll(".legacy-card"), {
+                max: 10,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.2,
+            });
+        }
+
+        // 3. Spiral Loading Effect cho nút Xem thêm
+        const btnLoad = document.getElementById('btn-load-more');
+        btnLoad.addEventListener('click', () => {
+            gsap.to(".legacy-card", {
+                duration: 0.8,
+                scale: 0.95,
+                stagger: {
+                    each: 0.05,
+                    from: "center",
+                    grid: "auto"
+                },
+                yoyo: true,
+                repeat: 1,
+                ease: "power2.inOut"
+            });
+            // Logic thực tế để gọi thêm dữ liệu sẽ ở đây
+        });
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
