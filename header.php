@@ -124,11 +124,7 @@
         </div>
     </div>
 
-    <!-- <main class="container mx-auto mt-20 px-6">
-        <div class="h-96 w-full rounded-3xl bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center border border-white/20">
-            <p class="text-gray-400">Content Section</p>
-        </div>
-    </main> -->
+    
 
     <script>
         // 1. Initial Reveal (Chào mừng)
@@ -187,7 +183,7 @@
         searchBtn.addEventListener('click', () => {
             if (!searchOpen) {
                 gsap.to(searchInput, {
-                    width: 200,
+                    width: 131,
                     paddingLeft: 15,
                     paddingRight: 15,
                     duration: 0.5,
