@@ -310,6 +310,86 @@ include "header.php";
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* 1. Typography */
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* 2. Custom Cursor for News Zone */
+        .news-cursor-active {
+            cursor: none;
+        }
+
+        #custom-cursor {
+            width: 80px;
+            height: 80px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: transform 0.1s ease;
+        }
+
+        #custom-cursor span {
+            color: #99FFFF;
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* 3. Infinite Ticker Animation */
+        .ticker-content {
+            animation: tickerLoop 30s linear infinite;
+            display: inline-flex;
+        }
+
+        @keyframes tickerLoop {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* 4. Highlight Text Logic */
+        .highlight-text {
+            color: rgba(0, 40, 80, 0.8);
+            /* Xanh Navy mờ ban đầu */
+            transition: color 0.8s ease;
+        }
+
+        /* 5. Dust Particles styling */
+        .dust-particle {
+            position: absolute;
+            background: #00FFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* 6. Mobile Story Swipe giả lập */
+        @media (max-width: 1024px) {
+            .scroll-feed-container {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 20px;
+                scroll-snap-type: x mandatory;
+            }
+
+            .news-item-card {
+                min-width: 280px;
+                scroll-snap-align: center;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -586,6 +666,77 @@ include "header.php";
     </div>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="heritage-log" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
+
+        <div class="absolute inset-0 z-0 hidden lg:block" id="dust-particles"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-20 text-center relative">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+                    <line id="horizon-line" x1="0" y1="50%" x2="100%" y2="50%" stroke="#00FFFF" stroke-width="1" />
+                </svg>
+                <h2 class="serif-title text-[#99FFFF] text-5xl md:text-7xl tracking-widest opacity-0 heritage-headline">
+                    NHẬT KÝ DI SẢN
+                </h2>
+                <p class="text-cyan-500/50 uppercase tracking-[6px] text-[10px] mt-4">Chronicles of Destiny & Numbers</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-3/5 focus-news-card group relative rounded-[32px] overflow-hidden border border-white/5 bg-white/5">
+                    <div class="parallax-wrap h-[400px] md:h-[600px] overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80"
+                            class="parallax-img w-full h-[120%] object-cover transition-transform duration-700">
+                        <div class="frost-layer absolute inset-0 backdrop-blur-md bg-cyan-900/10 transition-all duration-700 group-hover:backdrop-blur-none group-hover:bg-transparent"></div>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 bg-gradient-to-t from-[#000814] via-[#000814]/80 to-transparent">
+                        <span class="text-cyan-400 text-xs font-bold tracking-widest uppercase mb-4 block">Tiêu điểm 2026</span>
+                        <h3 class="serif-title text-white text-3xl md:text-4xl leading-tight mb-6 highlight-text">
+                            Quy trình định danh biển số 2026: <br>Những điều chủ nhân cần biết
+                        </h3>
+                        <div class="flex items-center gap-4">
+                            <div class="h-[1px] w-12 bg-cyan-500"></div>
+                            <span class="text-white/40 text-[10px] uppercase tracking-widest">Đọc câu chuyện</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-2/5 flex flex-col gap-6 scroll-feed-container">
+                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Thị trường</span>
+                        <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Giá trị biển số sảnh tiến tăng 15% trong tháng qua</h4>
+                        <span class="text-white/30 text-[10px]">14.02.2026</span>
+                    </div>
+
+                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Ý nghĩa con số</span>
+                        <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Sự giao thoa giữa phong thủy và số học hiện đại</h4>
+                        <span class="text-white/30 text-[10px]">12.02.2026</span>
+                    </div>
+
+                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <div class="flex gap-4 items-center">
+                            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-1">Bàn giao</span>
+                                <h4 class="text-white text-sm font-medium highlight-text">Bàn giao biển "Ngũ Quý 9" tại tư gia khách hàng TP.HCM</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 py-4 bg-cyan-500/5 border-t border-cyan-500/10 overflow-hidden">
+            <div class="ticker-content whitespace-nowrap flex gap-12">
+                <span class="text-cyan-400 text-[10px] font-bold uppercase tracking-[4px]">Biển ngũ quý 9 vừa được ký gửi...</span>
+                <span class="text-cyan-400 text-[10px] font-bold uppercase tracking-[4px]">Giá trị biển số sảnh tiến tăng 15% trong tháng qua...</span>
+                <span class="text-cyan-400 text-[10px] font-bold uppercase tracking-[4px]">Sắp diễn ra phiên đấu giá biển số siêu VIP tháng 3...</span>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -787,6 +938,100 @@ include "header.php";
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. Horizon Reveal Animation
+        const horizonTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#heritage-log",
+                start: "top 70%",
+            }
+        });
+
+        horizonTl.from("#horizon-line", {
+                scaleX: 0,
+                duration: 1.5,
+                ease: "expo.inOut"
+            })
+            .to(".heritage-headline", {
+                opacity: 1,
+                duration: 1,
+                ease: "power2.out"
+            }, "-=0.5");
+
+        // 2. Parallax Image Glaze
+        gsap.to(".parallax-img", {
+            scrollTrigger: {
+                trigger: ".focus-news-card",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true
+            },
+            y: -50,
+            ease: "none"
+        });
+
+        // 3. Text Highlight ScrollTrigger
+        const highlightTexts = document.querySelectorAll('.highlight-text');
+        highlightTexts.forEach(text => {
+            gsap.to(text, {
+                scrollTrigger: {
+                    trigger: text,
+                    start: "top 85%",
+                    end: "top 60%",
+                    scrub: true,
+                },
+                color: "#99FFFF", // Ice Blue rực rỡ
+                ease: "none"
+            });
+        });
+
+        // 4. Custom Cursor "READ" Logic
+        const cursor = document.createElement('div');
+        cursor.id = 'custom-cursor';
+        cursor.innerHTML = '<span>READ</span>';
+        document.body.appendChild(cursor);
+
+        const logSection = document.getElementById('heritage-log');
+        logSection.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX - 40,
+                y: e.clientY - 40,
+                opacity: 1,
+                duration: 0.3
+            });
+        });
+        logSection.addEventListener('mouseleave', () => {
+            gsap.to(cursor, {
+                opacity: 0,
+                duration: 0.3
+            });
+        });
+
+        // 5. Dust Particles (Light Dust)
+        const dustContainer = document.getElementById('dust-particles');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'dust-particle';
+            const size = Math.random() * 3;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            dustContainer.appendChild(p);
+
+            gsap.to(p, {
+                y: "random(-50, 50)",
+                x: "random(-50, 50)",
+                opacity: "random(0.1, 0.4)",
+                duration: "random(2, 5)",
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
