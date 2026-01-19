@@ -281,6 +281,263 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* CSS cho Infinite Marquee */
+        /* --- Section 4: Styles --- */
+        #social-pulse {
+            position: relative;
+            z-index: 10;
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .grainy-overlay {
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        /* Marquee Styles */
+        .marquee-wrapper {
+            overflow: hidden;
+            padding: 1rem 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            animation: marquee-scroll 30s linear infinite;
+            width: max-content;
+        }
+
+        @keyframes marquee-scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .transaction-card {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glint-pulse {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: glint-move 4s infinite;
+        }
+
+        @keyframes glint-move {
+            0% {
+                transform: skewX(-20deg) translateX(-150%);
+            }
+
+            20%,
+            100% {
+                transform: skewX(-20deg) translateX(250%);
+            }
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #001f3f;
+            font-size: 0.875rem;
+        }
+
+        .plate-number {
+            font-weight: 800;
+            color: #007fff;
+            letter-spacing: 0.05em;
+        }
+
+        .status-tag {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+
+        /* Auction Box */
+        .auction-box {
+            background: #001F3F;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .plate-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .plate-text {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .time-num {
+            display: block;
+            font-size: 2.25rem;
+            font-weight: 700;
+        }
+
+        .time-label {
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .time-colon {
+            font-size: 2.25rem;
+            color: #007fff;
+        }
+
+        .btn-auction-join {
+            margin-top: 2.5rem;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: #001f3f;
+            font-weight: 700;
+            border-radius: 9999px;
+            transition: all 0.5s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-auction-join:hover {
+            background: #007fff;
+            color: white;
+        }
+
+        .auction-icon-bg {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 200px;
+            color: rgba(255, 255, 255, 0.05);
+            transform: rotate(12deg);
+            pointer-events: none;
+        }
+
+        /* Hub Box */
+        .hub-box {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            border: 1px solid white;
+        }
+
+        .hub-title {
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: #001f3f;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        .hub-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 1rem;
+        }
+
+        .hub-plate {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #001f3f;
+        }
+
+        .hub-meta {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+
+        .hub-price {
+            color: #007fff;
+            font-weight: 700;
+        }
+
+        .endorsement-logos {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            filter: grayscale(100%);
+            opacity: 0.3;
+        }
+
+        .endorsement-logos i {
+            font-size: 1.5rem;
+        }
+
+        /* Đảm bảo sticky title luôn nằm dưới header nhưng trên nội dung section */
+        #sticky-title {
+            z-index: 5;
+        }
+
+        /* Thêm vào CSS chung để đảm bảo footer không bị đè ngược */
+        footer {
+            position: relative;
+            z-index: 20;
+            background-color: #000D1A;
+            /* Màu navy deep của bạn */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .plate-text {
+                font-size: 2rem;
+            }
+
+            .countdown-timer {
+                gap: 0.75rem;
+            }
+
+            .time-num {
+                font-size: 1.5rem;
+            }
+
+            #social-pulse {
+                padding-left: 0 !important;
+            }
+
+            .plate-text {
+                letter-spacing: -0.02em;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -480,8 +737,119 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
+        <div class="grainy-overlay"></div>
+
+        <div class="absolute inset-0 pointer-events-none">
+            <div id="sticky-title-container" class="sticky top-1/2 -translate-y-1/2 h-fit">
+                <div id="sticky-title" class="hidden lg:block ml-10">
+                    <h2 class="serif-title text-sm tracking-[0.5em] text-[#001F3F] origin-left rotate-90 whitespace-nowrap opacity-50">
+                        NHỊP ĐẬP THỊ TRƯỜNG
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-20">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="sans-text text-[10px] font-bold tracking-[0.3em] text-[#001F3F] uppercase">Giao dịch trực tiếp</span>
+                </div>
+
+                <div class="marquee-wrapper">
+                    <div class="marquee-content flex gap-8 whitespace-nowrap">
+                        <div class="transaction-card">
+                            <div class="glint-pulse"></div>
+                            <span class="customer-name">Anh Trần V.</span>
+                            <span class="plate-number">30K - 999.XX</span>
+                            <span class="status-tag">Vừa chốt đơn</span>
+                        </div>
+                        <div class="transaction-card">
+                            <span class="customer-name">Chị Lê M.</span>
+                            <span class="plate-number">51L - 888.XX</span>
+                            <span class="status-tag">10 phút trước</span>
+                        </div>
+                        <div class="transaction-card">
+                            <span class="customer-name">Khách hàng 09xx</span>
+                            <span class="plate-number">60A - 666.XX</span>
+                            <span class="status-tag">Vừa thanh toán</span>
+                        </div>
+                        <div class="transaction-card">
+                            <span class="customer-name">Anh Trần V.</span>
+                            <span class="plate-number">30K - 999.XX</span>
+                            <span class="status-tag">Vừa chốt đơn</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="w-full lg:w-[60%] bg-[#001F3F] rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                    <div class="relative z-10">
+                        <h3 class="serif-title text-3xl mb-8 uppercase tracking-widest text-[#007FFF]">Phiên đấu giá tiêu điểm</h3>
+                        <div class="flex items-center gap-12">
+                            <div class="plate-highlight bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20">
+                                <span class="text-4xl md:text-5xl font-bold tracking-tighter serif-title">30K - 555.55</span>
+                            </div>
+                            <div class="countdown-timer flex gap-6" id="auction-timer">
+                                <div class="time-block">
+                                    <span class="block text-4xl font-bold" id="hours">02</span>
+                                    <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giờ</span>
+                                </div>
+                                <span class="text-4xl text-[#007FFF]">:</span>
+                                <div class="time-block">
+                                    <span class="block text-4xl font-bold" id="mins">45</span>
+                                    <span class="text-[10px] text-gray-400 uppercase tracking-widest">Phút</span>
+                                </div>
+                                <span class="text-4xl text-[#007FFF]">:</span>
+                                <div class="time-block">
+                                    <span class="block text-4xl font-bold" id="secs">12</span>
+                                    <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giây</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-10 px-10 py-4 bg-white text-[#001F3F] font-bold rounded-full hover:bg-[#007FFF] hover:text-white transition-all duration-500 shadow-xl">
+                            THAM GIA ĐẤU GIÁ NGAY
+                        </button>
+                    </div>
+                    <i class="ri-hammer-line absolute right-[-20px] bottom-[-20px] text-[200px] text-white/5 rotate-12"></i>
+                </div>
+
+                <div class="w-full lg:w-[40%] bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white">
+                    <h3 class="sans-text font-bold tracking-[0.2em] text-[#001F3F] mb-8 text-sm uppercase">Ký gửi mới nhất</h3>
+                    <div class="space-y-6" id="consignment-list">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div>
+                                <p class="text-sm font-bold text-[#001F3F]">30K-123.45</p>
+                                <p class="text-[10px] text-gray-400">Vừa ký gửi - Hà Nội</p>
+                            </div>
+                            <span class="text-[#007FFF] font-bold">1.2 Tỷ</span>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div>
+                                <p class="text-sm font-bold text-[#001F3F]">51L-999.99</p>
+                                <p class="text-[10px] text-gray-400">Vừa ký gửi - TP.HCM</p>
+                            </div>
+                            <span class="text-[#007FFF] font-bold">3.5 Tỷ</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-gray-100 flex justify-between grayscale opacity-30">
+                        <i class="ri-bank-line text-2xl"></i>
+                        <i class="ri-newspaper-line text-2xl"></i>
+                        <i class="ri-government-line text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -753,6 +1121,73 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    window.addEventListener('load', () => {
+        // 1. Tối ưu Marquee
+        const marquee = document.querySelector('.marquee-content');
+        // Chỉ nhân bản nếu chưa có đủ nội dung để lặp
+        if (marquee.children.length < 8) {
+            marquee.innerHTML += marquee.innerHTML;
+        }
+
+        // Velocity Mapping: Tốc độ marquee chạy theo nhịp cuộn
+        let scrollVelocity = 1;
+        ScrollTrigger.create({
+            onUpdate: (self) => {
+                scrollVelocity = 1 + Math.abs(self.getVelocity() / 1000);
+                gsap.to(marquee, {
+                    timeScale: scrollVelocity,
+                    duration: 0.5
+                });
+            }
+        });
+
+
+        // Tìm đoạn này trong phần script Section 4
+        gsap.to("#sticky-title", {
+            scrollTrigger: {
+                trigger: "#social-pulse",
+                start: "top -80%",
+                end: "bottom 80%", // Đảm bảo kết thúc trước khi chạm tới Footer
+                pin: true,
+                pinSpacing: false, // QUAN TRỌNG: Đặt là false để không tạo khoảng trống dư
+                anticipatePin: 1
+            }
+        });
+
+        // 3. Countdown Tension (Giữ nguyên logic nhảy số)
+        const secsLabel = document.getElementById('secs');
+        if (secsLabel) {
+            setInterval(() => {
+                let currentSec = parseInt(secsLabel.innerText);
+                if (currentSec > 0) {
+                    currentSec--;
+                    secsLabel.innerText = currentSec < 10 ? '0' + currentSec : currentSec;
+                    gsap.fromTo(secsLabel, {
+                        scale: 1.2,
+                        color: "#007FFF"
+                    }, {
+                        scale: 1,
+                        color: "#FFFFFF",
+                        duration: 0.4
+                    });
+                } else {
+                    secsLabel.innerText = "59"; // Reset để demo
+                }
+            }, 1000);
+        }
+
+        // 4. Reveal Animation (Đảm bảo container hiện hết)
+        gsap.from("#social-pulse .container", {
+            scrollTrigger: {
+                trigger: "#social-pulse",
+                start: "top 80%",
+            },
+            y: 100,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power4.out"
+        });
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
