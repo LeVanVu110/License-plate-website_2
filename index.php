@@ -540,6 +540,154 @@
         }
 
         /* ----------------------------- section 5 -----------------------------  */
+        /* Nền Layered Glass */
+        #intelligence-hub {
+            position: relative;
+            background-color: #F8FAFC;
+            z-index: 10;
+        }
+
+        /* Các khối kính mờ trang trí phía sau */
+        #intelligence-hub .glass-decor-1 {
+            position: absolute;
+            top: 10%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(80px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #intelligence-hub .glass-decor-2 {
+            position: absolute;
+            bottom: 5%;
+            left: -5%;
+            width: 500px;
+            height: 500px;
+            background: rgba(0, 127, 255, 0.03);
+            backdrop-filter: blur(60px);
+            border-radius: 4rem;
+            transform: rotate(-6deg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Thẻ tin tức (Knowledge Card) */
+        .knowledge-card {
+            perspective: 1500px;
+            /* Tạo môi trường 3D */
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Hiệu ứng Parallax cho ảnh bài viết tiêu điểm */
+        #featured-post {
+            overflow: hidden;
+            backface-visibility: hidden;
+        }
+
+        .parallax-img {
+            will-change: transform;
+            object-fit: cover;
+            transform: scale(1.1);
+            /* Để có khoảng trống khi di chuyển parallax */
+        }
+
+        /* Lớp phủ kính trên bài viết tiêu điểm */
+        .featured-glass-overlay {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Nút Read More với tia sáng chạy quanh (Border Beam) */
+        .read-glow-btn {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 127, 255, 0.3);
+            color: #007FFF;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .read-glow-btn:hover {
+            background: #007FFF;
+            color: #fff !important;
+            box-shadow: 0 0 20px rgba(0, 127, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Thanh Progress Bar ở đáy section */
+        #hub-progress {
+            transition: width 0.1s linear;
+        }
+
+        /* Custom Cursor: Chữ "READ" khi rê vào tin tức */
+        .reading-mode {
+            cursor: none;
+        }
+
+        #custom-read-cursor {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #001F3F;
+            z-index: 9999;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .reading-mode #custom-read-cursor {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Ép khung ảnh có chiều cao cố định trước khi ảnh tải xong */
+        .knowledge-card .relative {
+            aspect-ratio: 16 / 9;
+            /* Hoặc chiều cao cố định như h-[500px] */
+            background: #f0f0f0;
+            /* Màu nền giả lập ảnh đang tải */
+        }
+
+        /* Tối ưu Mobile */
+        @media (max-width: 1024px) {
+            .knowledge-card {
+                perspective: none;
+                /* Tắt 3D trên mobile để mượt hơn */
+            }
+
+            .featured-glass-overlay {
+                position: relative;
+                margin: -40px 15px 15px 15px;
+                background: white;
+                backdrop-filter: none;
+            }
+
+            .featured-glass-overlay h3 {
+                color: #001F3F !important;
+            }
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -849,15 +997,104 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <section id="intelligence-hub" class="relative py-24 bg-[#F8FAFC] overflow-hidden">
+        <div class="absolute top-20 right-[-5%] w-96 h-96 bg-white/40 backdrop-blur-3xl rounded-full border border-white/50 rotate-12 pointer-events-none"></div>
+        <div class="absolute bottom-10 left-[-5%] w-[500px] h-[500px] bg-blue-50/50 backdrop-blur-2xl rounded-[4rem] border border-white/20 -rotate-6 pointer-events-none"></div>
 
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16 text-left">
+                <h2 class="serif-title text-4xl md:text-5xl text-[#001F3F] leading-tight">
+                    NHẬT KÝ <br> <span class="text-[#007FFF] italic">THỊ TRƯỜNG & DI SẢN</span>
+                </h2>
+                <div class="w-20 h-1 bg-[#007FFF] mt-6"></div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-2/3 group relative overflow-hidden rounded-[2rem] border border-white bg-white shadow-xl cursor-none knowledge-card" id="featured-post">
+                    <div class="relative h-[500px] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80"
+                            class="parallax-img w-full h-full object-cover transition-transform duration-700 scale-110" alt="Legal Guide">
+
+                        <div class="absolute inset-x-6 bottom-6 backdrop-blur-md bg-white/20 border border-white/30 p-8 rounded-[1.5rem] transform translate-y-4 transition-all duration-500 group-hover:translate-y-0">
+                            <span class="inline-block px-4 py-1 rounded-full bg-[#007FFF]/10 text-[#007FFF] text-[10px] font-bold tracking-widest uppercase mb-4">Pháp lý & Thủ tục</span>
+                            <h3 class="sans-text text-2xl md:text-3xl font-bold text-white mb-4 leading-snug">Hướng dẫn thủ tục định danh biển số 2026: Những điều chủ xe cần biết</h3>
+                            <p class="excerpt text-white/0 group-hover:text-white/90 transition-all duration-500 max-h-0 group-hover:max-h-24 overflow-hidden sans-text text-sm">
+                                Cập nhật mới nhất về quy trình chuyển nhượng, thu hồi và đăng ký biển số định danh theo thông tư mới nhất của Bộ Công An...
+                            </p>
+                            <a href="#" class="inline-flex items-center gap-2 mt-6 text-white font-bold text-xs tracking-widest uppercase group/btn">
+                                Xem chi tiết
+                                <span class="w-8 h-[1px] bg-white group-hover/btn:w-12 transition-all"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/3 flex flex-col gap-6">
+                    <div class="knowledge-card p-6 bg-white/80 backdrop-blur-md border border-white rounded-[1.5rem] shadow-sm hover:shadow-lg transition-all group">
+                        <span class="text-[9px] font-bold text-[#007FFF]/60 uppercase tracking-widest">Phong Thủy</span>
+                        <h4 class="sans-text font-bold text-[#001F3F] mt-2 group-hover:text-[#007FFF] transition-colors">Tầm quan trọng của số 8 trong phong thủy biển số xe hiện đại</h4>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-[10px] text-gray-400">5 phút đọc</span>
+                            <div class="read-glow-btn text-[#007FFF] text-lg"><i class="ri-arrow-right-up-line"></i></div>
+                        </div>
+                    </div>
+                    <div class="knowledge-card p-6 bg-white/80 backdrop-blur-md border border-white rounded-[1.5rem] shadow-sm hover:shadow-lg transition-all group">
+                        <span class="text-[9px] font-bold text-[#007FFF]/60 uppercase tracking-widest">Thị Trường</span>
+                        <h4 class="sans-text font-bold text-[#001F3F] mt-2 group-hover:text-[#007FFF] transition-colors">Top 10 biển số đấu giá kỷ lục tháng 12/2025</h4>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-[10px] text-gray-400">3 phút đọc</span>
+                            <div class="read-glow-btn text-[#007FFF] text-lg"><i class="ri-arrow-right-up-line"></i></div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-[#001F3F] rounded-[1.5rem] text-white flex flex-col items-center text-center justify-center gap-4 group cursor-pointer overflow-hidden relative">
+                        <div class="absolute inset-0 bg-[#007FFF] opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                        <i class="ri-magic-line text-3xl text-[#007FFF] animate-pulse"></i>
+                        <p class="text-xs tracking-widest opacity-80 uppercase">Tóm tắt bằng AI</p>
+                        <span class="text-[10px] text-gray-500 italic">Nắm bắt 24h tin tức trong 30 giây</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 w-full h-[1px] bg-gray-200 relative overflow-hidden">
+                <div id="hub-progress" class="absolute left-0 top-0 h-full bg-[#007FFF] w-0"></div>
+            </div>
+        </div>
+    </section>
+    <div id="custom-read-cursor">READ</div>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
     <?php include "footer.php"; ?>
+
 </body>
 <script>
+    // Sử dụng IIFE để chạy ngay nhưng kiểm soát được trình tự
+(function() {
+    // 1. Ngăn trình duyệt tự động cuộn về vị trí cũ khi F5 (Nguyên nhân chính gây lỗi tọa độ)
+    if (history.scrollRestoration) {
+        history.scrollRestoration = 'manual';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Khởi tạo các hiệu ứng
+        initSection4();
+        initSection5();
+
+        // 2. Kỹ thuật "Double Refresh": Đảm bảo tọa độ chuẩn sau khi render
+        let refreshSlider = setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 100);
+
+        // 3. Tự động tính toán lại nếu có sự thay đổi về kích thước (do ảnh load muộn)
+        const ro = new ResizeObserver(() => {
+            ScrollTrigger.refresh();
+        });
+        ro.observe(document.body);
+    });
+})();
     // ----------------------------- section 1 ----------------------------- //
     gsap.registerPlugin(ScrollTrigger);
+    
     // 2. Initial Animation & Scroll
     window.addEventListener('load', () => {
         const mainTl = gsap.timeline();
@@ -904,6 +1141,7 @@
             force3D: true
         });
     });
+
 
     // 3. Magnetic Search FIXED
     const searchWrapper = document.getElementById('search-wrapper');
@@ -1190,7 +1428,93 @@
     });
 
     // ----------------------------- section 5 ----------------------------- //
+    // Sử dụng IIFE để cô lập code và chạy ngay
+(function() {
+    // Ngăn trình duyệt nhảy về vị trí cũ khi F5 (Nguyên nhân gây lệch ScrollTrigger)
+    if (history.scrollRestoration) {
+        history.scrollRestoration = 'manual';
+    }
 
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Khởi tạo thanh Progress trước (Vì nó đơn giản)
+        gsap.to("#hub-progress", {
+            width: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#intelligence-hub",
+                start: "top center",
+                end: "bottom center",
+                scrub: true
+            }
+        });
+
+        // 2. Hiệu ứng Mở lối tri thức (3D Flip)
+        gsap.from(".knowledge-card", {
+            scrollTrigger: {
+                trigger: "#intelligence-hub",
+                start: "top 80%",
+                // Tự động tính lại tọa độ khi cửa sổ resize hoặc ảnh load xong
+                invalidateOnRefresh: true 
+            },
+            rotateY: 45,
+            opacity: 0,
+            x: 100,
+            stagger: 0.2,
+            duration: 1.2,
+            ease: "power3.out"
+        });
+
+        // 3. Parallax Image Hover (Tối ưu performance)
+        const featuredPost = document.getElementById('featured-post');
+        const parallaxImg = featuredPost?.querySelector('.parallax-img');
+
+        if (featuredPost && parallaxImg) {
+            featuredPost.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = featuredPost.getBoundingClientRect();
+                const xVal = (e.clientX - left) / width;
+                const yVal = (e.clientY - top) / height;
+
+                gsap.to(parallaxImg, {
+                    x: (xVal - 0.5) * 30,
+                    y: (yVal - 0.5) * 30,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    overwrite: 'auto' // Tránh xung đột hiệu ứng
+                });
+            });
+
+            featuredPost.addEventListener('mouseleave', () => {
+                gsap.to(parallaxImg, { x: 0, y: 0, duration: 1 });
+            });
+
+            featuredPost.addEventListener('mouseenter', () => 
+                document.getElementById('intelligence-hub').classList.add('reading-mode'));
+            featuredPost.addEventListener('mouseleave', () => 
+                document.getElementById('intelligence-hub').classList.remove('reading-mode'));
+        }
+
+        // 4. Custom Cursor (Tách biệt khỏi load để chạy mượt)
+        const readCursor = document.getElementById('custom-read-cursor');
+        if (readCursor) {
+            document.addEventListener('mousemove', (e) => {
+                gsap.to(readCursor, {
+                    x: e.clientX - 30,
+                    y: e.clientY - 30,
+                    duration: 0.1,
+                    overwrite: 'auto'
+                });
+            });
+        }
+
+        // QUAN TRỌNG: Ép trình duyệt Refresh lại ScrollTrigger sau 2 nhịp
+        // Nhịp 1: Ngay khi DOM xong
+        ScrollTrigger.refresh();
+        // Nhịp 2: Sau 500ms (Lúc này các CSS/Ảnh thường đã chiếm chỗ xong)
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 500);
+    });
+})();
     // ----------------------------- section 6 ----------------------------- //
 </script>
 
