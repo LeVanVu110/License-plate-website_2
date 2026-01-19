@@ -251,6 +251,63 @@ include "header.php";
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* 1. Typography */
+        .serif-azure {
+            font-family: 'Playfair Display', serif;
+            text-shadow: 0 0 25px rgba(153, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        .portal-btn span {
+            font-family: 'Inter', sans-serif;
+            color: #F8F9FA;
+            /* Silver White */
+        }
+
+        /* 2. Hiệu ứng Bioluminescent Flow */
+        .biolum-stream {
+            background: radial-gradient(circle at 50% 50%, #007FFF 0%, transparent 70%);
+            filter: blur(60px);
+            animation: flowMove 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes flowMove {
+            0% {
+                transform: translate(-10%, -10%) scale(1);
+            }
+
+            100% {
+                transform: translate(10%, 10%) scale(1.2);
+            }
+        }
+
+        /* 3. Electric Border Line */
+        .electric-border-line {
+            animation: borderGlow 4s linear infinite;
+        }
+
+        @keyframes borderGlow {
+
+            0%,
+            100% {
+                border-color: rgba(0, 255, 255, 0.2);
+            }
+
+            50% {
+                border-color: rgba(0, 255, 255, 0.5);
+                box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.1);
+            }
+        }
+
+        /* 4. Glass Hub Glassmorphism */
+        .glass-hub {
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 5. Mobile Sticky Bar reveal */
+        #sticky-azure-bar.show {
+            transform: translateY(0);
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -437,6 +494,96 @@ include "header.php";
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="azure-connection" class="relative min-h-screen flex items-center justify-center py-20 overflow-hidden bg-[#001220]">
+
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-[#001220]/60 z-10"></div>
+            <div class="biolum-stream absolute inset-0 opacity-30"></div>
+            <div class="absolute inset-0 backdrop-blur-[80px] z-20"></div>
+        </div>
+
+        <div id="rain-l" class="fixed left-4 top-0 h-full w-[1px] bg-cyan-500/20 z-50 opacity-0"></div>
+        <div id="rain-r" class="fixed right-4 top-0 h-full w-[1px] bg-cyan-500/20 z-50 opacity-0"></div>
+
+        <div class="container mx-auto px-6 relative z-30">
+            <div class="text-center mb-16">
+                <h2 class="serif-azure text-4xl md:text-7xl text-[#99FFFF] tracking-tight mb-4">
+                    KÍCH HOẠT ĐẶC QUYỀN SỞ HỮU
+                </h2>
+                <p class="text-cyan-400/50 tracking-[5px] uppercase text-[10px] md:text-xs">The Deep Azure Connection Bridge</p>
+            </div>
+
+            <div class="glass-hub relative mx-auto max-w-6xl rounded-[40px] border border-cyan-500/20 bg-[#001A33]/40 backdrop-blur-[40px] overflow-hidden shadow-2xl">
+                <div class="electric-border-line absolute inset-0 pointer-events-none border border-cyan-400/30 rounded-[40px]"></div>
+
+                <div class="flex flex-col lg:flex-row min-h-[500px]">
+                    <div class="flex-1 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-cyan-500/10">
+                        <h4 class="text-[#99FFFF]/60 uppercase tracking-[4px] text-[10px] mb-10 font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                            Lựa chọn của bạn
+                        </h4>
+
+                        <div id="selected-items-list" class="space-y-4">
+                            <div class="selected-plate group flex justify-between items-center p-5 bg-[#001220]/50 border border-cyan-500/10 rounded-2xl hover:border-cyan-400/50 transition-all cursor-pointer">
+                                <div>
+                                    <p class="text-[#99FFFF] font-mono text-2xl tracking-tighter">30K - 888.88</p>
+                                    <p class="text-cyan-600 text-[10px] uppercase mt-1">Sẵn sàng kết nối</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-500/10">
+                                    <i class="ri-arrow-right-up-line text-cyan-400"></i>
+                                </div>
+                            </div>
+
+                            <div class="selected-plate group flex justify-between items-center p-5 bg-[#001220]/50 border border-cyan-500/10 rounded-2xl hover:border-cyan-400/50 transition-all cursor-pointer">
+                                <div>
+                                    <p class="text-[#99FFFF] font-mono text-2xl tracking-tighter">51L - 999.99</p>
+                                    <p class="text-cyan-600 text-[10px] uppercase mt-1">Ưu tiên tư vấn</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-500/10">
+                                    <i class="ri-arrow-right-up-line text-cyan-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-8 md:p-12 flex flex-col justify-center gap-6 relative">
+                        <h4 class="text-[#99FFFF]/60 uppercase tracking-[4px] text-[10px] mb-4 font-bold">Cổng kết nối chuyên gia</h4>
+
+                        <button class="portal-btn group relative overflow-hidden py-6 rounded-2xl bg-gradient-to-r from-[#002244] to-[#001220] border border-cyan-500/30">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative z-10 flex items-center justify-center gap-4">
+                                <i class="ri-customer-service-2-line text-[#99FFFF] text-2xl group-hover:text-white"></i>
+                                <span class="text-white text-sm font-bold uppercase tracking-[3px]">Tư vấn cao cấp</span>
+                            </div>
+                        </button>
+
+                        <button class="portal-btn group relative overflow-hidden py-6 rounded-2xl bg-gradient-to-r from-[#002244] to-[#001220] border border-cyan-500/30">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative z-10 flex items-center justify-center gap-4">
+                                <i class="ri-chat-private-line text-[#99FFFF] text-2xl group-hover:text-white"></i>
+                                <span class="text-white text-sm font-bold uppercase tracking-[3px]">Đàm phán ẩn danh</span>
+                            </div>
+                        </button>
+
+                        <p class="text-cyan-400/30 text-[9px] text-center uppercase tracking-widest mt-4">Cam kết bảo mật thông tin 100%</p>
+                    </div>
+                </div>
+
+                <div id="hologram-surface" class="absolute inset-0 pointer-events-none z-0"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="sticky-azure-bar" class="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#001A33]/90 backdrop-blur-2xl border-t border-cyan-500/20 p-4 flex gap-3 transform translate-y-full">
+        <a href="tel:#" class="flex-1 h-14 bg-gradient-to-r from-blue-700 to-cyan-500 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,127,255,0.3)]">
+            <i class="ri-phone-fill text-white"></i>
+            <span class="text-white text-[10px] font-bold uppercase tracking-wider">Gọi điện</span>
+        </a>
+        <a href="zalo:#" class="flex-1 h-14 bg-[#002244] border border-cyan-500/30 rounded-xl flex items-center justify-center gap-2">
+            <i class="ri-whatsapp-line text-cyan-400"></i>
+            <span class="text-white text-[10px] font-bold uppercase tracking-wider">Zalo VIP</span>
+        </a>
+    </div>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -474,7 +621,7 @@ include "header.php";
                 duration: 0.5
             }, "-=0.5");
 
-        
+
 
         // 3. TỐI ƯU INPUT (Chỉ chạy khi thực sự cần)
         const searchInput = consoleElem.querySelector('input');
@@ -558,6 +705,86 @@ include "header.php";
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. Reveal Section & Digital Rain
+        const revealTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#azure-connection",
+                start: "top 60%",
+            }
+        });
+
+        revealTl.to("#rain-l, #rain-r", {
+                opacity: 1,
+                duration: 1
+            })
+            .from(".serif-azure", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power4.out"
+            }, "-=0.5")
+            .from(".glass-hub", {
+                scale: 0.95,
+                opacity: 0,
+                duration: 1.2,
+                ease: "expo.out"
+            }, "-=0.8");
+
+        // 2. Magnetic Gathering: Plates bay vào từ hai phía
+        gsap.from(".selected-plate", {
+            scrollTrigger: {
+                trigger: ".glass-hub",
+                start: "top 80%",
+            },
+            x: (i) => i % 2 === 0 ? -100 : 100,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 1.2,
+            ease: "power3.out"
+        });
+
+        // 3. Hologram Ripple: Hiệu ứng sóng nước Sapphire
+        const hub = document.querySelector('.glass-hub');
+        const surface = document.getElementById('hologram-surface');
+
+        hub.addEventListener('mousemove', (e) => {
+            const rect = hub.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            gsap.to(surface, {
+                background: `radial-gradient(circle at ${x}px ${y}px, rgba(0, 255, 255, 0.1) 0%, transparent 50%)`,
+                duration: 0.5
+            });
+        });
+
+        // 4. Mobile Sticky Bar & Gyroscope
+        ScrollTrigger.create({
+            trigger: "#azure-connection",
+            start: "top 80%",
+            onEnter: () => document.getElementById('sticky-azure-bar').classList.add('show'),
+            onLeaveBack: () => document.getElementById('sticky-azure-bar').classList.remove('show'),
+        });
+
+        // Gyroscope Effect (Dành cho Mobile)
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                if (window.innerWidth < 1024) {
+                    const tiltX = e.gamma / 15; // Trái phải
+                    const tiltY = e.beta / 15; // Trước sau
+                    gsap.to(".glass-hub", {
+                        x: tiltX * 5,
+                        y: tiltY * 5,
+                        duration: 0.8,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
