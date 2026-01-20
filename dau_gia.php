@@ -323,9 +323,166 @@
             }
         }
 
-
-
         /* ----------------------------- section 3 -----------------------------  */
+        /* Perspective Path */
+        .perspective-path {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 200%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+            transform: translateX(-50%) perspective(500px) rotateX(60deg);
+        }
+
+        /* Honor Card Styles */
+        .honor-card {
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            width: 350px;
+        }
+
+        .sapphire-filter {
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, rgba(0, 127, 255, 0.4), transparent);
+            z-index: 10;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        /* SOLD Seal */
+        .sold-seal {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            z-index: 30;
+            background: linear-gradient(45deg, #C0C0C0, #FFFFFF, #C0C0C0);
+            color: black;
+            padding: 5px 15px;
+            font-weight: 900;
+            font-size: 14px;
+            border-radius: 4px;
+            transform: rotate(15deg);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Price Sparkle Animation */
+        .price-sparkle {
+            position: relative;
+            background: linear-gradient(to right, #C0C0C0 20%, #fff 40%, #fff 60%, #C0C0C0 80%);
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Celebration Beam */
+        .beam-effect {
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            width: 2px;
+            height: 0;
+            background: linear-gradient(to top, transparent, #00FFFF, transparent);
+            transform: translateX(-50%);
+            filter: blur(2px);
+            opacity: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .honor-card {
+                width: 280px;
+            }
+        }
+
+        /* Perspective Path */
+        .perspective-path {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 200%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+            transform: translateX(-50%) perspective(500px) rotateX(60deg);
+        }
+
+        /* Honor Card Styles */
+        .honor-card {
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            width: 350px;
+        }
+
+        .sapphire-filter {
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, rgba(0, 127, 255, 0.4), transparent);
+            z-index: 10;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        /* SOLD Seal */
+        .sold-seal {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            z-index: 30;
+            background: linear-gradient(45deg, #C0C0C0, #FFFFFF, #C0C0C0);
+            color: black;
+            padding: 5px 15px;
+            font-weight: 900;
+            font-size: 14px;
+            border-radius: 4px;
+            transform: rotate(15deg);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Price Sparkle Animation */
+        .price-sparkle {
+            position: relative;
+            background: linear-gradient(to right, #C0C0C0 20%, #fff 40%, #fff 60%, #C0C0C0 80%);
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Celebration Beam */
+        .beam-effect {
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            width: 2px;
+            height: 0;
+            background: linear-gradient(to top, transparent, #00FFFF, transparent);
+            transform: translateX(-50%);
+            filter: blur(2px);
+            opacity: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .honor-card {
+                width: 280px;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -520,6 +677,94 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="hall-of-sovereigns" class="relative min-h-screen py-24 bg-[#00050A] overflow-hidden">
+
+        <canvas id="star-dust" class="absolute inset-0 z-0 opacity-40"></canvas>
+
+        <div class="absolute inset-0 z-0 pointer-events-none">
+            <div class="perspective-path"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <h2 class="hall-title text-6xl md:text-8xl font-serif uppercase text-[#E0F7FA] tracking-tighter opacity-0">
+                    The Hall of <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-silver">Sovereigns</span>
+                </h2>
+                <p class="text-cyan-500/60 tracking-[5px] text-xs mt-4 uppercase font-mono">Nơi những huyền thoại được vinh danh</p>
+            </div>
+
+            <div id="honor-carousel" class="flex flex-col lg:flex-row justify-center items-center gap-12 lg:gap-8 h-full">
+
+                <div class="honor-card group relative" data-sold="true">
+                    <div class="video-overlay absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 rounded-2xl overflow-hidden">
+                        <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-street-traffic-with-cars-and-lights-34538-wide.mp4" type="video/mp4">
+                        </video>
+                    </div>
+
+                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
+                        <div class="sold-seal">SOLD</div>
+
+                        <div class="honor-plate relative mb-8">
+                            <div class="sapphire-filter"></div>
+                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
+                                30K - 888.88
+                            </div>
+                        </div>
+
+                        <div class="text-center space-y-2">
+                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
+                            <h4 class="text-white text-xl font-light tracking-wide">Mr. Hoang****</h4>
+                            <div class="price-sparkle-wrap mt-4">
+                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">2.450.000.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="beam-effect"></div>
+                </div>
+
+                <div class="honor-card group relative">
+                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
+                        <div class="sold-seal">SOLD</div>
+                        <div class="honor-plate relative mb-8">
+                            <div class="sapphire-filter"></div>
+                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
+                                51L - 999.99
+                            </div>
+                        </div>
+                        <div class="text-center space-y-2">
+                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
+                            <h4 class="text-white text-xl font-light tracking-wide">Mrs. Tuyet**</h4>
+                            <div class="price-sparkle-wrap mt-4">
+                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">1.890.000.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="beam-effect"></div>
+                </div>
+
+            </div>
+
+            <div class="mt-32 max-w-2xl mx-auto glass-panel p-8 rounded-3xl border border-white/5 bg-white/5">
+                <h3 class="text-silver text-center text-sm uppercase tracking-[10px] mb-8">Bảng Vàng Kỷ Lục</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                        <span class="text-white/40 font-mono">01. Mr. T**</span>
+                        <span class="text-cyan-400 font-bold">12.500.000.000đ</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                        <span class="text-white/40 font-mono">02. Mr. V**</span>
+                        <span class="text-cyan-400 font-bold">9.200.000.000đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
+            Đăng ký phiên tới
+        </button>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -785,6 +1030,87 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Foggy Reveal Animation
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to(".hall-title", {
+            scrollTrigger: "#hall-of-sovereigns",
+            opacity: 1,
+            y: -20,
+            duration: 2,
+            ease: "power4.out"
+        });
+
+        gsap.utils.toArray(".honor-card").forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",
+                },
+                opacity: 0,
+                filter: "blur(20px)",
+                y: 100,
+                scale: 0.8,
+                duration: 1.5,
+                delay: i * 0.3,
+                onComplete: () => {
+                    // Kích hoạt hiệu ứng Beam sau khi thẻ hiện ra
+                    const beam = card.querySelector('.beam-effect');
+                    gsap.to(beam, {
+                        height: "400px",
+                        opacity: 1,
+                        duration: 0.5,
+                        onComplete: () => {
+                            gsap.to(beam, {
+                                opacity: 0,
+                                duration: 1
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // 2. Star Dust Particle System
+        const canvas = document.getElementById('star-dust');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let stars = [];
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 1.5,
+                vX: (Math.random() - 0.5) * 0.2,
+                vY: (Math.random() - 0.5) * 0.2
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00FFFF";
+            stars.forEach(s => {
+                s.x += s.vX;
+                s.y += s.vY;
+                if (s.x < 0 || s.x > canvas.width) s.vX *= -1;
+                if (s.y < 0 || s.y > canvas.height) s.vY *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // 3. Mobile 3D Carousel (Simple version)
+        if (window.innerWidth < 1024) {
+            // Sử dụng cử chỉ vuốt để thay đổi focus cho thẻ
+            // Ở đây có thể tích hợp thư viện Swiper.js hoặc tự viết logic xoay 3D
+        }
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
