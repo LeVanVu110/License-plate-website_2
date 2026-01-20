@@ -84,7 +84,7 @@
                 <a href="Digital_Vault.php" class="nav-item relative py-2">Kho Số</a>
                 <a href="dau_gia.php" class="nav-item relative py-2">Đấu Giá</a>
                 <a href="dinh_gia_AI.php" class="nav-item relative py-2">Định Giá AI</a>
-                <a href="#" class="nav-item relative py-2">Tin Tức</a>
+                <a href="tin_tuc.php" class="nav-item relative py-2">Tin Tức</a>
             </nav>
 
             <div class="flex items-center space-x-4">
@@ -108,10 +108,10 @@
 
     <div id="mobile-menu" class="fixed inset-0 bg-[#001A33]/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center space-y-8 text-white translate-y-[-100%] hidden">
         <button id="close-menu" class="absolute top-6 right-6 text-3xl text-white/50">&times;</button>
-        <a href="#" class="menu-link text-3xl font-bold">Kho Số</a>
-        <a href="#" class="menu-link text-3xl font-bold">Đấu Giá</a>
-        <a href="#" class="menu-link text-3xl font-bold">Định Giá AI</a>
-        <a href="#" class="menu-link text-3xl font-bold">Tin Tức</a>
+        <a href="Digital_Vault.php" class="menu-link text-3xl font-bold">Kho Số</a>
+        <a href="dau_gia.php" class="menu-link text-3xl font-bold">Đấu Giá</a>
+        <a href="dinh_gia_AI.php" class="menu-link text-3xl font-bold">Định Giá AI</a>
+        <a href="tin_tuc.php" class="menu-link text-3xl font-bold">Tin Tức</a>
         <button class="bg-[#007FFF] px-10 py-4 rounded-full text-xl">KÝ GỬI NGAY</button>
     </div>
 
