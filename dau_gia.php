@@ -109,71 +109,221 @@
             animation: shake 0.2s infinite;
             color: #FF0055 !important;
         }
-        @media (min-width: 768px){
-            .md\:text-8xl{
+
+        @media (min-width: 768px) {
+            .md\:text-8xl {
                 font-size: 4rem !important;
             }
         }
+
         @media (max-width: 1024px) {
-    .cube-3d {
-        width: 300px; /* Thu nhỏ bệ thờ trên tablet/mobile */
-        height: 120px;
-    }
-    .cube-face {
-        width: 300px;
-        height: 120px;
-    }
-    /* Điều chỉnh lại vị trí các mặt cho khớp kích thước mới */
-    .cube-face.top, .cube-face.bottom { height: 40px; }
-    .cube-face.left, .cube-face.right { width: 40px; }
-    .cube-face.right { transform: rotateY(90deg) translateZ(280px); } /* 300 - 20 */
-    
-    .plate-body {
-        width: 280px;
-        height: 100px;
-    }
-    #plate-number {
-        font-size: 2.5rem !important; /* Thu nhỏ số biển số */
-    }
-}
-/* --- Tối ưu giao diện Mobile --- */
-@media (max-width: 768px) {
-    .pedestal-center {
-        height: 300px; /* Giảm chiều cao khu vực trung tâm */
-        order: 1; /* Đưa biển số lên đầu */
-    }
-    .left-side { order: 2; }
-    .right-side { order: 3; }
+            .cube-3d {
+                width: 300px;
+                /* Thu nhỏ bệ thờ trên tablet/mobile */
+                height: 120px;
+            }
 
-    /* Ẩn bớt các hiệu ứng nặng nếu cần (Chế độ Lite) */
-    #energy-particles {
-        opacity: 0.3;
-    }
+            .cube-face {
+                width: 300px;
+                height: 120px;
+            }
 
-    /* Đưa bảng giá và đồng hồ lên vị trí dễ nhìn */
-    .glass-console {
-        padding: 1rem !important;
-    }
-    
-    #countdown-timer {
-        font-size: 2.5rem !important;
-    }
+            /* Điều chỉnh lại vị trí các mặt cho khớp kích thước mới */
+            .cube-face.top,
+            .cube-face.bottom {
+                height: 40px;
+            }
 
-    /* Thanh trả giá nhanh dính dưới màn hình */
-    
-    
-    #bid-now-btn {
-        padding: 12px !important;
-        flex: 2;
-    }
-    
-    .bid-control .flex {
-        flex: 1;
-        flex-direction: column;
-    }
-}
+            .cube-face.left,
+            .cube-face.right {
+                width: 40px;
+            }
+
+            .cube-face.right {
+                transform: rotateY(90deg) translateZ(280px);
+            }
+
+            /* 300 - 20 */
+
+            .plate-body {
+                width: 280px;
+                height: 100px;
+            }
+
+            #plate-number {
+                font-size: 2.5rem !important;
+                /* Thu nhỏ số biển số */
+            }
+        }
+
+        /* --- Tối ưu giao diện Mobile --- */
+        @media (max-width: 768px) {
+            .pedestal-center {
+                height: 300px;
+                /* Giảm chiều cao khu vực trung tâm */
+                order: 1;
+                /* Đưa biển số lên đầu */
+            }
+
+            .left-side {
+                order: 2;
+            }
+
+            .right-side {
+                order: 3;
+            }
+
+            /* Ẩn bớt các hiệu ứng nặng nếu cần (Chế độ Lite) */
+            #energy-particles {
+                opacity: 0.3;
+            }
+
+            /* Đưa bảng giá và đồng hồ lên vị trí dễ nhìn */
+            .glass-console {
+                padding: 1rem !important;
+            }
+
+            #countdown-timer {
+                font-size: 2.5rem !important;
+            }
+
+            /* Thanh trả giá nhanh dính dưới màn hình */
+
+
+            #bid-now-btn {
+                padding: 12px !important;
+                flex: 2;
+            }
+
+            .bid-control .flex {
+                flex: 1;
+                flex-direction: column;
+            }
+        }
 
         /* ----------------------------- section 2 -----------------------------  */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+
+        #multiverse-stakes {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Glass Refraction (Glint) */
+        .glint-layer {
+            background: linear-gradient(135deg, transparent 0%, transparent 40%, rgba(153, 255, 255, 0.2) 50%, transparent 60%, transparent 100%);
+            background-size: 250% 250%;
+            background-position: 200% 200%;
+            transition: background-position 0.8s ease;
+        }
+
+        .arena-mini-card:hover .glint-layer {
+            background-position: -150% -150%;
+        }
+
+        /* Live Flash Animation */
+        @keyframes flash-cyan {
+            0% {
+                box-shadow: 0 0 0px rgba(0, 255, 255, 0);
+                border-color: rgba(0, 255, 255, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+                border-color: rgba(0, 255, 255, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 0px rgba(0, 255, 255, 0);
+                border-color: rgba(0, 255, 255, 0.2);
+            }
+        }
+
+        .card-flash {
+            animation: flash-cyan 1s ease-out;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .arena-mini-card {
+                padding: 0;
+                border-radius: 16px;
+            }
+
+            .inner-content {
+                flex-direction: row;
+                align-items: center;
+                padding: 12px;
+                gap: 15px;
+                border-radius: 16px;
+            }
+
+            .plate-preview {
+                width: 100px;
+                /* Cố định chiều rộng */
+                height: 70px;
+                margin-bottom: 0 !important;
+                flex-shrink: 0;
+            }
+
+            .plate-mockup {
+                font-size: 10px !important;
+                padding: 4px 8px !important;
+            }
+
+            .progress-fill {
+                height: 1px;
+            }
+
+            /* Biến phần Progress Bar thành đường chỉ mỏng dưới biển số */
+            .mb-6 {
+                margin-bottom: 0 !important;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .mt-auto {
+                margin-top: 0 !important;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 4px;
+            }
+
+            .arena-mini-card button {
+                padding: 6px 12px !important;
+                font-size: 8px !important;
+                border-radius: 8px;
+            }
+
+            /* Ẩn các hiệu ứng nặng để tiết kiệm tài nguyên mobile */
+            .glint-layer {
+                display: none;
+            }
+
+            .price-val {
+                font-size: 14px;
+            }
+
+            #auction-grid {
+                grid-template-columns: 1fr;
+                /* 1 cột duy nhất */
+                gap: 12px;
+            }
+
+            /* Biến thẻ thành dạng Row (Dòng ngang) */
+            .arena-mini-card .inner-content {
+                display: flex;
+                flex-direction: row;
+                /* Xếp ngang các thành phần */
+                align-items: center;
+                padding: 12px;
+                gap: 12px;
+                min-height: 100px;
+            }
+        }
+
+
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -186,6 +336,7 @@
 </head>
 
 <body>
+
     <!-- ----------------------------- section 1 -----------------------------  -->
     <section id="grand-arena" class="relative min-h-screen bg-[#00050A] overflow-hidden flex items-center justify-center">
 
@@ -273,6 +424,100 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="multiverse-stakes" class="relative min-h-screen py-24 bg-[#000F1A] overflow-hidden">
+
+        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none" id="matrix-bg">
+            <div class="matrix-column absolute top-0 text-[10px] text-cyan-500 font-mono leading-none whitespace-nowrap"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div>
+                    <h2 class="text-[#99FFFF] text-4xl md:text-5xl font-bold tracking-tight mb-2 uppercase">Toàn cảnh chiến trường</h2>
+                    <p class="text-cyan-500/50 uppercase tracking-[4px] text-xs font-mono">Real-time Global Auction Grid</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-cyan-500/10 border border-cyan-500/30 px-4 py-2 rounded-full flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest">42 Phiên trực tiếp</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="1" data-time="55">
+                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
+                        <div class="glint-layer absolute inset-0 pointer-events-none"></div>
+
+                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center overflow-hidden border border-white/5">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cyan-500/10 to-transparent"></div>
+                            <div class="plate-mockup bg-white text-black px-6 py-3 rounded-lg font-bold text-2xl font-mono shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                51L - 888.88
+                            </div>
+                            <div class="quick-view absolute inset-0 bg-[#000F1A]/90 backdrop-blur-md flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <p class="text-cyan-400 text-[10px] uppercase mb-2">Thông số chi tiết</p>
+                                <div class="flex gap-4 text-white/70 text-xs">
+                                    <span>Bước giá: 5M</span>
+                                    <span>Lượt trả: 86</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
+                                <span>Thời gian còn lại</span>
+                                <span class="text-red-400 countdown-text">55s</span>
+                            </div>
+                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                                <div class="progress-fill h-full bg-cyan-500 w-[80%]"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-auto">
+                            <div>
+                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
+                                <p class="text-[#99FFFF] font-bold text-xl font-mono price-val">1.250M</p>
+                            </div>
+                            <button class="bg-cyan-500 hover:bg-[#99FFFF] text-[#000F1A] px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
+                                Tham chiến
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="2" data-time="3600">
+                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
+                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center border border-white/5">
+                            <div class="plate-mockup bg-white text-black w-24 h-24 rounded-lg font-bold text-xl font-mono flex flex-col items-center justify-center leading-tight">
+                                <span>29-AA</span>
+                                <span>999.99</span>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
+                                <span>Thời gian còn lại</span>
+                                <span class="text-cyan-400 countdown-text">01:00:00</span>
+                            </div>
+                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                                <div class="progress-fill h-full bg-cyan-500 w-[40%]"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-auto">
+                            <div>
+                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
+                                <p class="text-[#99FFFF] font-bold text-xl font-mono">450M</p>
+                            </div>
+                            <button class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-[#000F1A] transition-all">
+                                Tham chiến
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -284,82 +529,260 @@
 
     <?php include "footer.php"; ?>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
 <script>
     // ----------------------------- section 1 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
-    // 1. Reveal Animation
-    const revealTl = gsap.timeline();
-    revealTl.from("#crystal-cube", { 
-        y: 300, 
-        opacity: 0, 
-        rotationX: 90, 
-        duration: 2, 
-        ease: "expo.out" 
-    })
-    .from("#plate-number", { 
-        clipPath: "inset(0 100% 0 0)", 
-        duration: 1.5 
-    }, "-=1");
+        // 1. Reveal Animation
+        const revealTl = gsap.timeline();
+        revealTl.from("#crystal-cube", {
+                y: 300,
+                opacity: 0,
+                rotationX: 90,
+                duration: 2,
+                ease: "expo.out"
+            })
+            .from("#plate-number", {
+                clipPath: "inset(0 100% 0 0)",
+                duration: 1.5
+            }, "-=1");
 
-    // 2. Continuous Rotation
-    gsap.to("#crystal-cube", {
-        rotationY: "+=360",
-        duration: 20,
-        repeat: -1,
-        ease: "none"
+        // 2. Continuous Rotation
+        gsap.to("#crystal-cube", {
+            rotationY: "+=360",
+            duration: 20,
+            repeat: -1,
+            ease: "none"
+        });
+
+        // 3. Energy Particles
+        const canvas = document.getElementById('energy-particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = '#00FFFF';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 4. Price Surge Logic
+        document.getElementById('bid-now-btn').addEventListener('click', () => {
+            const price = document.getElementById('current-price');
+
+            // Hiệu ứng bùng nổ giá
+            gsap.timeline()
+                .to(price, {
+                    scale: 1.4,
+                    filter: "brightness(2)",
+                    duration: 0.1
+                })
+                .set(price, {
+                    textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN')
+                })
+                .to(price, {
+                    scale: 1,
+                    filter: "brightness(1)",
+                    duration: 0.4,
+                    ease: "back.out"
+                });
+
+            if (navigator.vibrate) navigator.vibrate(50);
+        });
     });
-
-    // 3. Energy Particles
-    const canvas = document.getElementById('energy-particles');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2;
-            this.speedY = (Math.random() - 0.5) * 0.8;
-        }
-        update() {
-            this.y += this.speedY;
-            if (this.y > canvas.height) this.y = 0;
-            if (this.y < 0) this.y = canvas.height;
-        }
-        draw() {
-            ctx.fillStyle = '#00FFFF';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // 4. Price Surge Logic
-    document.getElementById('bid-now-btn').addEventListener('click', () => {
-        const price = document.getElementById('current-price');
-        
-        // Hiệu ứng bùng nổ giá
-        gsap.timeline()
-            .to(price, { scale: 1.4, filter: "brightness(2)", duration: 0.1 })
-            .set(price, { textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN') })
-            .to(price, { scale: 1, filter: "brightness(1)", duration: 0.4, ease: "back.out" });
-
-        if (navigator.vibrate) navigator.vibrate(50);
-    });
-});
 
     // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(Flip);
+
+        // --- 1. KHỞI TẠO NỀN MATRIX PARALLAX ---
+        const initMatrixBackground = () => {
+            const matrixBg = document.getElementById('matrix-bg');
+            if (!matrixBg) return;
+
+            const numbers = "0123456789";
+            const columnCount = 30;
+
+            for (let i = 0; i < columnCount; i++) {
+                const col = document.createElement('div');
+                col.className = 'matrix-column absolute top-0 opacity-20 font-mono text-cyan-500';
+                col.style.left = (i * (100 / columnCount)) + '%';
+                col.style.fontSize = '10px';
+
+                // Tạo chuỗi số ngẫu nhiên cho mỗi cột
+                let content = "";
+                for (let j = 0; j < 50; j++) {
+                    content += numbers[Math.floor(Math.random() * numbers.length)] + "<br>";
+                }
+                col.innerHTML = content;
+                matrixBg.appendChild(col);
+
+                // Hiệu ứng chạy dọc vô tận với tốc độ ngẫu nhiên
+                gsap.to(col, {
+                    y: -150,
+                    duration: 15 + Math.random() * 25,
+                    repeat: -1,
+                    ease: "none"
+                });
+            }
+        };
+
+        // --- 2. HIỆU ỨNG NGHIÊNG THẺ 3D (DESKTOP TILT) ---
+        const initTiltEffect = () => {
+            if (window.innerWidth > 1024) {
+                const cards = document.querySelectorAll('.arena-mini-card');
+
+                cards.forEach(card => {
+                    const inner = card.querySelector('.inner-content');
+
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+
+                        // Tính toán góc quay (tối đa 10 độ)
+                        const rotateX = (y - centerY) / 10;
+                        const rotateY = (centerX - x) / 10;
+
+                        gsap.to(inner, {
+                            rotationX: rotateX,
+                            rotationY: rotateY,
+                            transformPerspective: 1000,
+                            ease: "power2.out",
+                            duration: 0.4
+                        });
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        gsap.to(inner, {
+                            rotationX: 0,
+                            rotationY: 0,
+                            duration: 0.6,
+                            ease: "elastic.out(1, 0.5)"
+                        });
+                    });
+                });
+            }
+        };
+
+        // --- 3. HỆ THỐNG SẮP XẾP THÔNG MINH (FLIP ANIMATION) ---
+        const reorderGrid = () => {
+            const grid = document.getElementById('auction-grid');
+            const cards = gsap.utils.toArray(".arena-mini-card");
+
+            // Ghi lại trạng thái hiện tại của các phần tử
+            const state = Flip.getState(cards);
+
+            // Sắp xếp lại mảng thẻ dựa trên data-time (thời gian còn lại)
+            cards.sort((a, b) => {
+                return parseInt(a.dataset.time) - parseInt(b.dataset.time);
+            });
+
+            // Đưa các phần tử vào DOM theo thứ tự mới
+            cards.forEach(card => grid.appendChild(card));
+
+            // Thực hiện hiệu ứng bay mượt mà đến vị trí mới
+            Flip.from(state, {
+                duration: 0.8,
+                ease: "power3.inOut",
+                stagger: 0.05,
+                scale: true,
+                onStart: () => {
+                    // Có thể thêm hiệu ứng lóe sáng khi thẻ đổi chỗ
+                }
+            });
+        };
+
+        // --- 4. HIỆU ỨNG LIVE WAVE (LÓE SÁNG KHI CÓ NGƯỜI TRẢ GIÁ) ---
+        const simulateLiveBids = () => {
+            setInterval(() => {
+                const cards = document.querySelectorAll('.arena-mini-card');
+                const randomCard = cards[Math.floor(Math.random() * cards.length)];
+
+                if (randomCard) {
+                    // Hiệu ứng nháy sáng viền
+                    randomCard.classList.add('card-flash');
+
+                    // Hiệu ứng rung nhẹ thu hút chú ý
+                    gsap.to(randomCard, {
+                        scale: 1.03,
+                        duration: 0.1,
+                        yoyo: true,
+                        repeat: 1,
+                        ease: "power1.inOut"
+                    });
+
+                    // Cập nhật giá giả lập
+                    const priceLabel = randomCard.querySelector('.price-val');
+                    if (priceLabel) {
+                        let currentPrice = parseInt(priceLabel.innerText.replace('M', ''));
+                        priceLabel.innerText = (currentPrice + 5) + "M";
+                        gsap.from(priceLabel, {
+                            scale: 1.5,
+                            color: "#00FFFF",
+                            duration: 0.4
+                        });
+                    }
+
+                    setTimeout(() => {
+                        randomCard.classList.remove('card-flash');
+                    }, 1000);
+                }
+            }, 4000); // Mỗi 4 giây giả lập có 1 người trả giá ngẫu nhiên
+        };
+
+        // --- 5. ĐIỀU KHIỂN RESPONSIVE TRÊN MOBILE ---
+        const initMobileInteractions = () => {
+            if (window.innerWidth < 768) {
+                // Tối ưu cuộn vô tận hoặc các tương tác vuốt
+                console.log("Mobile optimization active");
+            }
+        };
+
+        // KÍCH HOẠT TẤT CẢ CÁC HỆ THỐNG
+        initMatrixBackground();
+        initTiltEffect();
+        simulateLiveBids();
+        initMobileInteractions();
+
+        // Giả lập sau 5 giây sẽ thực hiện sắp xếp lại (khi có thẻ sắp kết thúc)
+        setTimeout(() => {
+            console.log("Reordering grid based on priority...");
+            reorderGrid();
+        }, 5000);
+
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
