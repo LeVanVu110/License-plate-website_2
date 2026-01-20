@@ -11,6 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/InertiaPlugin.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
             --midnight-abyss: #00040A;
@@ -27,21 +30,21 @@
         }
 
         /* ----------------------------- section 1 -----------------------------  */
-        /* Sân khấu chính */
-        .stage-container {
+        /* Tối ưu hóa hiển thị cho hiệu ứng 3D */
+        .perspective-2000 {
             perspective: 2000px;
-            background: radial-gradient(circle at 50% 50%, #001529 0%, var(--midnight-abyss) 80%);
         }
 
-        /* Bệ đỡ Obsidian 3D */
+        /* Sân khấu và bệ đỡ */
         .pedestal-3d {
-            width: 400px;
-            height: 40px;
-            background: linear-gradient(145deg, #1a1a1a, #000);
-            border-top: 1px solid rgba(0, 102, 255, 0.3);
-            box-shadow: 0 0 50px rgba(0, 102, 255, 0.2), inset 0 0 20px rgba(0, 0, 0, 1);
-            transform: rotateX(60deg);
+            width: 450px;
+            height: 50px;
+            background: linear-gradient(180deg, #111 0%, #000 100%);
+            border-top: 1px solid rgba(0, 102, 255, 0.4);
+            transform: rotateX(70deg);
             position: relative;
+            box-shadow: 0 0 60px rgba(0, 102, 255, 0.2);
+            top: 45px;
         }
 
         .pedestal-halo {
@@ -49,36 +52,71 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 120%;
-            height: 120%;
-            background: radial-gradient(ellipse, rgba(0, 102, 255, 0.4) 0%, transparent 70%);
-            filter: blur(20px);
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(ellipse, rgba(0, 102, 255, 0.3) 0%, transparent 75%);
+            filter: blur(40px);
         }
 
-        /* Biển số Ô tô dài (530x110mm) */
+        /* Biển số 3D */
         .car-plate-3d {
             width: 530px;
             height: 110px;
-            background: #f0f0f0;
-            border-radius: 4px;
+            background: #fff;
+            border-radius: 6px;
             position: relative;
             transform-style: preserve-3d;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
-            border: 3px solid #333;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9);
+            border: 3px solid #222;
             overflow: hidden;
-            cursor: grab;
         }
 
-        /* Giả lập lớp Chrome Chrome phản chiếu */
+        /* Hiệu ứng Chrome phản chiếu */
         .plate-chrome-overlay {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(0, 102, 255, 0.1) 100%);
+            inset: 0%;
+            top: 30% !important;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.7) 0%, transparent 45%, rgba(0, 102, 255, 0.15) 100%);
             z-index: 5;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        /* Hiệu ứng quét cực quang */
+        .aurora-scan {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            /* Đẩy xa hơn một chút để khởi động */
+            width: 100%;
+            /* Tăng độ rộng dải sáng */
+            height: 100%;
+            /* Làm dải sáng rực rỡ hơn với dải màu cyan/emerald */
+            background: linear-gradient(to right,
+                    transparent 0%,
+                    rgba(0, 242, 255, 0.5) 50%,
+                    rgba(0, 255, 127, 0.3) 70%,
+                    transparent 100%);
+            transform: skewX(-25deg);
+            z-index: 10;
+            /* Quan trọng: Phải cao hơn .plate-content (mặc định z-index: auto hoặc thấp hơn) */
             pointer-events: none;
         }
 
+        /* Chữ mạ Chrome Xanh */
+        .plate-number {
+            font-family: 'Space Mono', monospace;
+            font-weight: 900;
+            font-size: 60px;
+            background: linear-gradient(to bottom, #111 0%, #0066FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .plate-content {
+            position: relative;
+            z-index: 1;
+            /* Thấp hơn aurora-scan */
             height: 100%;
             display: flex;
             align-items: center;
@@ -87,65 +125,76 @@
             padding: 0 20px;
         }
 
-        /* Chữ mạ Chrome Xanh */
-        .plate-number {
-            font-family: 'Space Mono', monospace;
-            font-weight: 900;
-            font-size: 60px;
-            color: #1a1a1a;
-            letter-spacing: 5px;
-            background: linear-gradient(to bottom, #111 0%, var(--sapphire-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
-        }
-
-        /* Aurora Borealis Scan Effect */
-        .aurora-scan {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 40%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, rgba(0, 242, 255, 0.2), rgba(0, 255, 127, 0.1), transparent);
-            transform: skewX(-30deg);
-            z-index: 6;
-        }
-
-        /* Holographic HUD Lines */
-        .hud-line {
-            position: absolute;
-            background: var(--cyan-neon);
-            opacity: 0.5;
-            height: 1px;
-            transform-origin: left;
-        }
-
-        /* Custom Cursor */
         .cursor-glow {
-            width: 40px;
-            height: 40px;
-            background: var(--cyan-neon);
-            border-radius: 50%;
-            filter: blur(15px);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.1) 0%, transparent 70%);
             position: fixed;
             pointer-events: none;
-            z-index: 9999;
-            opacity: 0.5;
+            z-index: 1;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .car-plate-3d {
                 width: 320px;
                 height: 70px;
             }
 
             .plate-number {
-                font-size: 32px;
+                font-size: 34px;
+            }
+
+            .pedestal-3d {
+                width: 300px;
             }
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        #radarChart,
+        #lineChart {
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.2));
+        }
+
+        /* Hiệu ứng xung điện chạy qua Grid System */
+        @keyframes gridPulse {
+            0% {
+                opacity: 0.1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 0.1;
+            }
+        }
+
+        #sovereignty-metrics .absolute.inset-0 {
+            animation: gridPulse 4s infinite ease-in-out;
+        }
+
+        /* Parallax hiệu ứng lơ lửng */
+        @media (min-width: 1024px) {
+            .metric-module:nth-child(1) {
+                transform: translateY(20px);
+            }
+
+            .metric-module:nth-child(2) {
+                transform: translateY(0px);
+            }
+
+            .metric-module:nth-child(3) {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Font kỹ thuật */
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -162,25 +211,25 @@
     <div class="cursor-glow" id="mouseGlow"></div>
 
     <section class="stage-container relative min-h-screen flex flex-col lg:flex-row items-center justify-center p-6 overflow-hidden">
+        <div class="relative flex-[2] flex flex-col items-center justify-center h-full min-h-[500px]">
 
-        <div class="relative flex-[2] flex flex-col items-center justify-center h-full">
-
-            <div id="hud-price" class="absolute top-[15%] left-[10%] opacity-0">
+            <div id="hud-price" class="absolute top-[15%] left-[10%] opacity-0 z-30">
                 <p class="font-mono text-[10px] text-cyan-400 tracking-widest uppercase">Current Value</p>
-                <div class="text-4xl font-bold text-white neon-value" id="price-stream">5.800.000.000₫</div>
+                <div class="text-4xl font-bold text-white neon-value" id="price-stream">0₫</div>
                 <div class="hud-line w-32 mt-2"></div>
             </div>
 
-            <div id="hud-region" class="absolute bottom-[20%] right-[10%] opacity-0 text-right">
-                <p class="font-mono text-[10px] text-cyan-400 tracking-widest uppercase">Region Code</p>
-                <div class="text-2xl font-bold text-white uppercase">TP. Hồ Chí Minh</div>
+            <div id="hud-status" class="absolute top-[15%] right-[10%] opacity-0 z-30 text-right">
+                <p class="font-mono text-[10px] text-cyan-400 tracking-widest uppercase">Auction Status</p>
+                <div class="text-2xl font-bold text-green-400 uppercase">Live Now</div>
                 <div class="hud-line w-32 mt-2 ml-auto origin-right"></div>
             </div>
 
-            <div id="plate-wrapper" class="relative z-20 mb-[-20px]">
+            <div id="plate-wrapper" class="relative z-20 mb-[-20px] perspective-2000">
                 <div class="car-plate-3d" id="carPlate">
                     <div class="plate-chrome-overlay" id="chromeLight"></div>
                     <div class="aurora-scan" id="auroraEffect"></div>
+
                     <div class="plate-content">
                         <span class="plate-number">30K - 888.88</span>
                     </div>
@@ -192,39 +241,129 @@
             </div>
         </div>
 
-        <div class="flex-1 w-full lg:max-w-md z-30 space-y-8 bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/5">
+        <div class="flex-1 w-full lg:max-w-sm z-30 space-y-8 bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/5">
             <div>
                 <h1 class="text-cyan-500 font-mono text-xs tracking-[0.5em] uppercase mb-2">Grand Reveal</h1>
-                <h2 class="text-4xl font-extralight tracking-tighter">THE SOVEREIGN <br><strong class="font-bold">EIGHTS</strong></h2>
+                <h2 class="text-4xl font-extralight tracking-tighter text-white">THE SOVEREIGN <br><strong class="font-bold">EIGHTS</strong></h2>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <button class="bg-white/5 hover:bg-cyan-500/20 border border-white/10 p-4 rounded-xl transition-all group">
-                    <i class="ri-ruler-2-line text-cyan-400 mb-2 block"></i>
-                    <span class="text-[10px] uppercase font-bold text-gray-400 group-hover:text-white">Biển dài</span>
+                    <i class="ri-ruler-2-line text-cyan-400 mb-2 block text-xl"></i>
+                    <span class="text-[10px] uppercase font-bold text-gray-400 group-hover:text-white">Biển dài (Default)</span>
                 </button>
                 <button class="bg-white/5 hover:bg-cyan-500/20 border border-white/10 p-4 rounded-xl transition-all group">
-                    <i class="ri-drag-move-fill text-cyan-400 mb-2 block"></i>
-                    <span class="text-[10px] uppercase font-bold text-gray-400 group-hover:text-white">Xoay 360°</span>
+                    <i class="ri-drag-move-fill text-cyan-400 mb-2 block text-xl"></i>
+                    <span class="text-[10px] uppercase font-bold text-gray-400 group-hover:text-white">Drag to Rotate</span>
                 </button>
             </div>
 
             <div class="space-y-4">
                 <button class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-5 rounded-full shadow-[0_0_30px_rgba(0,242,255,0.3)] transition-all uppercase tracking-widest text-sm">
-                    Đặt cọc ngay
+                    ĐẶT CỌC NGAY
                 </button>
-                <p class="text-center text-[10px] text-gray-500 font-mono">Bảo mật giao dịch bởi Blockchain Ledger</p>
+                <p class="text-center text-[10px] text-gray-500 font-mono">Blockchain Secured Transaction</p>
             </div>
         </div>
     </section>
 
-    <div class="fixed bottom-0 left-0 w-full p-4 lg:hidden z-[999] bg-black/60 backdrop-blur-md border-t border-white/10">
-        <button class="w-full bg-cyan-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs">
-            Đặt cọc sở hữu
-        </button>
-    </div>
-
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="sovereignty-metrics" class="relative min-h-screen bg-[#00040A] py-20 overflow-hidden border-t border-white/5">
+        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#007FFF 1px, transparent 1px), linear-gradient(90deg, #007FFF 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16 text-center lg:text-left">
+                <h2 class="text-cyan-500 font-mono text-xs tracking-[0.5em] uppercase mb-4">The Sovereignty Metrics</h2>
+                <div class="text-3xl md:text-5xl font-light tracking-tighter">PHÂN TÍCH <span class="font-bold italic text-white">DI SẢN SỐ</span></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <div class="metric-module opacity-0 transform translate-y-10 bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all duration-500 group relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                    <h3 class="font-mono text-[10px] text-cyan-400 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">
+                        <i class="ri-radar-line"></i> Fortune Matrix
+                    </h3>
+
+                    <div class="relative w-full aspect-square flex items-center justify-center">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2 border border-white/5 rounded-lg bg-white/5">
+                            <div class="text-[8px] text-gray-500 uppercase font-mono">Thiên</div>
+                            <div class="text-cyan-400 font-bold text-sm">Hòa</div>
+                        </div>
+                        <div class="p-2 border border-white/5 rounded-lg bg-white/5">
+                            <div class="text-[8px] text-gray-500 uppercase font-mono">Địa</div>
+                            <div class="text-cyan-400 font-bold text-sm">Lợi</div>
+                        </div>
+                        <div class="p-2 border border-white/5 rounded-lg bg-white/5">
+                            <div class="text-[8px] text-gray-500 uppercase font-mono">Nhân</div>
+                            <div class="text-cyan-400 font-bold text-sm">Thời</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-module opacity-0 transform translate-y-10 bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all duration-500 group">
+                    <h3 class="font-mono text-[10px] text-cyan-400 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">
+                        <i class="ri-rfid-line"></i> Scarcity Index
+                    </h3>
+
+                    <div class="py-10 text-center">
+                        <div class="text-7xl font-bold text-white mb-2 leading-none">
+                            <span class="random-string" data-value="0.01">00.00</span><span class="text-2xl text-cyan-500">%</span>
+                        </div>
+                        <p class="text-gray-400 text-xs font-light px-6">Top biển số cực hiếm trong hệ thống định danh quốc gia 2026</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="level-bar-group">
+                            <div class="flex justify-between text-[10px] mb-1 uppercase tracking-tighter">
+                                <span>Độ hiếm ký tự</span>
+                                <span class="text-cyan-400">98%</span>
+                            </div>
+                            <div class="h-[2px] w-full bg-white/10 overflow-hidden">
+                                <div class="h-full bg-cyan-500 level-progress" style="width: 0%" data-width="98%"></div>
+                            </div>
+                        </div>
+                        <div class="level-bar-group">
+                            <div class="flex justify-between text-[10px] mb-1 uppercase tracking-tighter">
+                                <span>Thanh khoản kỳ vọng</span>
+                                <span class="text-cyan-400">85%</span>
+                            </div>
+                            <div class="h-[2px] w-full bg-white/10 overflow-hidden">
+                                <div class="h-full bg-cyan-500 level-progress" style="width: 0%" data-width="85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-module opacity-0 transform translate-y-10 bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all duration-500 group">
+                    <h3 class="font-mono text-[10px] text-cyan-400 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">
+                        <i class="ri-line-chart-line"></i> Value Projection
+                    </h3>
+
+                    <div class="h-48 w-full mt-4">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+
+                    <div class="mt-10 p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] text-cyan-400 uppercase font-mono">Dự báo 2028</div>
+                                <div class="text-xl font-bold text-white tracking-tighter">+125% <i class="ri-arrow-right-up-line"></i></div>
+                            </div>
+                            <div class="h-10 w-10 rounded-full bg-cyan-500 flex items-center justify-center text-black">
+                                <i class="ri-hand-coin-line text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -238,11 +377,9 @@
 </body>
 <script>
     // ----------------------------- section 1 ----------------------------- //
-    // Khởi tạo hiệu ứng GSAP
     window.addEventListener('load', () => {
+        // 1. Khởi tạo hiệu ứng Genesis Spin
         const tl = gsap.timeline();
-
-        // 1. "The Genesis Spin" - Khởi tạo bệ và biển số
         tl.from("#pedestal", {
                 rotateY: 360,
                 scale: 0,
@@ -250,104 +387,261 @@
                 ease: "expo.out"
             })
             .from("#carPlate", {
-                y: -500,
+                y: -30,
+                rotationX: 90,
                 opacity: 0,
                 scale: 0.5,
-                duration: 1.5,
-                ease: "bounce.out"
-            }, "-=1")
-            .to("#hud-price, #hud-region", {
+                duration: 2,
+                ease: "back.out(1.5)"
+            }, "-=1.5")
+            .to("#hud-price, #hud-status", {
                 opacity: 1,
                 duration: 1,
                 stagger: 0.3
             });
 
-        // 2. Chuyển động lơ lửng (Floating)
+        // 2. Hiệu ứng Particle Swarm (Nhảy số tiền)
+        const priceEl = document.getElementById('price-stream');
+        let priceVal = {
+            val: 0
+        };
+        gsap.to(priceVal, {
+            val: 5800000000,
+            duration: 3,
+            onUpdate: () => {
+                priceEl.innerText = Math.floor(priceVal.val).toLocaleString('vi-VN') + "₫";
+            }
+        });
+
+        // 3. Hiệu ứng Floating (Lơ lửng)
         gsap.to("#carPlate", {
-            y: -15,
+            y: "-=15",
             duration: 2.5,
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut"
         });
 
-        // 3. Aurora Borealis Scan - Mỗi 8 giây
-        setInterval(() => {
+        // 4. Tương tác chuột: Xoay 3D & Phản chiếu (Chrome Reflection)
+        const plate = document.getElementById('carPlate');
+        const plateReflect = document.getElementById('chromeLight');
+        const glow = document.getElementById('mouseGlow');
+
+        document.addEventListener('mousemove', (e) => {
+            const xPos = (e.clientX / window.innerWidth) - 0.5;
+            const yPos = (e.clientY / window.innerHeight) - 0.5;
+
+            // Xoay biển số theo chuột
+            gsap.to(plate, {
+                rotateY: xPos * 40,
+                rotateX: -yPos * 30,
+                duration: 0.7,
+                ease: "power2.out"
+            });
+
+            // Di chuyển vùng sáng phản chiếu
+            gsap.to(plateReflect, {
+                x: xPos * 250,
+                y: yPos * 150,
+                duration: 0.7
+            });
+
+            // Ánh sáng theo chuột
+            gsap.to(glow, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.5
+            });
+        });
+
+        // 5. Aurora Borealis Scan (Ánh sáng Bắc cực quét ngang)
+        function runAurora() {
             gsap.fromTo("#auroraEffect", {
-                left: "-100%"
+                left: "-150%",
+                opacity: 0
             }, {
-                left: "200%",
-                duration: 2,
+                left: "150%",
+                opacity: 1,
+                duration: 2.5,
                 ease: "power2.inOut"
             });
-        }, 8000);
+        }
+        setInterval(runAurora, 8000); // Chạy mỗi 8 giây
 
-        // 4. Particle Swarm (Giả lập bằng chữ số nhảy)
-        function animatePrice() {
-            const priceEl = document.getElementById('price-stream');
-            let target = 5800000000;
-            let current = {
-                val: 0
-            };
-            gsap.to(current, {
-                val: target,
-                duration: 3,
-                onUpdate: () => {
-                    priceEl.innerText = Math.floor(current.val).toLocaleString() + "₫";
+        // 6. Cảm biến nghiêng (Gyroscope) cho Mobile
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                if (window.innerWidth < 1024) {
+                    const tiltX = e.gamma; // Độ nghiêng trái-phải
+                    const tiltY = e.beta; // Độ nghiêng trước-sau
+                    gsap.to(plate, {
+                        rotateY: tiltX * 0.7,
+                        rotateX: (tiltY - 45) * 0.5,
+                        duration: 0.5
+                    });
                 }
             });
         }
-        animatePrice();
-    });
-
-    // 5. Tương tác Dynamic Chrome Reflection & Tilt
-    const plate = document.getElementById('carPlate');
-    const chrome = document.getElementById('chromeLight');
-    const glow = document.getElementById('mouseGlow');
-
-    document.addEventListener('mousemove', (e) => {
-        // Mouse Glow
-        gsap.to(glow, {
-            x: e.clientX,
-            y: e.clientY,
-            duration: 0.2
-        });
-
-        const xPos = (e.clientX / window.innerWidth) - 0.5;
-        const yPos = (e.clientY / window.innerHeight) - 0.5;
-
-        // Xoay biển số theo chuột (Tilt)
-        gsap.to(plate, {
-            rotateY: xPos * 30,
-            rotateX: -yPos * 20,
-            duration: 0.5
-        });
-
-        // Di chuyển luồng sáng phản chiếu (Chrome reflection)
-        gsap.to(chrome, {
-            x: xPos * 100,
-            y: yPos * 50,
-            duration: 0.5
-        });
-    });
-
-    // 6. Gyroscope (Mobile)
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (e) => {
-            if (window.innerWidth < 1024) {
-                const tiltX = e.gamma; // Trái-phải
-                const tiltY = e.beta; // Trước-sau
-                gsap.to(plate, {
-                    rotateY: tiltX / 2,
-                    rotateX: (tiltY - 45) / 2,
-                    duration: 0.5
+        // 3. Aurora Borealis Scan - Cải tiến hiệu ứng quét mượt hơn
+        function triggerAurora() {
+            const aurora = document.getElementById('auroraEffect');
+            if (aurora) {
+                gsap.fromTo(aurora, {
+                    left: "-150%",
+                    opacity: 0
+                }, {
+                    left: "150%",
+                    opacity: 1,
+                    duration: 2.5,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.set(aurora, {
+                            opacity: 0
+                        }); // Ẩn đi sau khi quét xong
+                    }
                 });
             }
-        });
-    }
+        }
 
+        // Chạy lần đầu sau khi load
+        setTimeout(triggerAurora, 2000);
+
+        // Lặp lại mỗi 6 giây (nhanh hơn 8s để người dùng dễ thấy)
+        setInterval(triggerAurora, 6000);
+    });
     // ----------------------------- section 2 ----------------------------- //
+    window.addEventListener('load', () => {
+        // ĐĂNG KÝ PLUGIN TRƯỚC KHI SỬ DỤNG
+        gsap.registerPlugin(ScrollTrigger);
 
+        // 1. Khởi tạo Biểu đồ Radar
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Tài lộc', 'Quyền lực', 'Sức khỏe', 'Danh tiếng', 'May mắn'],
+                datasets: [{
+                    data: [95, 90, 85, 92, 88],
+                    backgroundColor: 'rgba(0, 242, 255, 0.2)',
+                    borderColor: '#00f2ff',
+                    borderWidth: 1,
+                    pointBackgroundColor: '#00f2ff',
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255,255,255,0.05)'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)'
+                        },
+                        pointLabels: {
+                            color: '#888',
+                            font: {
+                                size: 9
+                            }
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 2. Khởi tạo Biểu đồ Đường
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: ['2024', '2025', '2026', '2027', '2028'],
+                datasets: [{
+                    data: [100, 140, 190, 210, 280],
+                    borderColor: '#007FFF',
+                    backgroundColor: 'rgba(0, 127, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#555',
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 3. Hiệu ứng "The System Boot"
+        // Tạo một timeline riêng cho việc hiện các module
+        const tlMetrics = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#sovereignty-metrics",
+                start: "top 80%", // Kích hoạt khi đầu section cách top màn hình 80%
+                toggleActions: "play none none none" // Chỉ chạy 1 lần khi cuộn xuống
+            }
+        });
+
+        tlMetrics.to(".metric-module", {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.3,
+                ease: "power3.out"
+            })
+            .to(".level-progress", {
+                width: (i, el) => el.dataset.width,
+                duration: 1.5,
+                ease: "expo.out"
+            }, "-=0.5");
+
+        // Hiệu ứng nhảy số
+        const randomNums = document.querySelectorAll('.random-string');
+        randomNums.forEach(num => {
+            const finalVal = parseFloat(num.dataset.value);
+            gsap.to(num, {
+                innerText: finalVal,
+                duration: 2,
+                scrollTrigger: {
+                    trigger: num,
+                    start: "top 90%"
+                },
+                onUpdate: function() {
+                    // Tạo hiệu ứng nhảy số thập phân mượt mà
+                    num.innerText = this.targets()[0].innerText.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            });
+        });
+    });
     // ----------------------------- section 3 ----------------------------- //
 
     // ----------------------------- section 4 ----------------------------- //
