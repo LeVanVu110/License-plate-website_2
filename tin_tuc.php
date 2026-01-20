@@ -1,0 +1,1021 @@
+<?php include "header.php"; ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* ----------------------------- section 1 -----------------------------  */
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,700;1,700&family=Inter:wght@300;400&display=swap');
+
+        #oracle-chronicle {
+            font-family: 'Inter', sans-serif;
+        }
+
+        #hero-headline {
+            font-family: 'Bodoni Moda', serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* Pulse Glow for Button */
+        @keyframes pulse-cyan {
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(34, 211, 238, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 211, 238, 0);
+            }
+        }
+
+        #btn-read-now {
+            animation: pulse-cyan 2s infinite;
+        }
+
+        /* Mobile Sticky Button */
+        @media (max-width: 1024px) {
+            #btn-read-now.sticky-mobile {
+                position: fixed;
+                bottom: 20px;
+                left: 5%;
+                width: 90%;
+                z-index: 100;
+                background: rgba(0, 11, 24, 0.8);
+                backdrop-filter: blur(10px);
+            }
+        }
+
+        /* Glow Tracer Effect */
+        .tracer-active::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            background: #00ffff;
+            box-shadow: 0 0 15px #00ffff;
+            left: 0;
+            top: 0;
+            animation: trace 2s ease-in-out forwards;
+        }
+
+        @keyframes trace {
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* ----------------------------- section 2 -----------------------------  */
+        /* Filter Buttons */
+        .filter-btn {
+            padding: 10px 24px;
+            border-radius: 99px;
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #22d3ee;
+            color: #000;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+
+        /* Knowledge Card Components */
+        .tag {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        /* Glint Effect */
+        .glint {
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 45%,
+                    rgba(34, 211, 238, 0.3) 50%,
+                    transparent 55%);
+            transition: all 0s;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .news-item:hover .glint {
+            top: 100%;
+            left: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .news-item:hover .thumb-img {
+            transform: scale(1.1);
+            filter: saturate(1.5);
+        }
+
+        /* Responsive Mobile Stack */
+        @media (max-width: 768px) {
+            #news-grid {
+                grid-template-columns: 1fr !important;
+                auto-rows: auto !important;
+            }
+
+            .news-item {
+                grid-column: span 1 !important;
+                grid-row: span 1 !important;
+                height: 250px;
+            }
+        }
+
+        /* ----------------------------- section 3 -----------------------------  */
+        .animate-spin-slow {
+            animation: spin 20s linear infinite;
+        }
+
+        .animate-spin-reverse {
+            animation: spin-reverse 15s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin-reverse {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-out 4s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-out {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Oracle Card Styling */
+        .oracle-card {
+            pointer-events: auto;
+            background: rgba(0, 31, 63, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            width: 140px;
+            border-radius: 12px;
+            position: absolute;
+            cursor: pointer;
+            transition: border 0.3s, transform 0.3s;
+
+        }
+
+        #oracle-cards-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .oracle-card:hover {
+            border-color: #22d3ee;
+            transform: scale(1.1) !important;
+        }
+
+        /* Glitch Effect Class */
+        .glitch-reveal {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff;
+            }
+
+            25% {
+                transform: translate(-2px, 2px);
+            }
+
+            50% {
+                transform: translate(2px, -2px);
+            }
+
+            75% {
+                transform: translate(-1px, -1px);
+            }
+
+            100% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+        }
+
+        .oracle-container-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 600px;
+            /* Desktop height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-y;
+            /* Tối ưu cho mobile swipe */
+        }
+
+        @media (max-width: 768px) {
+            .oracle-container-wrapper {
+                height: 500px;
+                /* Thu nhỏ chiều cao trên Mobile */
+            }
+
+            .oracle-card {
+                width: 110px !important;
+                /* Thẻ nhỏ hơn trên Mobile */
+                padding: 8px !important;
+            }
+
+            #glitch-display h3 {
+                font-size: 1.5rem !important;
+            }
+        }
+
+        /* ----------------------------- section 4 -----------------------------  */
+        /* 1. Pulse Border Animation */
+        .border-glow {
+            width: 200%;
+            height: 200%;
+            left: -50%;
+            top: -50%;
+            animation: rotate-glow 6s linear infinite;
+        }
+
+        @keyframes rotate-glow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 2. Newsletter Box Pulse Effect */
+        #newsletter-box {
+            box-shadow: 0 0 50px rgba(0, 8, 20, 0.8);
+        }
+
+        /* 3. Typewriter Effect for Success Message */
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #22d3ee;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 2.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: #22d3ee;
+            }
+        }
+
+        /* Mobile Sticky Ticker */
+        @media (max-width: 768px) {
+            .ticker-wrapper {
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                z-index: 1000;
+                background: rgba(0, 18, 32, 0.95);
+                backdrop-filter: blur(10px);
+            }
+
+            #pulse-subscription {
+                padding-bottom: 80px;
+            }
+        }
+
+        /* ----------------------------- section 5 -----------------------------  */
+
+        /* ----------------------------- section 6 -----------------------------  */
+    </style>
+</head>
+
+<body>
+    <!-- ----------------------------- section 1 -----------------------------  -->
+    <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
+
+        <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+
+                <div class="lg:w-1/2 order-2 lg:order-1">
+                    <div class="relative pl-8 border-l border-cyan-500/30 overflow-hidden" id="headline-container">
+                        <h1 id="hero-headline" class="text-4xl md:text-7xl font-serif text-[#E0F7FA] leading-[1.1] mb-8 opacity-0 -translate-x-full">
+                            GIẢI MÃ: BIỂN SỐ TỈ ĐÔ <br>
+                            <span class="text-cyan-400">888.88</span> <br>
+                            ĐỊNH DANH VẬN MỆNH THẾ NÀO?
+                        </h1>
+
+                        <p id="hero-lead" class="text-lg md:text-xl text-cyan-200/70 font-sans leading-relaxed mb-10 opacity-0">
+                            Từ một dãy số vô hồn trở thành di sản tài chính triệu đô. Khám phá bí ẩn phong thủy và lực đẩy thị trường phía sau những con số quyền lực nhất Việt Nam.
+                        </p>
+
+                        <button id="btn-read-now" class="px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                            Đọc Ngay
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2 order-1 lg:order-2 relative" id="hero-image-wrapper">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
+                        <div id="sapphire-filter" class="absolute inset-0 bg-blue-900/40 backdrop-blur-sm z-10 transition-all duration-1000"></div>
+
+                        <img id="hero-img" src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
+                            alt="Luxury Car & Plate"
+                            class="w-full h-[300px] md:h-[600px] object-cover scale-110 opacity-0">
+
+                        <div class="absolute -inset-2 bg-cyan-500/20 blur-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-cyan-500/50 animate-bounce">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="intelligence-grid" class="relative min-h-screen py-24 bg-[#000B18]">
+        <div class="container mx-auto px-6">
+
+            <div class="flex flex-wrap justify-center gap-4 mb-16" id="filter-controls">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="fengshui">Phong thủy</button>
+                <button class="filter-btn" data-filter="market">Thị trường</button>
+                <button class="filter-btn" data-filter="legal">Pháp lý</button>
+            </div>
+
+            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
+
+                <div class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <img src="https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 p-8">
+                        <span class="tag mb-4 inline-block">#PhongThuy</span>
+                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight">Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)</h3>
+                    </div>
+                </div>
+
+                <div class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <img src="https://images.unsplash.com/photo-1611974714024-4621400d3063?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
+                    <div class="absolute bottom-0 p-6">
+                        <span class="tag mb-2 inline-block">#ThiTruong</span>
+                        <h3 class="text-xl font-bold text-[#E0F7FA]">Tổng hợp giá đấu các phiên VIP tháng 1/2026</h3>
+                    </div>
+                </div>
+
+                <div class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
+                    <div class="absolute bottom-0 p-6 z-20">
+                        <span class="tag mb-2 inline-block">#PhapLy</span>
+                        <h3 class="text-sm font-bold text-[#E0F7FA]">Hướng dẫn thu hồi biển định danh theo luật mới</h3>
+                    </div>
+                </div>
+
+                <div class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854" class="thumb-img absolute inset-0 w-full h-full object-cover opacity-40">
+                    <div class="absolute bottom-0 p-6">
+                        <h3 class="text-sm font-bold text-[#E0F7FA]">Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="fengshui-oracle" class="relative min-h-screen py-24 bg-[#00050A] overflow-hidden flex items-center justify-center">
+
+        <div id="ripple-container" class="absolute inset-0 z-0"></div>
+
+        <div class="container mx-auto px-6 relative z-10 flex flex-col items-center">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-4xl font-serif text-cyan-100 tracking-[0.8rem] uppercase mb-2">The Feng Shui Oracle</h2>
+                <p class="text-mint-400 text-xs uppercase tracking-widest opacity-60">Vòng Xoáy Giải Mã Cung Mệnh</p>
+            </div>
+
+            <div class="relative w-full max-w-5xl h-[600px] flex items-center justify-center">
+
+                <div id="bagua-wrapper" class="relative z-20 w-[300px] h-[300px] md:w-[450px] md:h-[450px] cursor-grab active:cursor-grabbing">
+                    <div class="absolute inset-0 border-2 border-cyan-500/30 rounded-full animate-spin-slow"></div>
+                    <div class="absolute inset-[10%] border border-mint-500/20 rounded-full animate-spin-reverse"></div>
+
+                    <svg id="bagua-svg" viewBox="0 0 500 500" class="w-full h-full drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                        <defs>
+                            <radialGradient id="center-glow">
+                                <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.5" />
+                                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="250" cy="250" r="50" fill="url(#center-glow)" />
+                        <g id="bagua-segments"></g>
+                    </svg>
+                </div>
+
+                <div id="oracle-cards-container" class="absolute inset-0 pointer-events-none">
+                </div>
+            </div>
+
+            <div id="glitch-display" class="mt-12 max-w-xl text-center opacity-0 transform translate-y-10 transition-all duration-500">
+                <h3 id="oracle-title" class="text-mint-400 text-3xl font-bold mb-4 font-mono tracking-tighter">SỐ 8: PHÁT ĐẠT</h3>
+                <p id="oracle-desc" class="text-cyan-100/70 text-sm leading-relaxed font-sans">
+                    Đại diện cho sự rung động của tầng số vô cực. Trong vận 9, số 8 mang năng lượng của sự tích lũy tài sản vững chãi và sự chuyển hóa bền vững.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="pulse-subscription" class="relative min-h-screen bg-[#000814] flex flex-col justify-between overflow-hidden py-20">
+
+        <div class="ticker-wrapper w-full bg-[#001220] border-y border-cyan-900/30 py-3 overflow-hidden relative z-20">
+            <div id="live-ticker" class="flex whitespace-nowrap gap-10 items-center">
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● Biển 30K-999.99 vừa được định giá 2.5 Tỷ VNĐ</span>
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● Thị trường biển ngũ quý tăng 15% trong tuần qua</span>
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● AI Oracle vừa cập nhật dữ liệu từ 500 phiên đấu giá mới</span>
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● 51K-888.88 đang là mục tiêu săn đón hàng đầu</span>
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● Biển 30K-999.99 vừa được định giá 2.5 Tỷ VNĐ</span>
+                <span class="ticker-item text-cyan-400 font-mono text-sm uppercase tracking-widest">● Thị trường biển ngũ quý tăng 15% trong tuần qua</span>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 flex-grow flex items-center justify-center relative z-10">
+            <div id="newsletter-box" class="relative w-full max-w-4xl p-1 md:p-[2px] rounded-[2.5rem] overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400 to-transparent border-glow"></div>
+
+                <div class="relative bg-[#000B18]/90 backdrop-blur-3xl rounded-[2.5rem] p-10 md:p-16 flex flex-col lg:flex-row items-center gap-12">
+                    <div class="lg:w-1/2 text-center lg:text-left">
+                        <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-4 uppercase">Nhận bản tin<br><span class="text-cyan-400">Di sản số</span></h2>
+                        <p class="text-cyan-100/50 text-sm font-light tracking-wide">Cập nhật biến động thị trường và các phân tích chuyên sâu từ AI Oracle hàng tuần.</p>
+                    </div>
+
+                    <div class="lg:w-1/2 w-full" id="input-container">
+                        <form id="subscribe-form" class="flex flex-col md:flex-row gap-4">
+                            <input type="email" required placeholder="EMAIL CỦA BẠN..."
+                                class="flex-grow bg-white/5 border border-cyan-500/20 rounded-full px-8 py-4 text-white focus:outline-none focus:border-cyan-400 transition-all placeholder:text-cyan-900/50">
+                            <button type="submit" class="bg-gradient-to-r from-blue-700 to-cyan-500 text-black font-black px-10 py-4 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(34,211,238,0.3)]">
+                                GỬI
+                            </button>
+                        </form>
+                        <div id="success-msg" class="hidden text-center py-4">
+                            <p class="text-2xl font-mono text-cyan-300 typewriter">CHÀO MỪNG CHỦ NHÂN MỚI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="container mx-auto px-6 py-10 border-t border-cyan-900/20 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="logo text-white font-serif tracking-[0.5rem] opacity-50 uppercase text-sm">AI Oracle Chronicle</div>
+
+                <div class="social-icons flex gap-8">
+                    <a href="#" class="social-btn group">
+                        <div class="icon-3d bg-white/5 p-4 rounded-xl border border-white/10 group-hover:border-cyan-400/50 group-hover:bg-cyan-400/10 transition-all">
+                            <svg class="w-6 h-6 text-white group-hover:text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="text-[10px] text-cyan-900 uppercase tracking-widest">© 2026 AI Oracle. Toàn bộ bản quyền được bảo vệ.</div>
+            </div>
+        </footer>
+
+        <div id="particle-canvas-footer" class="absolute inset-0 pointer-events-none"></div>
+    </section>
+
+    <!-- ----------------------------- section 5 -----------------------------  -->
+
+    <!-- ----------------------------- section 6 -----------------------------  -->
+
+    <?php include "footer.php"; ?>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
+<script>
+    // ----------------------------- section 1 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. DYNAMIC STAR MAP CANVAS
+        const canvas = document.getElementById('star-map-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function initStars() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#22d3ee';
+            stars.forEach(s => {
+                s.x += s.vx;
+                s.y += s.vy;
+                if (s.x < 0 || s.x > canvas.width) s.vx *= -1;
+                if (s.y < 0 || s.y > canvas.height) s.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        initStars();
+        animateStars();
+
+        // 2. THE GRAND ENTRANCE TIMELINE
+        const tl = gsap.timeline();
+
+        tl.to("#hero-headline", {
+                opacity: 1,
+                x: 0,
+                duration: 1.5,
+                ease: "expo.out"
+            })
+            .to("#hero-img", {
+                opacity: 1,
+                scale: 1,
+                duration: 2,
+                ease: "power2.out"
+            }, "-=1")
+            .to("#sapphire-filter", {
+                backdropFilter: "blur(0px)",
+                backgroundColor: "rgba(30, 58, 138, 0.2)",
+                duration: 1.5
+            }, "-=1.5")
+            .to("#hero-lead", {
+                opacity: 1,
+                y: 0,
+                duration: 1
+            }, "-=1");
+
+        // 3. PARALLAX NARRATIVE
+        gsap.to("#hero-img", {
+            scrollTrigger: {
+                trigger: "#oracle-chronicle",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 100,
+            scale: 1.1
+        });
+
+        gsap.to("#hero-headline", {
+            scrollTrigger: {
+                trigger: "#oracle-chronicle",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: -50
+        });
+
+        // 4. MOBILE STICKY CTA
+        if (window.innerWidth < 1024) {
+            ScrollTrigger.create({
+                trigger: "#btn-read-now",
+                start: "top center",
+                onLeave: () => document.getElementById('btn-read-now').classList.add('sticky-mobile'),
+                onEnterBack: () => document.getElementById('btn-read-now').classList.remove('sticky-mobile')
+            });
+        }
+
+        // 5. INTERACTIVE HOVER
+        const wrapper = document.getElementById('hero-image-wrapper');
+        wrapper.addEventListener('mouseenter', () => {
+            gsap.to("#sapphire-filter", {
+                opacity: 0,
+                duration: 0.5
+            });
+            gsap.to("#hero-img", {
+                scale: 1.05,
+                duration: 0.5
+            });
+        });
+        wrapper.addEventListener('mouseleave', () => {
+            gsap.to("#sapphire-filter", {
+                opacity: 1,
+                duration: 0.5
+            });
+            gsap.to("#hero-img", {
+                scale: 1,
+                duration: 0.5
+            });
+        });
+    });
+
+    // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(Flip);
+
+        const newsItems = gsap.utils.toArray(".news-item");
+        const grid = document.getElementById("news-grid");
+
+        // 1. STAGGERED FLUID REVEAL
+        gsap.from(newsItems, {
+            scrollTrigger: {
+                trigger: "#intelligence-grid",
+                start: "top 70%",
+            },
+            y: 100,
+            opacity: 0,
+            scale: 0.9,
+            stagger: 0.1,
+            duration: 1.2,
+            ease: "power4.out"
+        });
+
+        // 2. CATEGORY SWITCHER (FLIP LOGIC)
+        const buttons = document.querySelectorAll(".filter-btn");
+
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                // Cập nhật trạng thái Active của nút
+                buttons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                const filter = btn.dataset.filter;
+
+                // Ghi lại trạng thái Flip
+                const state = Flip.getState(newsItems);
+
+                // Xử lý ẩn/hiện dựa trên filter
+                newsItems.forEach(item => {
+                    if (filter === "all" || item.classList.contains(filter)) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                // Thực hiện hiệu ứng Flip mượt mà
+                Flip.from(state, {
+                    duration: 0.8,
+                    ease: "power3.inOut",
+                    stagger: 0.05,
+                    onEnter: elements => gsap.fromTo(elements, {
+                        opacity: 0,
+                        scale: 0
+                    }, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.6
+                    }),
+                    onLeave: elements => gsap.to(elements, {
+                        opacity: 0,
+                        scale: 0,
+                        duration: 0.4
+                    })
+                });
+            });
+        });
+
+        // 3. 3D GLASS TILT (DESKTOP)
+        if (window.innerWidth > 1024) {
+            newsItems.forEach(card => {
+                card.addEventListener("mousemove", (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                    gsap.to(card, {
+                        rotationY: x * 10,
+                        rotationX: -y * 10,
+                        transformPerspective: 1000,
+                        ease: "power2.out",
+                        duration: 0.4
+                    });
+                });
+
+                card.addEventListener("mouseleave", () => {
+                    gsap.to(card, {
+                        rotationY: 0,
+                        rotationX: 0,
+                        duration: 0.6
+                    });
+                });
+            });
+        }
+    });
+
+    // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const baguaSegments = document.getElementById('bagua-segments');
+        const cardsContainer = document.getElementById('oracle-cards-container');
+        const glitchDisplay = document.getElementById('glitch-display');
+
+        const data = [{
+                num: '1',
+                title: 'NHẤT: KHỞI ĐẦU',
+                desc: 'Tượng trưng cho dòng chảy của nước, sự khởi đầu của trí tuệ và sự thích nghi.'
+            },
+            {
+                num: '2',
+                title: 'NHỊ: CÂN BẰNG',
+                desc: 'Sự hài hòa giữa âm và dương, mang lại sự ổn định và hỗ trợ từ quý nhân.'
+            },
+            {
+                num: '3',
+                title: 'TAM: SÁNG TẠO',
+                desc: 'Năng lượng phát triển mạnh mẽ như mầm non, thúc đẩy tư duy đột phá.'
+            },
+            {
+                num: '6',
+                title: 'LỤC: TÀI LỘC',
+                desc: 'Cung của thiên lộc, mang lại sự may mắn bất ngờ và sự che chở.'
+            },
+            {
+                num: '8',
+                title: 'BÁT: PHÁT ĐẠT',
+                desc: 'Con số vượng nhất, biểu tượng của sự vô cực và phát triển không ngừng.'
+            },
+            {
+                num: '9',
+                title: 'CỬU: VĨNH CỬU',
+                desc: 'Đỉnh cao của thành công, biểu tượng cho sự viên mãn và quyền uy tuyệt đối.'
+            }
+        ];
+
+        // Cấu hình bán kính (Radius)
+        const isMobile = window.innerWidth < 768;
+        const innerRadius = isMobile ? 120 : 180; // Bán kính số trên vòng quay
+        const outerRadius = isMobile ? 160 : 280; // Bán kính thẻ bay bên ngoài
+
+        data.forEach((item, i) => {
+            // Tính toán góc (Chia đều 360 độ cho số lượng item)
+            const angle = (i / data.length) * Math.PI * 2 - Math.PI / 2;
+
+            // 1. Tạo số trên vòng quay (SVG)
+            const xSVG = 250 + Math.cos(angle) * innerRadius;
+            const ySVG = 250 + Math.sin(angle) * innerRadius;
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", xSVG);
+            text.setAttribute("y", ySVG);
+            text.setAttribute("fill", "#22d3ee");
+            text.setAttribute("font-size", isMobile ? "20" : "28");
+            text.setAttribute("font-family", "serif");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("dominant-baseline", "middle");
+            text.setAttribute("class", "cursor-pointer font-bold hover:fill-white transition-all");
+            text.style.textShadow = "0 0 10px rgba(34,211,238,0.8)";
+            text.textContent = item.num;
+            baguaSegments.appendChild(text);
+
+            // 2. Tạo thẻ Oracle Card (HTML)
+            const card = document.createElement('div');
+            card.className = 'oracle-card absolute';
+            card.innerHTML = `
+            <div class="text-[10px] text-cyan-400 font-mono mb-1">DATA_${item.num}</div>
+            <div class="text-[11px] text-white font-bold leading-tight">${item.title}</div>
+        `;
+
+            // Tính toán vị trí thẻ (Center lùi ra theo bán kính outerRadius)
+            const xCard = Math.cos(angle) * outerRadius;
+            const yCard = Math.sin(angle) * outerRadius;
+
+            // Căn giữa thẻ dựa trên transform để không bị lệch tâm
+            gsap.set(card, {
+                left: "50%",
+                top: "50%",
+                xPercent: -50,
+                yPercent: -50,
+                x: xCard,
+                y: yCard
+            });
+
+            cardsContainer.appendChild(card);
+
+            // 3. Hiệu ứng trôi lơ lửng (Floating)
+            gsap.to(card, {
+                x: `+=${Math.random() * 20 - 10}`,
+                y: `+=${Math.random() * 20 - 10}`,
+                duration: 3 + Math.random() * 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // 4. Logic tương tác khi Click
+            const focusAction = () => {
+                // Hiệu ứng xoay nhanh khi chọn
+                gsap.to("#bagua-svg", {
+                    rotation: "+=360",
+                    duration: 0.8,
+                    ease: "expo.out"
+                });
+
+                // Hiển thị thông tin
+                glitchDisplay.style.opacity = "1";
+                glitchDisplay.style.transform = "translateY(0)";
+                document.getElementById('oracle-title').innerText = item.title;
+                document.getElementById('oracle-desc').innerText = item.desc;
+
+                // Glitch Effect
+                glitchDisplay.classList.add('glitch-reveal');
+                setTimeout(() => glitchDisplay.classList.remove('glitch-reveal'), 500);
+
+                if (navigator.vibrate) navigator.vibrate(20);
+            };
+
+            text.addEventListener('click', focusAction);
+            card.addEventListener('click', focusAction);
+        });
+
+        // Vòng quay vĩnh cửu
+        const mainSpin = gsap.to("#bagua-svg", {
+            rotation: 360,
+            duration: 30,
+            repeat: -1,
+            ease: "none"
+        });
+
+        // Tăng tốc khi hover
+        const baguaWrapper = document.getElementById('bagua-wrapper');
+        baguaWrapper.addEventListener('mouseenter', () => gsap.to(mainSpin, {
+            timeScale: 4,
+            duration: 1
+        }));
+        baguaWrapper.addEventListener('mouseleave', () => gsap.to(mainSpin, {
+            timeScale: 1,
+            duration: 2
+        }));
+    });
+
+    // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. THE INFINITE STREAM (Ticker Logic)
+        const ticker = document.getElementById('live-ticker');
+        const tickerItems = ticker.innerHTML;
+        ticker.innerHTML += tickerItems; // Nhân đôi nội dung để lặp mượt
+
+        let tickerAnim = gsap.to("#live-ticker", {
+            xPercent: -50,
+            duration: 30,
+            repeat: -1,
+            ease: "none"
+        });
+
+        ticker.addEventListener('mouseenter', () => gsap.to(tickerAnim, {
+            timeScale: 0.2,
+            duration: 1
+        }));
+        ticker.addEventListener('mouseleave', () => gsap.to(tickerAnim, {
+            timeScale: 1,
+            duration: 1
+        }));
+
+        // 2. INPUT SUCCESS ANIMATION
+        const form = document.getElementById('subscribe-form');
+        const inputContainer = document.getElementById('input-container');
+        const successMsg = document.getElementById('success-msg');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Particle Dispersion (Giả lập bằng GSAP)
+            gsap.to("#subscribe-form", {
+                opacity: 0,
+                scale: 0.8,
+                filter: "blur(20px)",
+                duration: 0.6,
+                onComplete: () => {
+                    form.classList.add('hidden');
+                    successMsg.classList.remove('hidden');
+
+                    // Toàn bộ Section bừng sáng
+                    gsap.to("#pulse-subscription", {
+                        backgroundColor: "#083344",
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1
+                    });
+
+                    // Haptic Feedback
+                    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+                }
+            });
+        });
+
+        // 3. ICON 3D PERSPECTIVE (Desktop)
+        if (window.innerWidth > 1024) {
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    gsap.to(btn.querySelector('.icon-3d'), {
+                        x: x * 0.5,
+                        y: y * 0.5,
+                        rotateX: -y * 0.1,
+                        rotateY: x * 0.1,
+                        duration: 0.3
+                    });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn.querySelector('.icon-3d'), {
+                        x: 0,
+                        y: 0,
+                        rotateX: 0,
+                        rotateY: 0,
+                        duration: 0.5
+                    });
+                });
+            });
+        }
+    });
+
+    // ----------------------------- section 5 ----------------------------- //
+
+    // ----------------------------- section 6 ----------------------------- //
+</script>
+
+</html>

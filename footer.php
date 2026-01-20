@@ -107,17 +107,17 @@
 
 <script>
     // 1. Unfold Reveal (Hiệu ứng mở thảm)
-    gsap.from("#main-footer", {
-        scrollTrigger: {
-            trigger: "#main-footer",
-            start: "top bottom",
-            toggleActions: "play none none reverse"
-        },
-        y: 100,
-        opacity: 0,
-        duration: 1.5,
-        ease: "power4.out"
-    });
+    // gsap.from("#main-footer", {
+    //     scrollTrigger: {
+    //         trigger: "#main-footer",
+    //         start: "top bottom",
+    //         toggleActions: "play none none reverse"
+    //     },
+    //     y: 100,
+    //     opacity: 0,
+    //     duration: 1.5,
+    //     ease: "power4.out"
+    // });
 
     // 2. Floating Blobs (Nền trôi nổi)
     gsap.to("#blob-1", {
