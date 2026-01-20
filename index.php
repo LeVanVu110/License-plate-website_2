@@ -725,7 +725,13 @@
             border: 1px solid rgba(0, 127, 255, 0.3);
             color: #007FFF;
             overflow: hidden;
-            transition: all 0.4s ease;
+            /* transition: all 0.4s ease; */
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .knowledge-card:hover .read-glow-btn {
+            transform: translate(3px, -3px);
+            color: #001F3F;
         }
 
         .read-glow-btn:hover {
@@ -780,8 +786,9 @@
         /* Tối ưu Mobile */
         @media (max-width: 1024px) {
             .knowledge-card {
-                perspective: none;
+                /* perspective: none; */
                 /* Tắt 3D trên mobile để mượt hơn */
+                transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
             .featured-glass-overlay {
@@ -793,6 +800,77 @@
 
             .featured-glass-overlay h3 {
                 color: #001F3F !important;
+            }
+
+            #featured-post {
+                border-radius: 1.5rem;
+            }
+
+            #featured-post .relative.h-\[500px\] {
+                height: 400px;
+                /* Thu nhỏ chiều cao ảnh chính trên mobile */
+            }
+
+            #featured-post h3 {
+                font-size: 1.25rem;
+            }
+
+            .absolute.inset-x-6.bottom-6 {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+                padding: 1.5rem;
+            }
+
+            /* Hiện mô tả luôn trên mobile vì không có hover */
+            .excerpt {
+                max-height: 100px !important;
+                opacity: 1 !important;
+                color: rgba(255, 255, 255, 0.9) !important;
+                margin-top: 0.5rem;
+            }
+            .absolute.inset-x-4{
+                width: 60%;
+            }
+        }
+
+        /* Xử lý chữ trên mobile không bị quá to */
+        @media (max-width: 768px) {
+            .sans-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                /* Giới hạn tiêu đề 2 dòng */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            /* Ép hiển thị excerpt nhẹ nhàng trên mobile */
+            .excerpt {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                opacity: 0.8 !important;
+            }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+
+            /* Ép font chữ nhỏ lại trên màn hình cực nhỏ để không đẩy khung */
+            h3.sans-text {
+                font-size: 1.15rem !important;
+                line-height: 1.3;
+            }
+
+            .excerpt {
+                display: none;
+                /* Ẩn hẳn đoạn mô tả trên mobile nhỏ để tránh tràn */
             }
         }
 
@@ -913,7 +991,7 @@
                         </div>
 
                     </div>
-                    
+
                 </div>
 
                 <div id="gallery-moto" class="gallery-wrapper hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -1160,20 +1238,25 @@
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8">
-                <div class="lg:w-2/3 group relative overflow-hidden rounded-[2rem] border border-white bg-white shadow-xl cursor-none knowledge-card" id="featured-post">
-                    <div class="relative h-[500px] overflow-hidden">
+                <div class="lg:w-2/3 group relative overflow-hidden rounded-[1.5rem] md:rounded-[2rem] border border-white bg-white shadow-xl lg:cursor-none knowledge-card" id="featured-post">
+                    <div class="relative h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80"
                             class="parallax-img w-full h-full object-cover transition-transform duration-700 scale-110" alt="Legal Guide">
 
-                        <div class="absolute inset-x-6 bottom-6 backdrop-blur-md bg-white/20 border border-white/30 p-8 rounded-[1.5rem] transform translate-y-4 transition-all duration-500 group-hover:translate-y-0">
-                            <span class="inline-block px-4 py-1 rounded-full bg-[#007FFF]/10 text-[#007FFF] text-[10px] font-bold tracking-widest uppercase mb-4">Pháp lý & Thủ tục</span>
-                            <h3 class="sans-text text-2xl md:text-3xl font-bold text-white mb-4 leading-snug">Hướng dẫn thủ tục định danh biển số 2026: Những điều chủ xe cần biết</h3>
-                            <p class="excerpt text-white/0 group-hover:text-white/90 transition-all duration-500 max-h-0 group-hover:max-h-24 overflow-hidden sans-text text-sm">
-                                Cập nhật mới nhất về quy trình chuyển nhượng, thu hồi và đăng ký biển số định danh theo thông tư mới nhất của Bộ Công An...
+                        <div class="absolute inset-x-4 bottom-4 md:inset-x-6 md:bottom-6 backdrop-blur-md bg-white/20 border border-white/30 p-5 md:p-8 rounded-[1rem] md:rounded-[1.5rem] transform translate-y-2 md:translate-y-4 transition-all duration-500 group-hover:translate-y-0">
+                            <span class="inline-block px-3 py-1 rounded-full bg-[#007FFF]/20 text-[#007FFF] text-[9px] md:text-[10px] font-bold tracking-widest uppercase mb-2 md:mb-4">Pháp lý & Thủ tục</span>
+
+                            <h3 class="sans-text text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-4 leading-tight">
+                                Hướng dẫn thủ tục định danh biển số 2026
+                            </h3>
+
+                            <p class="excerpt text-white/90 md:text-white/0 md:group-hover:text-white/90 transition-all duration-500 max-h-[60px] md:max-h-0 md:group-hover:max-h-24 overflow-hidden sans-text text-xs md:text-sm">
+                                Cập nhật mới nhất về quy trình chuyển nhượng, thu hồi và đăng ký biển số định danh...
                             </p>
-                            <a href="#" class="inline-flex items-center gap-2 mt-6 text-white font-bold text-xs tracking-widest uppercase group/btn">
+
+                            <a href="#" class="inline-flex items-center gap-2 mt-4 text-white font-bold text-[10px] tracking-widest uppercase group/btn">
                                 Xem chi tiết
-                                <span class="w-8 h-[1px] bg-white group-hover/btn:w-12 transition-all"></span>
+                                <span class="w-6 h-[1px] bg-white group-hover/btn:w-10 transition-all"></span>
                             </a>
                         </div>
                     </div>
@@ -1681,40 +1764,68 @@
             const featuredPost = document.getElementById('featured-post');
             const parallaxImg = featuredPost?.querySelector('.parallax-img');
 
+            // Kiểm tra thiết bị ngay đầu sự kiện hoặc dùng biến toàn cục
+            const isMobile = window.innerWidth < 1024;
+
             if (featuredPost && parallaxImg) {
-                featuredPost.addEventListener('mousemove', (e) => {
-                    const {
-                        left,
-                        top,
-                        width,
-                        height
-                    } = featuredPost.getBoundingClientRect();
-                    const xVal = (e.clientX - left) / width;
-                    const yVal = (e.clientY - top) / height;
+                // CHỈ gán sự kiện nếu không phải là Mobile
+                if (!isMobile) {
+                    featuredPost.addEventListener('mousemove', (e) => {
+                        const {
+                            left,
+                            top,
+                            width,
+                            height
+                        } = featuredPost.getBoundingClientRect();
 
-                    gsap.to(parallaxImg, {
-                        x: (xVal - 0.5) * 30,
-                        y: (yVal - 0.5) * 30,
-                        duration: 0.6,
-                        ease: "power2.out",
-                        overwrite: 'auto' // Tránh xung đột hiệu ứng
+                        // Tính toán vị trí chuột tương đối trong card
+                        const xVal = (e.clientX - left) / width;
+                        const yVal = (e.clientY - top) / height;
+
+                        // Di chuyển ảnh nhẹ nhàng (Biên độ giảm xuống 20 để an toàn cho responsive)
+                        gsap.to(parallaxImg, {
+                            x: (xVal - 0.5) * 20,
+                            y: (yVal - 0.5) * 20,
+                            duration: 0.6,
+                            ease: "power2.out",
+                            overwrite: 'auto'
+                        });
                     });
-                });
 
-                featuredPost.addEventListener('mouseleave', () => {
-                    gsap.to(parallaxImg, {
-                        x: 0,
-                        y: 0,
-                        duration: 1
+                    featuredPost.addEventListener('mouseleave', () => {
+                        // Trả ảnh về vị trí trung tâm khi chuột rời đi
+                        gsap.to(parallaxImg, {
+                            x: 0,
+                            y: 0,
+                            scale: 1.1, // Giữ scale nhẹ để không bị lộ mép ảnh
+                            duration: 1,
+                            ease: "power2.out"
+                        });
+
+                        if (document.getElementById('intelligence-hub')) {
+                            document.getElementById('intelligence-hub').classList.remove('reading-mode');
+                        }
                     });
-                });
 
-                featuredPost.addEventListener('mouseenter', () =>
-                    document.getElementById('intelligence-hub').classList.add('reading-mode'));
-                featuredPost.addEventListener('mouseleave', () =>
-                    document.getElementById('intelligence-hub').classList.remove('reading-mode'));
+                    featuredPost.addEventListener('mouseenter', () => {
+                        if (document.getElementById('intelligence-hub')) {
+                            document.getElementById('intelligence-hub').classList.add('reading-mode');
+                        }
+                    });
+                } else {
+                    // ĐỐI VỚI MOBILE: Thay mousemove bằng hiệu ứng Scroll Parallax đơn giản
+                    gsap.to(parallaxImg, {
+                        scrollTrigger: {
+                            trigger: featuredPost,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        },
+                        y: -20, // Chỉ trượt dọc nhẹ khi cuộn trang
+                        ease: "none"
+                    });
+                }
             }
-
             // 4. Custom Cursor (Tách biệt khỏi load để chạy mượt)
             const readCursor = document.getElementById('custom-read-cursor');
             if (readCursor) {
