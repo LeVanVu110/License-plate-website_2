@@ -829,7 +829,8 @@
                 color: rgba(255, 255, 255, 0.9) !important;
                 margin-top: 0.5rem;
             }
-            .absolute.inset-x-4{
+
+            .absolute.inset-x-4 {
                 width: 60%;
             }
         }
@@ -915,136 +916,147 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-
     <section id="infinite-vault" class="relative py-16 md:py-24 bg-[#000D1A] overflow-hidden">
         <div class="container mx-auto px-4 md:px-6 relative z-10">
 
             <div class="flex justify-center mb-12 md:mb-16">
-                <div class="glass-tab-container relative p-1 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center scale-90 md:scale-100">
-                    <div id="tab-slider" class="absolute h-[calc(100%-8px)] w-[120px] md:w-[140px] bg-blue-600 rounded-full transition-all duration-500 ease-out"></div>
-                    <button onclick="switchGallery('auto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white uppercase">Ô TÔ</button>
-                    <button onclick="switchGallery('moto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">XE MÁY</button>
+                <div class="glass-tab-container relative p-1 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center scale-90 md:scale-100 w-fit">
+
+                    <div id="tab-slider" class="absolute h-[calc(100%-8px)] w-[100px] md:w-[120px] bg-blue-600 rounded-full transition-all duration-500 ease-out left-1"></div>
+
+                    <button onclick="switchGallery('all')" id="btn-all" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white uppercase">TẤT CẢ</button>
+                    <button onclick="switchGallery('auto')" id="btn-auto" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">Ô TÔ</button>
+                    <button onclick="switchGallery('moto')" id="btn-moto" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">XE MÁY</button>
                 </div>
             </div>
-            <div class=" grid grid-cols-1 relative min-h-[600px] md:min-h-[500px]">
-                <div id="gallery-auto" class="gallery-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
+
+            <div id="master-gallery" class="flex flex-col gap-12">
+                <div id="group-auto" class="gallery-group">
+                    <h4 class="text-blue-400 text-[10px] tracking-[0.3em] uppercase font-bold mb-6 flex items-center gap-4">
+                        <span>Hệ thống Ô tô</span>
+                        <div class="h-[1px] flex-1 bg-blue-500/20"></div>
+                    </h4>
+                    <div id="gallery-auto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
+                        <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
                             </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                            <div class="relative z-10 h-full flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                    <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
                                 </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
-                            </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                <div class="plate-number text-center">
+                                    <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
                                 </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
-                            </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                <div class="flex justify-between items-end">
+                                    <div class="price">
+                                        <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                    </div>
+                                    <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
                                 </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
                             </div>
                         </div>
-
+                        <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                            </div>
+                            <div class="relative z-10 h-full flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                    <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                </div>
+                                <div class="plate-number text-center">
+                                    <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <div class="price">
+                                        <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                    </div>
+                                    <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                            </div>
+                            <div class="relative z-10 h-full flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                    <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                </div>
+                                <div class="plate-number text-center">
+                                    <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <div class="price">
+                                        <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                    </div>
+                                    <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
 
-                <div id="gallery-moto" class="gallery-wrapper hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                <div id="group-moto" class="gallery-group mt-8">
+                    <h4 class="text-blue-400 text-[10px] tracking-[0.3em] uppercase font-bold mb-6 flex items-center gap-4">
+                        <span>Hệ thống Xe máy</span>
+                        <div class="h-[1px] flex-1 bg-blue-500/20"></div>
+                    </h4>
+                    <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
+                        <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                <div class="plate-number-moto leading-tight py-2">
+                                    <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                    <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                </div>
+                                <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
                         </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                        <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                            <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                <div class="plate-number-moto leading-tight py-2">
+                                    <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                    <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                </div>
+                                <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                        </div>
+                        <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                            </div>
+                            <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                <div class="plate-number-moto leading-tight py-2">
+                                    <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                    <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                </div>
+                                <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                            </div>
+                        </div>
+                        <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
+                            <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
+                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                            </div>
+                            <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                <div class="plate-number-moto leading-tight py-2">
+                                    <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                    <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                </div>
+                                <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1454,29 +1466,52 @@
 
             // Xử lý chuyển đổi Tab
             window.switchGallery = (type) => {
+                const groupAuto = document.getElementById('group-auto');
+                const groupMoto = document.getElementById('group-moto');
                 const slider = document.getElementById('tab-slider');
-                const autoG = document.getElementById('gallery-auto');
-                const motoG = document.getElementById('gallery-moto');
-                const isDesktop = window.innerWidth > 1024;
 
-                // 1. Di chuyển thanh slider
-                if (type === 'auto') {
-                    gsap.to(slider, {
-                        x: 0,
-                        duration: 0.4,
-                        ease: "back.out"
-                    });
-                    animateTransition(motoG, autoG);
-                } else {
-                    const moveVal = isDesktop ? 144 : 124;
-                    gsap.to(slider, {
-                        x: moveVal,
-                        duration: 0.4,
-                        ease: "back.out"
-                    });
-                    animateTransition(autoG, motoG);
+                // Lấy tất cả nút để đổi màu chữ
+                const btnAll = document.getElementById('btn-all');
+                const btnAuto = document.getElementById('btn-auto');
+                const btnMoto = document.getElementById('btn-moto');
+
+                // Reset trạng thái chữ mờ
+                [btnAll, btnAuto, btnMoto].forEach(btn => {
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-white/50');
+                });
+
+                if (type === 'all') {
+                    groupAuto.style.display = 'block';
+                    groupMoto.style.display = 'block';
+                    slider.style.left = '4px'; // Vị trí nút 1
+                    btnAll.classList.replace('text-white/50', 'text-white');
+                } else if (type === 'auto') {
+                    groupAuto.style.display = 'block';
+                    groupMoto.style.display = 'none';
+                    // Di chuyển slider sang nút 2 (Width nút là 100px hoặc 120px tùy màn hình)
+                    const offset = window.innerWidth < 768 ? 104 : 124;
+                    slider.style.left = offset + 'px';
+                    btnAuto.classList.replace('text-white/50', 'text-white');
+                } else if (type === 'moto') {
+                    groupAuto.style.display = 'none';
+                    groupMoto.style.display = 'block';
+                    // Di chuyển slider sang nút 3
+                    const offset = window.innerWidth < 768 ? 204 : 244;
+                    slider.style.left = offset + 'px';
+                    btnMoto.classList.replace('text-white/50', 'text-white');
                 }
-            };
+
+                // Hiệu ứng mượt mà khi hiện card
+                gsap.from(".gallery-group[style*='display: block'] .plate-card", {
+                    y: 30,
+                    opacity: 0,
+                    stagger: 0.05,
+                    duration: 0.4,
+                    ease: "power2.out",
+                    overwrite: true
+                });
+            }
 
             function hideGallery(el, callback) {
                 gsap.to(el.querySelectorAll('.plate-card'), {
