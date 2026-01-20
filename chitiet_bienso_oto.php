@@ -19,7 +19,7 @@ $plate_price = isset($_GET['price']) ? $_GET['price'] : "0";
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
+    <style> 
         :root {
             --midnight-abyss: #00040A;
             --sapphire-blue: #0066FF;

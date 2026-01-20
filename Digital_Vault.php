@@ -682,7 +682,8 @@ include "header.php";
             </div>
 
             <div class="flex flex-col lg:flex-row gap-12">
-                <div class="lg:w-3/5 focus-news-card group relative rounded-[32px] overflow-hidden border border-white/5 bg-white/5">
+                <a href="chitiet_tintuc.php?name=Quy trình định danh biển số 2026: Những điều chủ nhân cần biết&image=https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80"
+                    class="lg:w-3/5 focus-news-card group relative rounded-[32px] overflow-hidden border border-white/5 bg-white/5">
                     <div class="parallax-wrap h-[400px] md:h-[600px] overflow-hidden relative">
                         <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80"
                             class="parallax-img w-full h-[120%] object-cover transition-transform duration-700">
@@ -699,22 +700,37 @@ include "header.php";
                             <span class="text-white/40 text-[10px] uppercase tracking-widest">Đọc câu chuyện</span>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <div class="lg:w-2/5 flex flex-col gap-6 scroll-feed-container">
-                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
-                        <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Thị trường</span>
-                        <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Giá trị biển số sảnh tiến tăng 15% trong tháng qua</h4>
-                        <span class="text-white/30 text-[10px]">14.02.2026</span>
-                    </div>
+                    <a href="chitiet_tintuc.php?name=Giá trị biển số sảnh tiến tăng 15% trong tháng qua&image=https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1000&date=14.02.2026"
+                        class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <div class="flex gap-4 items-center">
+                            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1000" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Thị trường</span>
+                            <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Giá trị biển số sảnh tiến tăng 15% trong tháng qua</h4>
+                            <span class="text-white/30 text-[10px]">14.02.2026</span>
+                        </div>
+                    </a>
 
-                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
-                        <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Ý nghĩa con số</span>
-                        <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Sự giao thoa giữa phong thủy và số học hiện đại</h4>
-                        <span class="text-white/30 text-[10px]">12.02.2026</span>
-                    </div>
 
-                    <div class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                    <a href="chitiet_tintuc.php?name=Sự giao thoa giữa phong thủy và số học hiện đại&image=https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2000&auto=format&fit=crop"
+                        class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <div class="flex gap-4 items-center">
+                            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-cyan-600 text-[10px] font-bold uppercase tracking-widest block mb-2">Ý nghĩa con số</span>
+                            <h4 class="text-white text-lg font-medium leading-snug mb-4 highlight-text">Sự giao thoa giữa phong thủy và số học hiện đại</h4>
+                            <span class="text-white/30 text-[10px]">12.02.2026</span>
+                        </div>
+                    </a>
+
+
+                    <a href="chitiet_tintuc.php?name=Bàn giao biển Ngũ Quý 9 tại tư gia khách hàng TP.HCM&image=https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80"
+                        class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
                         <div class="flex gap-4 items-center">
                             <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                                 <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
@@ -724,7 +740,23 @@ include "header.php";
                                 <h4 class="text-white text-sm font-medium highlight-text">Bàn giao biển "Ngũ Quý 9" tại tư gia khách hàng TP.HCM</h4>
                             </div>
                         </div>
-                    </div>
+                    </a>
+                    <a href="chitiet_tintuc.php?name=Quy trình định danh biển số xe trên ứng dụng VNeID mới nhất năm 2026&image=https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=200"
+                    class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        <div class="flex gap-4 items-center">
+                            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=200"
+                                    class="w-full h-full object-cover"
+                                    alt="Legal Identity">
+                            </div>
+                            <div>
+                                <span class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest block mb-1">Hướng dẫn</span>
+                                <h4 class="text-white text-sm font-medium highlight-text line-clamp-2">
+                                    Quy trình định danh biển số xe trên ứng dụng VNeID mới nhất năm 2026
+                                </h4>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>

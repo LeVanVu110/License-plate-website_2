@@ -403,7 +403,8 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24" id="related-grid">
-                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                <a href="chitiet_tintuc.php?name=Nghệ thuật chọn biển số theo bản mệnh&image=https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?auto=format&fit=crop&q=80&w=800"
+                    class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
                     <div class="aspect-[4/5] overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="News">
                         <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
@@ -413,8 +414,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         <h4 class="text-lg font-serif text-white mt-2 leading-tight">Nghệ thuật chọn biển số theo bản mệnh</h4>
                         <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
                     </div>
-                </div>
-                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                </a>
+                <a href="chitiet_tintuc.php?name=Biến động giá trị biển số Ngũ Quý 2026&image=https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
+                    class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
                     <div class="aspect-[4/5] overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="Market News">
                         <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
@@ -424,9 +426,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         <h4 class="text-lg font-serif text-white mt-2 leading-tight">Biến động giá trị biển số Ngũ Quý 2026</h4>
                         <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
                     </div>
-                </div>
-
-                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                </a>
+                <a href="chitiet_tintuc.php?name=Quy trình định danh biển số di sản số&image=https://images.unsplash.com/photo-1512446816042-444d641267d4?auto=format&fit=crop&q=80&w=800"
+                    class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
                     <div class="aspect-[4/5] overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1512446816042-444d641267d4?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="Legal Guide">
                         <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
@@ -436,7 +438,7 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         <h4 class="text-lg font-serif text-white mt-2 leading-tight">Quy trình định danh biển số di sản số</h4>
                         <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="mb-20">
