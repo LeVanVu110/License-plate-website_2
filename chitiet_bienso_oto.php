@@ -197,6 +197,129 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        #prestige-fitting {
+            perspective: 1000px;
+        }
+
+        .car-btn.active {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: #00f2ff;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        .pulse-wave {
+            position: absolute;
+            inset: -10px;
+            /* Tỏa ra ngoài biển số */
+            border: 2px solid #00f2ff;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            animation: wavePulse 2s infinite;
+        }
+
+        /* Ghi đè lại class car-plate-3d khi nằm trong Section 3 */
+        #plate-snap .car-plate-3d {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes wavePulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        #car-container {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Kiểu chữ tiêu đề mẫu xe */
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.2em;
+        }
+
+        /* Vị trí biển số trên xe (Tùy chỉnh cho từng ảnh xe) */
+        #plate-snap {
+            top: 50%;
+            left: 0%;
+            width: 1300px;
+            /* Độ rộng ước tính của biển số khi gắn lên xe */
+            height: 85%;
+            transform-origin: center center;
+        }
+
+        /* Wrapper để quản lý tỷ lệ scale */
+        .plate-mini-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plate-number-mini {
+            font-family: 'Space Mono', monospace;
+            font-weight: 900;
+            font-size: 5rem;
+            /* Tăng size chữ lên để nhìn rõ */
+            background: linear-gradient(to bottom, #111 0%, #0066FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1024px) {
+            #prestige-fitting {
+                padding-top: 40px;
+                padding-bottom: 40px;
+            }
+
+            /* Biển số nhỏ lại một chút trên Mobile để cân đối với xe */
+            #plate-snap {
+                top: 100%;
+                left: -145%;
+            }
+
+            .plate-number-prestige {
+                font-size: 15px;
+                /* Giảm size chữ để không bị vỡ khung */
+            }
+
+
+
+            /* Console điều khiển dạng danh sách gọn hơn */
+            .car-btn {
+                padding: 0.5rem !important;
+            }
+        }
+
+        /* Hiệu ứng Zoom khi Double Tap (cho Mobile) */
+        .zoomed-in {
+            transform: scale(1.5) translateY(-20px);
+            transition: transform 0.5s ease;
+
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -366,6 +489,86 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="prestige-fitting" class="relative min-h-screen bg-[#000810] overflow-hidden border-t border-white/5">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
+            <div class="absolute right-0 top-0 w-1/3 h-full bg-cyan-950/10 blur-[120px]"></div>
+        </div>
+
+        <div class="container mx-auto px-6 py-20 relative z-10 h-full flex flex-col">
+            <div class="mb-10">
+                <h2 class="text-cyan-500 font-mono text-xs tracking-[0.5em] uppercase mb-2">The Prestige Fitting</h2>
+                <div class="text-3xl md:text-5xl font-serif tracking-widest text-blue-100 italic" id="car-name">MAYBACH S680</div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12 items-center flex-grow">
+                <div class="relative flex-[2] w-full flex items-center justify-center min-h-[400px]" id="studio-scene">
+                    <div class="absolute bottom-10 w-[120%] h-32 bg-gradient-to-t from-cyan-900/20 to-transparent rounded-[100%] blur-2xl transform -rotate-x-12"></div>
+
+                    <div id="car-container" class="relative transition-all duration-700">
+                        <canvas id="photon-canvas" class="absolute inset-0 pointer-events-none opacity-0"></canvas>
+
+                        <img id="current-car" src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png"
+                            class="w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]" alt="Luxury Car">
+
+                        <div id="plate-snap" class="absolute opacity-0 z-20 pointer-events-none flex items-center justify-center">
+                            <div class="plate-mini-wrapper">
+                                <div class="car-plate-3d shadow-none border-[1px]">
+                                    <div class="plate-content">
+                                        <span class="plate-number-mini">30K - 888.88</span>
+                                    </div>
+                                </div>
+                                <div class="pulse-wave"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="absolute bottom-4 right-4 lg:hidden bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full">
+                        <i class="ri-anticlockwise-2-fill text-cyan-400 text-2xl"></i>
+                        <span class="text-[10px] block text-white uppercase mt-1">Xem AR</span>
+                    </button>
+                </div>
+
+                <div class="flex-1 w-full lg:max-w-md space-y-8">
+                    <div class="console-group">
+                        <label class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-4 block">Select Specimen</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="changeCar('sedan', 'MAYBACH S680')" class="car-btn active bg-white/5 border border-cyan-500/50 p-3 rounded-xl hover:bg-white/10 transition-all text-center">
+                                <i class="ri-car-fill text-xl block mb-1"></i>
+                                <span class="text-[9px] uppercase tracking-tighter">Sedan</span>
+                            </button>
+                            <button onclick="changeCar('suv', 'CULLINAN')" class="car-btn bg-white/5 border border-white/10 p-3 rounded-xl hover:bg-white/10 transition-all text-center">
+                                <i class="ri-truck-fill text-xl block mb-1"></i>
+                                <span class="text-[9px] uppercase tracking-tighter">SUV</span>
+                            </button>
+                            <button onclick="changeCar('hyper', 'VENENO')" class="car-btn bg-white/5 border border-white/10 p-3 rounded-xl hover:bg-white/10 transition-all text-center">
+                                <i class="ri-flashlight-fill text-xl block mb-1"></i>
+                                <span class="text-[9px] uppercase tracking-tighter">Hypercar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="console-group">
+                        <label class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-4 block">Exterior Finish</label>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-black border-2 border-cyan-500 cursor-pointer shadow-[0_0_10px_rgba(0,242,255,0.3)]"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-400 border border-white/20 cursor-pointer"></div>
+                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-white/20 cursor-pointer"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex border-t border-white/5 pt-8 gap-4">
+                        <button class="flex-1 bg-white/5 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-cyan-600 transition-all">
+                            Front View
+                        </button>
+                        <button class="flex-1 border border-white/10 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:border-cyan-500">
+                            Rear View
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -643,6 +846,124 @@
         });
     });
     // ----------------------------- section 3 ----------------------------- //
+    // Cấu hình vị trí biển số cho từng loại xe
+    const carConfigs = {
+        'sedan': {
+            platePos: {
+                top: '100%',
+                left: '-145%'
+            },
+            name: 'MAYBACH S680',
+            img: 'mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png'
+        },
+        'suv': {
+            platePos: {
+                top: '100%',
+                left: '-145%'
+            },
+            name: 'RR CULLINAN',
+            img: 'Armored_Vehicle_Make_e3a8620860.png'
+        },
+        'hyper': {
+            platePos: {
+                top: '100%',
+                left: '-145%'
+            },
+            name: 'LAMBO VENENO',
+            img: '499540-removebg-preview.png'
+        }
+    };
+
+    function changeCar(type) {
+        const config = carConfigs[type];
+        const carImg = document.getElementById('current-car');
+        const carName = document.getElementById('car-name');
+        const plate = document.getElementById('plate-snap');
+
+        // 1. Hiệu ứng biến mất (mờ dần và lóe sáng)
+        gsap.to(carImg, {
+            filter: "brightness(3) blur(15px)",
+            opacity: 0,
+            scale: 1.05,
+            duration: 0.4,
+            onComplete: () => {
+                // 2. Thay đổi nguồn ảnh và tên xe sau khi ảnh cũ đã mờ hẳn
+                carImg.src = config.img;
+                carName.innerText = config.name;
+
+                // Cập nhật vị trí biển số cho khớp với xe mới
+                plate.style.top = config.platePos.top;
+                plate.style.left = config.platePos.left;
+
+                // 3. Hiệu ứng hiện hình xe mới
+                gsap.fromTo(carImg, {
+                    filter: "brightness(3) blur(15px)",
+                    opacity: 0,
+                    scale: 0.95
+                }, {
+                    filter: "brightness(1) blur(0px)",
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.6,
+                    ease: "power2.out"
+                });
+
+                // Gọi lại hiệu ứng lắp biển số
+                snapPlate();
+            }
+        });
+
+        // Cập nhật trạng thái Active của nút
+        document.querySelectorAll('.car-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    function snapPlate() {
+        const plate = document.getElementById('plate-snap');
+
+        // Reset biển
+        gsap.set(plate, {
+            opacity: 0,
+            scale: 3,
+            y: -100
+        });
+
+        // Hiệu ứng "Hít" biển vào xe
+        gsap.to(plate, {
+            opacity: 1,
+            scale: 0.15, // Scale về kích thước thực tế trên xe
+            y: 0,
+            duration: 1,
+            delay: 0.5,
+            ease: "power4.out",
+            onComplete: () => {
+                // Flash sáng khi chạm
+                gsap.to(".pulse-wave", {
+                    opacity: 1,
+                    scale: 2,
+                    duration: 0.5,
+                    repeat: 1,
+                    yoyo: true
+                });
+            }
+        });
+    }
+
+    // Khởi chạy lần đầu
+    window.addEventListener('load', () => {
+        setTimeout(snapPlate, 2500); // Đợi Section 1 hoàn tất
+
+        // 4. Studio Camera Path (Hover effect)
+        const studio = document.getElementById('studio-scene');
+        studio.addEventListener('mousemove', (e) => {
+            const xPos = (e.clientX / window.innerWidth) - 0.5;
+            gsap.to("#car-container", {
+                rotateY: xPos * 15,
+                duration: 1,
+                ease: "power2.out"
+            });
+        });
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
