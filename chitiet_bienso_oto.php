@@ -1,4 +1,9 @@
 <?php include "header.php"; ?>
+<?php
+// Lấy dữ liệu từ URL
+$plate_number = isset($_GET['plate']) ? $_GET['plate'] : "30K - 000.00";
+$plate_price = isset($_GET['price']) ? $_GET['price'] : "0";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -422,7 +427,7 @@
                     <div class="aurora-scan" id="auroraEffect"></div>
 
                     <div class="plate-content">
-                        <span class="plate-number">30K - 888.88</span>
+                        <span class="plate-number"><?php echo $plate_number; ?></span>
                     </div>
                 </div>
             </div>
@@ -666,7 +671,7 @@
                         <div class="relative bg-blue-600 h-full py-6 rounded-2xl flex flex-col items-center justify-center overflow-hidden">
                             <div class="liquid-metal absolute inset-0 opacity-30"></div>
                             <span class="relative z-10 text-white font-bold tracking-widest text-sm mb-1 uppercase">Tham gia đấu giá</span>
-                            <span class="relative z-10 text-blue-100 text-[10px] font-mono opacity-70">Price: 5.800.000.000₫</span>
+                            <span class="relative z-10 text-blue-100 text-[10px] font-mono opacity-70">Price: <?php echo $plate_price; ?>₫</span>
                             <div class="absolute inset-0 border-2 border-cyan-400 rounded-2xl opacity-0 group-hover:opacity-100 neon-border-pulse"></div>
                         </div>
                     </button>
