@@ -1095,7 +1095,7 @@
                 onEnter: () => {
                     // Visual Bass: Rung màn hình nhẹ
                     gsap.to("body", {
-                        x: 1,
+                        x: 0,
                         yoyo: true,
                         repeat: 5,
                         duration: 0.05
