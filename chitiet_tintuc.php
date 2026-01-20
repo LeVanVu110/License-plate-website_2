@@ -112,6 +112,75 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        #lab-console {
+            transition: transform 0.1s ease-out;
+            perspective: 1000px;
+        }
+
+        /* Hiệu ứng Power Up viền */
+        .console-active {
+            border-color: #00f2ff !important;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            animation: breathing 4s infinite ease-in-out;
+        }
+
+        @keyframes breathing {
+
+            0%,
+            100% {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            50% {
+                background: rgba(0, 102, 255, 0.08);
+            }
+        }
+
+        /* Floating Wisdom Tags */
+        .wisdom-tag {
+            position: absolute;
+            padding: 5px 15px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 20px;
+            color: #00f2ff;
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Custom Input Glitch Placeholder */
+        #plate-input::placeholder {
+            color: #00f2ff;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -233,6 +302,48 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="oracle-engine" class="relative py-24 bg-[#00040A] overflow-hidden">
+        <div id="wisdom-container" class="absolute inset-0 pointer-events-none z-0"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <div id="lab-console" class="relative bg-white/5 backdrop-blur-2xl border border-cyan-500/30 rounded-[40px] p-8 lg:p-16 overflow-hidden shadow-[0_0_50px_rgba(0,102,255,0.1)]">
+
+                    <div id="neural-scan" class="absolute left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#00f2ff] opacity-0 z-20"></div>
+
+                    <div class="text-center mb-12">
+                        <h2 class="text-cyan-500 font-mono text-[10px] tracking-[0.6em] uppercase mb-4">The Oracle Engine</h2>
+                        <h3 class="text-2xl lg:text-4xl font-serif text-white italic">Giải Mã Di Sản Số</h3>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row items-center gap-12">
+                        <div class="flex-1 text-center lg:text-left order-2 lg:order-1 w-full">
+                            <span class="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Chỉ số Ngũ Hành</span>
+                            <div class="text-4xl lg:text-6xl font-mono text-cyan-400 mt-2" id="score-fengshui">00</div>
+                            <p class="text-xs text-cyan-900 mt-2 font-bold uppercase tracking-tighter" id="status-text">Waiting Scan...</p>
+                        </div>
+
+                        <div class="relative flex-[1.5] order-1 lg:order-2 w-full">
+                            <div class="relative group">
+                                <input type="text" id="plate-input" maxlength="10" placeholder="NHẬP BIỂN SỐ..."
+                                    class="w-full bg-black/50 border-2 border-cyan-900/50 rounded-2xl py-6 px-4 text-center text-2xl lg:text-3xl font-mono text-white tracking-[0.3em] focus:border-cyan-400 outline-none transition-all placeholder:opacity-30">
+                            </div>
+                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-pulse"></div>
+                        </div>
+
+                        <div class="flex-1 text-center lg:text-right order-3 w-full">
+                            <span class="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Định Giá Ước Tính</span>
+                            <div class="text-3xl lg:text-4xl font-mono text-emerald-400 mt-2" id="estimated-value">0<span class="text-sm ml-1">TR</span></div>
+                            <p class="text-[9px] text-gray-600 mt-2 uppercase">Market Value Reference</p>
+                        </div>
+                    </div>
+
+                    <div id="custom-numpad" class="lg:hidden grid grid-cols-3 gap-2 mt-8 opacity-0 translate-y-10 transition-all duration-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -418,6 +529,118 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    window.addEventListener('load', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        const input = document.getElementById('plate-input');
+        const scanLine = document.getElementById('neural-scan');
+        const wisdomContainer = document.getElementById('wisdom-container');
+        const words = ["ĐẠI CÁT", "PHÚ QUÝ", "TRƯỜNG THỌ", "TIỀN TÀI", "VỮNG BỀN", "DI SẢN"];
+
+        // 1. Khởi tạo Floating Wisdom
+        words.forEach(text => {
+            const tag = document.createElement('div');
+            tag.className = 'wisdom-tag';
+            tag.innerText = text;
+            wisdomContainer.appendChild(tag);
+
+            // Random position
+            gsap.set(tag, {
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                opacity: 0
+            });
+
+            // Floating animation
+            gsap.to(tag, {
+                x: "+=50",
+                y: "+=50",
+                duration: 3 + Math.random() * 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        });
+
+        // 2. The System Activation (ScrollTrigger)
+        ScrollTrigger.create({
+            trigger: "#oracle-engine",
+            start: "top 60%",
+            onEnter: () => {
+                document.getElementById('lab-console').classList.add('console-active');
+                gsap.to(".wisdom-tag", {
+                    opacity: 0.4,
+                    stagger: 0.1
+                });
+            }
+        });
+
+        // 3. Logic Giải Mã khi nhập liệu
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length >= 4) {
+                triggerScan();
+            }
+        });
+
+        function triggerScan() {
+            // Neural Scan Animation
+            gsap.timeline()
+                .set(scanLine, {
+                    top: "0%",
+                    opacity: 1
+                })
+                .to(scanLine, {
+                    top: "100%",
+                    duration: 1.5,
+                    ease: "power2.inOut"
+                })
+                .to(scanLine, {
+                    opacity: 0,
+                    duration: 0.3
+                });
+
+            // CountUp Effects
+            const scoreObj = {
+                val: 0
+            };
+            gsap.to(scoreObj, {
+                val: Math.floor(Math.random() * 20) + 80, // Giả lập điểm cao
+                duration: 2,
+                onUpdate: () => {
+                    document.getElementById('score-fengshui').innerText = Math.floor(scoreObj.val);
+                }
+            });
+
+            const priceObj = {
+                val: 0
+            };
+            gsap.to(priceObj, {
+                val: Math.floor(Math.random() * 500) + 100,
+                duration: 2,
+                onUpdate: () => {
+                    document.getElementById('estimated-value').innerHTML = `${Math.floor(priceObj.val)}<span class="text-sm ml-1">TR</span>`;
+                },
+                onComplete: () => {
+                    document.getElementById('status-text').innerText = "PHONG THỦY: ĐẠI CÁT";
+                    document.getElementById('status-text').style.color = "#4ade80"; // Mint Green
+
+                    // Haptic feedback giả lập
+                    if (window.navigator.vibrate) window.navigator.vibrate(50);
+                }
+            });
+        }
+
+        // 4. Interactive Floating Wisdom (Mouse Follow)
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX - window.innerWidth / 2) * 0.05;
+            const y = (e.clientY - window.innerHeight / 2) * 0.05;
+            gsap.to(".wisdom-tag", {
+                x: `+=${x}`,
+                y: `+=${y}`,
+                duration: 1
+            });
+        });
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
