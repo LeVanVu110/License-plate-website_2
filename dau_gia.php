@@ -52,14 +52,14 @@
         .cube-face.top {
             height: 40px;
             transform: rotateX(90deg) translateZ(20px);
-            top: -20px;
+            top: 0px;
             background: rgba(0, 255, 255, 0.1);
         }
 
         .cube-face.bottom {
             height: 40px;
             transform: rotateX(-90deg) translateZ(160px);
-            top: -20px;
+            top: 0px;
             background: rgba(0, 255, 255, 0.3);
             box-shadow: 0 0 100px rgba(0, 255, 255, 0.5);
         }
@@ -67,14 +67,14 @@
         .cube-face.left {
             width: 40px;
             transform: rotateY(-90deg) translateZ(20px);
-            left: -20px;
+            left: 0px;
             background: rgba(0, 255, 255, 0.1);
         }
 
         .cube-face.right {
             width: 40px;
             transform: rotateY(90deg) translateZ(430px);
-            left: -20px;
+            left: 0px;
             background: rgba(0, 255, 255, 0.1);
         }
 
@@ -132,6 +132,10 @@
             .cube-face.top,
             .cube-face.bottom {
                 height: 40px;
+               
+            }
+            .cube-face.bottom{
+                 top: -60px !important;
             }
 
             .cube-face.left,
@@ -151,7 +155,7 @@
             }
 
             #plate-number {
-                font-size: 2.5rem !important;
+                font-size: 2.0rem !important;
                 /* Thu nhỏ số biển số */
             }
         }
@@ -567,7 +571,7 @@
                     <div class="my-6 h-[1px] bg-cyan-500/20 w-full"></div>
 
                     <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-1 font-bold">Giá hiện tại</p>
-                    <h3 id="current-price" class="text-[#99FFFF] text-4xl font-bold font-sans drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+                    <h3 id="current-price" class="text-[#99FFFF] text-4xl font-bold font-sans drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]" style="text-align: center;">
                         850.000.000
                     </h3>
                 </div>
