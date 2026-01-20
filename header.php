@@ -77,7 +77,7 @@
         <div class="container mx-auto px-4 md:px-6 flex items-center justify-between">
 
             <div class="logo flex items-center">
-                <span class="chrome-text text-xl md:text-2xl tracking-tighter uppercase">Biển Số Đẹp</span>
+                <a href="index.php"><span class="chrome-text text-xl md:text-2xl tracking-tighter uppercase">Biển Số Đẹp</span></a>
             </div>
 
             <nav class="hidden md:flex items-center space-x-8 text-[#001A33] font-medium">
