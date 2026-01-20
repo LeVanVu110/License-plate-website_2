@@ -485,6 +485,60 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Heartbeat for Icons */
+        @keyframes trust-heartbeat {
+            0% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 0px rgba(45, 212, 191, 0));
+            }
+
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 10px rgba(45, 212, 191, 0.5));
+            }
+
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 0px rgba(45, 212, 191, 0));
+            }
+        }
+
+        .trust-icon {
+            animation: trust-heartbeat 3s infinite ease-in-out;
+        }
+
+        /* Scanning Effect Line */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(45, 212, 191, 0.1),
+                    transparent);
+            pointer-events: none;
+            transition: left 0.8s ease;
+        }
+
+        .trust-card:hover .scan-line {
+            left: 100%;
+        }
+
+        /* Responsive Steps (Mobile) */
+        @media (max-width: 1024px) {
+            .trust-block {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Accordion Expand on Hover/Active */
+        .trust-block:hover .details {
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 1rem;
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -761,12 +815,105 @@
             </div>
         </div>
 
-        <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
+        <!-- <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
             Đăng ký phiên tới
-        </button>
+        </button> -->
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="protocol-trust" class="relative min-h-screen py-24 bg-[#000B14] overflow-hidden">
+
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-1/2 w-[1px] h-full bg-cyan-500/50"></div>
+            <div class="absolute top-1/4 left-0 w-full h-[1px] bg-cyan-500/50"></div>
+            <div class="absolute top-3/4 left-0 w-full h-[1px] bg-cyan-500/50"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-24">
+                <div id="security-shield-container" class="relative w-32 h-32 mx-auto mb-8 flex items-center justify-center">
+                    <svg id="security-shield" class="w-24 h-24 text-cyan-400 drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <div class="shield-lock-glow absolute inset-0 bg-cyan-500/20 blur-3xl rounded-full opacity-0"></div>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-serif text-[#E0F7FA] tracking-widest uppercase mb-4">Nghị Định & Niềm Tin</h2>
+                <div class="h-[2px] w-24 bg-teal-500 mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
+                <svg class="hidden lg:block absolute inset-0 w-full h-full pointer-events-none" style="z-index: -1;">
+                    <path d="M 33% 50% L 66% 50%" stroke="rgba(20, 184, 166, 0.2)" stroke-width="1" fill="none" />
+                </svg>
+
+                <div class="trust-block group" data-step="1">
+                    <div class="trust-card relative bg-[#001F3F]/30 backdrop-blur-xl border border-teal-500/20 p-8 rounded-3xl h-full transition-all duration-500 hover:border-teal-500/60">
+                        <div class="scan-line"></div>
+                        <div class="trust-icon text-teal-400 mb-6">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4">Quy trình đặt cọc</h3>
+                        <p class="text-white/70 leading-relaxed text-sm mb-6">Tiền cọc được ký quỹ an toàn tại ngân hàng đối tác liên kết, bảo mật tuyệt đối 100% đến khi kết thúc phiên.</p>
+                        <div class="details opacity-0 max-h-0 overflow-hidden transition-all duration-500">
+                            <ul class="text-xs text-teal-400/80 space-y-2 border-t border-white/10 pt-4">
+                                <li>• Xác thực OTP đa tầng</li>
+                                <li>• Hoàn tiền trong 24h làm việc</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trust-block group" data-step="2">
+                    <div class="trust-card relative bg-[#001F3F]/30 backdrop-blur-xl border border-teal-500/20 p-8 rounded-3xl h-full transition-all duration-500 hover:border-teal-500/60">
+                        <div class="scan-line"></div>
+                        <div class="trust-icon text-teal-400 mb-6">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4">Thủ tục định danh</h3>
+                        <p class="text-white/70 leading-relaxed text-sm mb-6">Tuân thủ nghiêm ngặt Luật đấu giá biển số 2026. Hỗ trợ thu hồi và lắp biển mới trực tiếp tại cư trú.</p>
+                        <div class="details opacity-0 max-h-0 overflow-hidden transition-all duration-500">
+                            <ul class="text-xs text-teal-400/80 space-y-2 border-t border-white/10 pt-4">
+                                <li>• Liên kết dữ liệu VNeID</li>
+                                <li>• Bàn giao hồ sơ gốc tận tay</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trust-block group" data-step="3">
+                    <div class="trust-card relative bg-[#001F3F]/30 backdrop-blur-xl border border-teal-500/20 p-8 rounded-3xl h-full transition-all duration-500 hover:border-teal-500/60">
+                        <div class="scan-line"></div>
+                        <div class="trust-icon text-teal-400 mb-6">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4">Cam kết hoàn tiền</h3>
+                        <p class="text-white/70 leading-relaxed text-sm mb-6">Sự minh bạch là tôn chỉ. Hoàn trả phí đăng ký nếu có bất kỳ sai lệch nào từ phía hệ thống đấu giá.</p>
+                        <div class="details opacity-0 max-h-0 overflow-hidden transition-all duration-500">
+                            <ul class="text-xs text-teal-400/80 space-y-2 border-t border-white/10 pt-4">
+                                <li>• Bảo hiểm giao dịch 100%</li>
+                                <li>• Pháp lý được luật sư phê duyệt</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="lg:hidden fixed bottom-6 right-6 z-50">
+            <button class="bg-teal-600/90 backdrop-blur-md text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 border border-teal-400/30">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z"></path>
+                </svg>
+                <span class="text-xs font-bold uppercase tracking-widest">Luật sư tư vấn</span>
+            </button>
+        </div> -->
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -1113,6 +1260,71 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. SHIELD REVEAL & LOCK
+        const shieldTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#security-shield-container",
+                start: "top 70%",
+            }
+        });
+
+        shieldTl.from("#security-shield", {
+                rotationY: 360,
+                scale: 0,
+                opacity: 0,
+                duration: 1.5,
+                ease: "back.out(1.7)"
+            })
+            .to(".shield-lock-glow", {
+                opacity: 1,
+                duration: 0.5,
+                onStart: () => {
+                    // Hiệu ứng "Khóa" bằng một tia sáng mạnh
+                    gsap.fromTo("#security-shield", {
+                        filter: "brightness(1)"
+                    }, {
+                        filter: "brightness(3)",
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1
+                    });
+                }
+            });
+
+        // 2. BLOCKS UNFOLDING (Theo thứ tự)
+        gsap.utils.toArray(".trust-block").forEach((block, i) => {
+            gsap.from(block, {
+                scrollTrigger: {
+                    trigger: block,
+                    start: "top 85%",
+                },
+                rotationX: -90, // Hiệu ứng lật trang (Unfolding)
+                opacity: 0,
+                y: 50,
+                duration: 1.2,
+                delay: i * 0.3,
+                ease: "expo.out"
+            });
+        });
+
+        // 3. SCANNING EFFECT ON HOVER
+        document.querySelectorAll('.trust-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Có thể thêm âm thanh "beep" nhẹ ở đây nếu muốn
+                gsap.fromTo(card.querySelector('.trust-icon'), {
+                    scale: 1
+                }, {
+                    scale: 1.2,
+                    duration: 0.2,
+                    yoyo: true,
+                    repeat: 1
+                });
+            });
+        });
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
