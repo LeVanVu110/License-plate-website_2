@@ -131,6 +131,68 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Waterfall background with Canvas or CSS */
+        #data-waterfall {
+            background: linear-gradient(to bottom, rgba(0, 150, 255, 0.1) 0%, transparent 100%);
+            position: relative;
+        }
+
+        /* Mercury Liquid Effect */
+        .action-card:hover .liquid-bg {
+            background: radial-gradient(circle at center, rgba(34, 211, 238, 0.4) 0%, transparent 70%);
+            opacity: 1;
+        }
+
+        .btn-mercury {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+
+        .btn-mercury:hover {
+            background: #22d3ee;
+            color: #000;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+        }
+
+        /* Heartbeat Pulsing */
+        @keyframes master-pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 60px rgba(34, 211, 238, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+            }
+        }
+
+        #master-cta {
+            animation: master-pulse 2s infinite ease-in-out;
+        }
+
+        /* Mobile Swiper Layout */
+        @media (max-width: 768px) {
+            #power-cards-container {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 2rem;
+                gap: 20px;
+            }
+
+            .action-card {
+                min-width: 85%;
+                scroll-snap-align: center;
+            }
+
+            #power-cards-container::-webkit-scrollbar {
+                display: none;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -285,6 +347,80 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="action-hub" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden flex items-center justify-center">
+
+        <div class="absolute inset-0 z-0 opacity-30 pointer-events-none">
+            <div id="data-waterfall" class="w-full h-full"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <h2 class="text-3xl md:text-5xl font-bold text-[#E0F7FA] tracking-[0.5rem] uppercase mb-4">Trung Tâm Chuyển Hóa</h2>
+                <p class="text-cyan-400/60 text-xs tracking-widest uppercase">Biến dữ liệu thành giá trị di sản</p>
+            </div>
+
+            <div id="power-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+
+                <div class="action-card group relative bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] overflow-hidden transition-all duration-500 cursor-pointer">
+                    <div class="liquid-bg absolute inset-0 bg-cyan-500/0 transition-all duration-700"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                        <div class="icon-3d mb-6 w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Thanh Khoản</h3>
+                        <p class="text-sm text-white/60 mb-8">Ký gửi biển số ngay với mức giá AI định danh tối ưu nhất.</p>
+                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Ký gửi ngay</button>
+                    </div>
+                </div>
+
+                <div id="cert-card" class="action-card group relative bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] overflow-hidden transition-all duration-500 cursor-pointer">
+                    <div class="liquid-bg absolute inset-0 bg-cyan-500/0 transition-all duration-700"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                        <div class="icon-3d mb-6 w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Xác Thực</h3>
+                        <p class="text-sm text-white/60 mb-8">Tải bản báo cáo định giá (PDF) có dấu mộc bảo chứng AI.</p>
+                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Tải báo cáo</button>
+                    </div>
+                    <div id="virtual-pdf" class="absolute inset-0 bg-white opacity-0 scale-0 pointer-events-none rounded-lg flex items-center justify-center">
+                        <span class="text-black font-bold">PDF REPORT</span>
+                    </div>
+                </div>
+
+                <div class="action-card group relative bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] overflow-hidden transition-all duration-500 cursor-pointer">
+                    <div class="liquid-bg absolute inset-0 bg-cyan-500/0 transition-all duration-700"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                        <div class="icon-3d mb-6 w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Săn Tìm</h3>
+                        <p class="text-sm text-white/60 mb-8">Tìm kiếm những biển số có giá trị tương đương trong kho báu.</p>
+                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Khám phá kho</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center relative">
+                <div class="convergence-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 blur-[100px] rounded-full animate-pulse"></div>
+                <button id="master-cta" class="relative z-10 px-16 py-6 bg-cyan-500 text-[#000814] font-black text-lg tracking-[0.4rem] uppercase rounded-full shadow-[0_0_50px_rgba(34,211,238,0.5)] hover:scale-105 transition-transform duration-300">
+                    Thực thi chuyển đổi
+                </button>
+            </div>
+        </div>
+
+        <div id="sticky-contact" class="fixed bottom-0 left-0 w-full p-4 z-[100] translate-y-full transition-transform duration-500 lg:hidden">
+            <button class="w-full bg-teal-500/80 backdrop-blur-lg py-4 rounded-2xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">
+                Liên hệ chuyên gia tư vấn
+            </button>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -543,6 +679,93 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. PERSPECTIVE SHIFT (Desktop)
+        if (window.innerWidth > 1024) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 10;
+                const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+                gsap.to("#action-hub .container", {
+                    rotationY: x,
+                    rotationX: -y,
+                    transformPerspective: 1500,
+                    duration: 1,
+                    ease: "power2.out"
+                });
+            });
+        }
+
+        // 2. THE CERTIFICATE SPROUT (FLY TO POCKET)
+        const certCard = document.getElementById('cert-card');
+        const virtualPdf = document.getElementById('virtual-pdf');
+
+        certCard.addEventListener('click', () => {
+            const tl = gsap.timeline();
+
+            tl.to(virtualPdf, {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.4,
+                    ease: "back.out(1.7)"
+                })
+                .to(virtualPdf, {
+                    x: 500,
+                    y: 800,
+                    rotation: 360,
+                    scale: 0.1,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power2.in"
+                });
+
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(50);
+        });
+
+        // 3. THE CONVERGENCE (Particle rotation)
+        // Giả lập các hạt hội tụ từ Section 2
+        gsap.from(".convergence-glow", {
+            scale: 0.5,
+            opacity: 0,
+            duration: 2,
+            scrollTrigger: {
+                trigger: "#action-hub",
+                start: "top center"
+            }
+        });
+
+        // 4. STICKY FOOTER LOGIC
+        ScrollTrigger.create({
+            trigger: "#action-hub",
+            start: "top 20%",
+            onEnter: () => gsap.to("#sticky-contact", {
+                y: 0,
+                duration: 0.5
+            }),
+            onLeaveBack: () => gsap.to("#sticky-contact", {
+                y: "100%",
+                duration: 0.5
+            })
+        });
+
+        // 5. MOBILE SWIPE HAPTIC
+        const container = document.getElementById('power-cards-container');
+        if (window.innerWidth < 768) {
+            let lastScrollLeft = 0;
+            container.addEventListener('scroll', () => {
+                const currentScroll = container.scrollLeft;
+                const cardWidth = container.offsetWidth * 0.85;
+
+                if (Math.abs(currentScroll - lastScrollLeft) > cardWidth) {
+                    if (navigator.vibrate) navigator.vibrate(20);
+                    lastScrollLeft = currentScroll;
+                }
+            });
+        }
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
