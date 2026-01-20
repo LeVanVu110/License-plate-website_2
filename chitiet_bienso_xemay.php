@@ -17,6 +17,8 @@
             --midnight: #000F1A;
             --electric-blue: #007FFF;
             --cyan-neon: #00f2ff;
+            --ice-blue: #E0F7FA;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -24,6 +26,7 @@
             margin: 0;
             overflow-x: hidden;
             font-family: 'Inter', sans-serif;
+            color: white;
         }
 
         /* ----------------------------- section 1 -----------------------------  */
@@ -140,6 +143,148 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        #virtual-fitting {
+            --s-cyan: #00f2ff;
+            --s-navy: #00050A;
+            background-color: var(--s-navy);
+            perspective: 2000px;
+            overflow: hidden;
+        }
+
+        /* Khung chứa xe máy */
+        #bike-display {
+            position: relative;
+            z-index: 10;
+            transform-style: preserve-3d;
+            will-change: transform;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ảnh xe máy - Chống kéo nhầm ảnh khi xoay */
+        #current-bike-img {
+            max-height: 500px;
+            width: auto;
+            user-select: none;
+            -webkit-user-drag: none;
+            filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.6));
+            z-index: 5;
+        }
+
+        /* Container biển số gắn trên xe */
+        #attached-plate {
+            position: absolute;
+            pointer-events: none;
+            z-index: 999999999;
+            /* Phải cao hơn ảnh xe */
+            transform-origin: center;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Thiết kế thẻ biển số mini - Fix lỗi font và border */
+        .mini-plate-skin {
+            width: 75px;
+            height: 55px;
+            background: #fdfdfd;
+            border: 1.5px solid #222;
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(0, 0, 0, 0.1);
+            padding: 2px;
+            background-image: linear-gradient(135deg, #fff 0%, #ebebeb 100%);
+        }
+
+        /* Font số trên biển gắn xe */
+        .mini-plate-skin span {
+            font-family: 'Space Mono', monospace !important;
+            color: #000 !important;
+            line-height: 1.1 !important;
+            text-align: center;
+        }
+
+        .mini-plate-skin .plate-top {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 0.5px solid #ccc;
+            width: 90%;
+            margin-bottom: 1px;
+        }
+
+        .mini-plate-skin .plate-bottom {
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        /* Hiệu ứng sàn phản chiếu */
+        .reflective-floor {
+            position: absolute;
+            bottom: 15%;
+            width: 100%;
+            height: 150px;
+            background: radial-gradient(ellipse at center, rgba(0, 127, 255, 0.2) 0%, transparent 75%);
+            filter: blur(50px);
+            transform: rotateX(80deg);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Selector chọn xe mượt mà hơn */
+        .bike-icon {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .bike-icon:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 255, 0.3);
+        }
+
+        .bike-icon.active {
+            border-color: var(--s-cyan);
+            background: rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        /* Nút Snap-On lơ lửng */
+        #snap-trigger {
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+
+        #snap-trigger.hidden-plate {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+
+        /* Tablet & Mobile responsive */
+        @media (max-width: 1024px) {
+            #current-bike-img {
+                max-height: 350px;
+            }
+
+            .mini-plate-skin {
+                width: 55px;
+                height: 40px;
+            }
+
+            .mini-plate-skin .plate-top {
+                font-size: 7px;
+            }
+
+            .mini-plate-skin .plate-bottom {
+                font-size: 10px;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -281,6 +426,65 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="virtual-fitting" class="relative min-h-screen bg-[#00050A] overflow-hidden py-20">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#001525] z-0"></div>
+        <div class="absolute bottom-0 w-full h-1/2 bg-[radial-gradient(ellipse_at_center,_rgba(0,127,255,0.1)_0%,_transparent_70%)] opacity-50"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-10">
+                <h3 class="text-cyan-500 font-mono text-xs tracking-[0.5em] uppercase mb-2">The Virtual Fitting</h3>
+                <h2 id="bike-name" class="text-3xl md:text-5xl font-extralight text-ice-blue tracking-tighter italic">Vespa 946 Christian Dior</h2>
+            </div>
+
+            <div class="relative w-full h-[400px] md:h-[600px] flex items-center justify-center">
+                <div class="absolute bottom-10 w-full h-40 bg-white/5 blur-3xl rounded-[100%] scale-y-50 opacity-20"></div>
+
+                <div id="bike-display" class="relative z-10 transition-transform duration-700 ease-out cursor-grab active:cursor-grabbing">
+                    <img id="current-bike-img" src="vespa946christiandior155zing1-09213937-removebg-preview.png"
+                        class="max-h-[350px] md:max-h-[500px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]" alt="Bike">
+
+                    <div id="attached-plate" class="absolute opacity-0 scale-50 z-[100] pointer-events-none">
+                        <div class="mini-plate-skin flex flex-col items-center justify-center bg-white border border-gray-400 shadow-2xl">
+                            <span class="plate-text-top text-black font-bold uppercase">29-G1</span>
+                            <span class="plate-text-bottom text-black font-black">888.88</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="snap-trigger" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-20 h-20 rounded-full border border-cyan-500/30 flex items-center justify-center group">
+                    <div class="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center group-hover:bg-cyan-500 transition-all">
+                        <i class="ri-attachment-line text-white text-xl"></i>
+                    </div>
+                    <span class="absolute -bottom-8 w-32 text-center text-[10px] text-cyan-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Gắn biển ngay</span>
+                </button>
+            </div>
+
+            <div class="mt-12 flex flex-col items-center gap-8">
+                <div class="flex gap-4 md:gap-8 overflow-x-auto pb-4 max-w-full no-scrollbar" id="bike-selector">
+                    <button onclick="changeBike('vespa', 'Vespa 946 Christian Dior', 'vespa946christiandior155zing1-09213937-removebg-preview.png', {top: '72%', left: '33%'})"
+                        class="bike-icon active shrink-0 w-20 h-20 rounded-full border-2 border-cyan-500 p-2 bg-white/5">
+                        <img src="vespa946christiandior155zing1-09213937-removebg-preview.png" class="w-full h-full object-contain" alt="Vespa">
+                    </button>
+
+                    <button onclick="changeBike('sh', 'Honda SH350i Heritage', '350-xanh-tt.webp', {top: '68%', left: '38%'})"
+                        class="bike-icon shrink-0 w-20 h-20 rounded-full border-2 border-white/10 p-2 bg-white/5">
+                        <img src="350-xanh-tt.webp" class="w-full h-full object-contain" alt="Honda SH">
+                    </button>
+                </div>
+
+                <div class="flex gap-4">
+                    <div onclick="changeColor('#0a0a0a')" class="w-8 h-8 rounded-full bg-[#0a0a0a] border border-white/20 cursor-pointer hover:scale-125 transition-all shadow-lg"></div>
+                    <div onclick="changeColor('#f0f0f0')" class="w-8 h-8 rounded-full bg-[#f0f0f0] border border-white/20 cursor-pointer hover:scale-125 transition-all shadow-lg"></div>
+                    <div onclick="changeColor('#007FFF')" class="w-8 h-8 rounded-full bg-[#007FFF] border border-white/20 cursor-pointer hover:scale-125 transition-all shadow-lg"></div>
+                    <div onclick="changeColor('#C41E3A')" class="w-8 h-8 rounded-full bg-[#C41E3A] border border-white/20 cursor-pointer hover:scale-125 transition-all shadow-lg"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-50">
+            <i class="ri-camera-3-line text-white text-2xl"></i>
+        </button>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -498,6 +702,165 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    // Cấu hình vị trí gắn biển mặc định cho Vespa
+    let platePosition = {
+        top: '68%',
+        left: '32%'
+    };
+    let isPlateAttached = false; // Biến kiểm soát trạng thái đã gắn biển chưa
+    function changeBike(id, name, img, pos) {
+        const plate = document.getElementById('attached-plate');
+        const trigger = document.getElementById('snap-trigger');
+        // 1. Hiệu ứng đổi tên
+        gsap.to("#bike-name", {
+            opacity: 0,
+            y: 10,
+            duration: 0.3,
+            onComplete: () => {
+                document.getElementById('bike-name').innerText = name;
+                gsap.to("#bike-name", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5
+                });
+            }
+        });
+        // Đảm bảo khi đổi xe, biển số tạm ẩn đi để bấm Snap lại
+        gsap.set("#attached-plate", {
+            opacity: 0,
+            scale: 0.5,
+            display: 'block' // Đảm bảo không bị display: none
+        });
+        gsap.to("#snap-trigger", {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3
+        });
+
+        // 2. Hiệu ứng đổi ảnh xe
+        gsap.to("#current-bike-img", {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.4,
+            onComplete: () => {
+                document.getElementById('current-bike-img').src = img;
+                platePosition = pos; // Cập nhật tọa độ mới của xe mới
+
+                gsap.to("#current-bike-img", {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.6
+                });
+
+                // NẾU BIỂN ĐANG GẮN: Cho biển bay ngay sang vị trí mới trên xe mới
+                if (isPlateAttached) {
+                    gsap.to(plate, {
+                        top: pos.top,
+                        left: pos.left,
+                        duration: 0.6,
+                        ease: "back.out(1.2)",
+                        opacity: 1,
+                        scale: 1
+                    });
+                }
+            }
+        });
+
+        // Cập nhật giao diện nút chọn xe
+        document.querySelectorAll('.bike-icon').forEach(btn => btn.classList.remove('active', 'border-cyan-500'));
+        event.currentTarget.classList.add('active', 'border-cyan-500');
+    }
+
+    // Hiệu ứng Snap-On
+    document.getElementById('snap-trigger').addEventListener('click', function() {
+        const plate = document.getElementById('attached-plate');
+
+        // Ẩn nút trigger
+        gsap.to(this, {
+            scale: 0,
+            opacity: 0,
+            duration: 0.3
+        });
+
+        // Hiệu ứng bay biển
+        gsap.set(plate, {
+            top: '50%',
+            left: '50%',
+            xPercent: -50,
+            yPercent: -50,
+            opacity: 1,
+            scale: 2,
+            rotateY: 45
+        });
+
+        gsap.to(plate, {
+            top: platePosition.top,
+            left: platePosition.left,
+            scale: 1,
+            rotateY: 0,
+            duration: 1.2,
+            ease: "back.inOut(1.7)",
+            onComplete: () => {
+                // Flash effect khi khớp
+                gsap.to(plate, {
+                    boxShadow: "0 0 20px #00f2ff",
+                    duration: 0.2,
+                    yoyo: true,
+                    repeat: 1
+                });
+            }
+        });
+    });
+
+    // Hiệu ứng xoay 360 độ (Drag Interaction)
+    Draggable.create("#bike-display", {
+        type: "x",
+        onDrag: function() {
+            let rotation = this.x / 5;
+            gsap.set("#bike-display", {
+                rotationY: rotation
+            });
+        },
+        onDragEnd: function() {
+            gsap.to("#bike-display", {
+                rotationY: 0,
+                duration: 1.5,
+                ease: "power2.out"
+            });
+        }
+    });
+
+    // Hiệu ứng đổi màu xe (Color Wave)
+    function changeColor(hex) {
+        const bikeImg = document.getElementById('current-bike-img');
+        // Giả lập hiệu ứng quét màu
+        const tl = gsap.timeline();
+        tl.to(bikeImg, {
+                filter: `drop-shadow(0 0 30px ${hex})`,
+                duration: 0.5
+            })
+            .to(bikeImg, {
+                opacity: 0.7,
+                duration: 0.2
+            })
+            .to(bikeImg, {
+                opacity: 1,
+                duration: 0.5
+            });
+    }
+
+    // Cảm biến nghiêng điện thoại (Gyroscope)
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (event) => {
+            if (window.innerWidth < 1024) {
+                let tiltX = event.gamma / 2; // Nghiêng trái phải
+                gsap.to("#bike-display", {
+                    x: tiltX,
+                    duration: 0.5
+                });
+            }
+        });
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
