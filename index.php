@@ -725,7 +725,13 @@
             border: 1px solid rgba(0, 127, 255, 0.3);
             color: #007FFF;
             overflow: hidden;
-            transition: all 0.4s ease;
+            /* transition: all 0.4s ease; */
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .knowledge-card:hover .read-glow-btn {
+            transform: translate(3px, -3px);
+            color: #001F3F;
         }
 
         .read-glow-btn:hover {
@@ -780,8 +786,9 @@
         /* Tối ưu Mobile */
         @media (max-width: 1024px) {
             .knowledge-card {
-                perspective: none;
+                /* perspective: none; */
                 /* Tắt 3D trên mobile để mượt hơn */
+                transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
             .featured-glass-overlay {
@@ -793,6 +800,78 @@
 
             .featured-glass-overlay h3 {
                 color: #001F3F !important;
+            }
+
+            #featured-post {
+                border-radius: 1.5rem;
+            }
+
+            #featured-post .relative.h-\[500px\] {
+                height: 400px;
+                /* Thu nhỏ chiều cao ảnh chính trên mobile */
+            }
+
+            #featured-post h3 {
+                font-size: 1.25rem;
+            }
+
+            .absolute.inset-x-6.bottom-6 {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+                padding: 1.5rem;
+            }
+
+            /* Hiện mô tả luôn trên mobile vì không có hover */
+            .excerpt {
+                max-height: 100px !important;
+                opacity: 1 !important;
+                color: rgba(255, 255, 255, 0.9) !important;
+                margin-top: 0.5rem;
+            }
+
+            .absolute.inset-x-4 {
+                width: 60%;
+            }
+        }
+
+        /* Xử lý chữ trên mobile không bị quá to */
+        @media (max-width: 768px) {
+            .sans-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                /* Giới hạn tiêu đề 2 dòng */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            /* Ép hiển thị excerpt nhẹ nhàng trên mobile */
+            .excerpt {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                opacity: 0.8 !important;
+            }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+
+            /* Ép font chữ nhỏ lại trên màn hình cực nhỏ để không đẩy khung */
+            h3.sans-text {
+                font-size: 1.15rem !important;
+                line-height: 1.3;
+            }
+
+            .excerpt {
+                display: none;
+                /* Ẩn hẳn đoạn mô tả trên mobile nhỏ để tránh tràn */
             }
         }
 
@@ -837,137 +916,205 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-
     <section id="infinite-vault" class="relative py-16 md:py-24 bg-[#000D1A] overflow-hidden">
         <div class="container mx-auto px-4 md:px-6 relative z-10">
 
             <div class="flex justify-center mb-12 md:mb-16">
-                <div class="glass-tab-container relative p-1 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center scale-90 md:scale-100">
-                    <div id="tab-slider" class="absolute h-[calc(100%-8px)] w-[120px] md:w-[140px] bg-blue-600 rounded-full transition-all duration-500 ease-out"></div>
-                    <button onclick="switchGallery('auto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white uppercase">Ô TÔ</button>
-                    <button onclick="switchGallery('moto')" class="relative z-10 w-[120px] md:w-[140px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">XE MÁY</button>
+                <div class="glass-tab-container relative p-1 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center scale-90 md:scale-100 w-fit">
+
+                    <div id="tab-slider" class="absolute h-[calc(100%-8px)] w-[100px] md:w-[120px] bg-blue-600 rounded-full transition-all duration-500 ease-out left-1"></div>
+
+                    <button onclick="switchGallery('all')" id="btn-all" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white uppercase">TẤT CẢ</button>
+                    <button onclick="switchGallery('auto')" id="btn-auto" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">Ô TÔ</button>
+                    <button onclick="switchGallery('moto')" id="btn-moto" class="relative z-10 w-[100px] md:w-[120px] py-2 md:py-3 text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase">XE MÁY</button>
                 </div>
             </div>
-            <div class=" grid grid-cols-1 relative min-h-[600px] md:min-h-[500px]">
-                <div id="gallery-auto" class="gallery-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
-                            </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
-                                </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                            </div>
-                        </div>
 
-                    </div>
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
-                            </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
-                                </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                            </div>
-                        </div>
+            <div id="master-gallery" class="flex flex-col gap-12">
+                <div id="group-auto" class="gallery-group">
+                    <h4 class="text-blue-400 text-[10px] tracking-[0.3em] uppercase font-bold mb-6 flex items-center gap-4">
+                        <span>Hệ thống Ô tô</span>
+                        <div class="h-[1px] flex-1 bg-blue-500/20"></div>
+                    </h4>
+                    <div id="gallery-auto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
+                        <a href="chitiet_bienso_oto.php?plate=30K-999.99&price=2.500.000.000" class="block">
+                            <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
 
-                    </div>
-                    <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                            <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                <i class="ri- steering-fill text-white/20 text-sm md:text-base"></i>
-                            </div>
-                            <div class="plate-number text-center">
-                                <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="price">
-                                    <p class="text-[10px] font-bold text-blue-500 md:text-lg">2.500.000.000đ</p>
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                    <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
                                 </div>
-                                <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                            </div>
-                        </div>
 
+                                <div class="relative z-10 h-full flex flex-col justify-between">
+                                    <div class="flex justify-between items-start">
+                                        <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                        <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                    </div>
+
+                                    <div class="plate-number text-center">
+                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                                    </div>
+
+                                    <div class="flex justify-between items-end">
+                                        <div class="price">
+                                            <p class="text-xs md:text-lg font-bold text-blue-500">2.500.000.000đ</p>
+                                        </div>
+                                        <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                                    </div>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            </div>
+                        </a>
+                        <a href="chitiet_bienso_oto.php?plate=29K-888.88&price=7.500.000.000" class="block">
+                            <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                    <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between">
+                                    <div class="flex justify-between items-start">
+                                        <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                        <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                    </div>
+
+                                    <div class="plate-number text-center">
+                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">29K - 888.88</h3>
+                                    </div>
+
+                                    <div class="flex justify-between items-end">
+                                        <div class="price">
+                                            <p class="text-xs md:text-lg font-bold text-blue-500">7.500.000.000đ</p>
+                                        </div>
+                                        <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                                    </div>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            </div>
+                        </a>
+                        <a href="chitiet_bienso_oto.php?plate=27K-777.77&price=8.100.000.000" class="block">
+                            <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                    <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between">
+                                    <div class="flex justify-between items-start">
+                                        <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
+                                        <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                    </div>
+
+                                    <div class="plate-number text-center">
+                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">27K - 777.77</h3>
+                                    </div>
+
+                                    <div class="flex justify-between items-end">
+                                        <div class="price">
+                                            <p class="text-xs md:text-lg font-bold text-blue-500">8.100.000.000đ</p>
+                                        </div>
+                                        <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
+                                    </div>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            </div>
+                        </a>
                     </div>
-                    
                 </div>
 
-                <div id="gallery-moto" class="gallery-wrapper hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                <div id="group-moto" class="gallery-group mt-8">
+                    <h4 class="text-blue-400 text-[10px] tracking-[0.3em] uppercase font-bold mb-6 flex items-center gap-4">
+                        <span>Hệ thống Xe máy</span>
+                        <div class="h-[1px] flex-1 bg-blue-500/20"></div>
+                    </h4>
+                    <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
+                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000" class="block">
+                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
+                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+
+                                    <div class="plate-number-moto leading-tight py-2">
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-E2</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">999.99</p>
+                                    </div>
+
+                                    <p class="text-sm md:text-base font-bold text-white">1.200.000.000đ</p>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                        </a>
+                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
+                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+
+                                    <div class="plate-number-moto leading-tight py-2">
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                    </div>
+
+                                    <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                        </a>
+                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000" class="block">
+                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
+                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+
+                                    <div class="plate-number-moto leading-tight py-2">
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">59-T2</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">555.55</p>
+                                    </div>
+
+                                    <p class="text-sm md:text-base font-bold text-white">650.000.000đ</p>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
-                    </div>
-                    <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
-                        <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                            <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
-                        </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
-                            <div class="plate-number-moto leading-tight py-2">
-                                <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                        </a>
+                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000" class="block">
+                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+
+                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
+                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
+                                </div>
+
+                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+
+                                    <div class="plate-number-moto leading-tight py-2">
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">36-M1</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">688.88</p>
+                                    </div>
+
+                                    <p class="text-sm md:text-base font-bold text-white">185.000.000đ</p>
+                                </div>
+
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                            <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                        </div>
+                        </a>
+
                     </div>
                 </div>
             </div>
@@ -1160,20 +1307,25 @@
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8">
-                <div class="lg:w-2/3 group relative overflow-hidden rounded-[2rem] border border-white bg-white shadow-xl cursor-none knowledge-card" id="featured-post">
-                    <div class="relative h-[500px] overflow-hidden">
+                <div class="lg:w-2/3 group relative overflow-hidden rounded-[1.5rem] md:rounded-[2rem] border border-white bg-white shadow-xl lg:cursor-none knowledge-card" id="featured-post">
+                    <div class="relative h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80"
                             class="parallax-img w-full h-full object-cover transition-transform duration-700 scale-110" alt="Legal Guide">
 
-                        <div class="absolute inset-x-6 bottom-6 backdrop-blur-md bg-white/20 border border-white/30 p-8 rounded-[1.5rem] transform translate-y-4 transition-all duration-500 group-hover:translate-y-0">
-                            <span class="inline-block px-4 py-1 rounded-full bg-[#007FFF]/10 text-[#007FFF] text-[10px] font-bold tracking-widest uppercase mb-4">Pháp lý & Thủ tục</span>
-                            <h3 class="sans-text text-2xl md:text-3xl font-bold text-white mb-4 leading-snug">Hướng dẫn thủ tục định danh biển số 2026: Những điều chủ xe cần biết</h3>
-                            <p class="excerpt text-white/0 group-hover:text-white/90 transition-all duration-500 max-h-0 group-hover:max-h-24 overflow-hidden sans-text text-sm">
-                                Cập nhật mới nhất về quy trình chuyển nhượng, thu hồi và đăng ký biển số định danh theo thông tư mới nhất của Bộ Công An...
+                        <div class="absolute inset-x-4 bottom-4 md:inset-x-6 md:bottom-6 backdrop-blur-md bg-white/20 border border-white/30 p-5 md:p-8 rounded-[1rem] md:rounded-[1.5rem] transform translate-y-2 md:translate-y-4 transition-all duration-500 group-hover:translate-y-0">
+                            <span class="inline-block px-3 py-1 rounded-full bg-[#007FFF]/20 text-[#007FFF] text-[9px] md:text-[10px] font-bold tracking-widest uppercase mb-2 md:mb-4">Pháp lý & Thủ tục</span>
+
+                            <h3 class="sans-text text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-4 leading-tight">
+                                Hướng dẫn thủ tục định danh biển số 2026
+                            </h3>
+
+                            <p class="excerpt text-white/90 md:text-white/0 md:group-hover:text-white/90 transition-all duration-500 max-h-[60px] md:max-h-0 md:group-hover:max-h-24 overflow-hidden sans-text text-xs md:text-sm">
+                                Cập nhật mới nhất về quy trình chuyển nhượng, thu hồi và đăng ký biển số định danh...
                             </p>
-                            <a href="#" class="inline-flex items-center gap-2 mt-6 text-white font-bold text-xs tracking-widest uppercase group/btn">
+
+                            <a href="#" class="inline-flex items-center gap-2 mt-4 text-white font-bold text-[10px] tracking-widest uppercase group/btn">
                                 Xem chi tiết
-                                <span class="w-8 h-[1px] bg-white group-hover/btn:w-12 transition-all"></span>
+                                <span class="w-6 h-[1px] bg-white group-hover/btn:w-10 transition-all"></span>
                             </a>
                         </div>
                     </div>
@@ -1371,29 +1523,52 @@
 
             // Xử lý chuyển đổi Tab
             window.switchGallery = (type) => {
+                const groupAuto = document.getElementById('group-auto');
+                const groupMoto = document.getElementById('group-moto');
                 const slider = document.getElementById('tab-slider');
-                const autoG = document.getElementById('gallery-auto');
-                const motoG = document.getElementById('gallery-moto');
-                const isDesktop = window.innerWidth > 1024;
 
-                // 1. Di chuyển thanh slider
-                if (type === 'auto') {
-                    gsap.to(slider, {
-                        x: 0,
-                        duration: 0.4,
-                        ease: "back.out"
-                    });
-                    animateTransition(motoG, autoG);
-                } else {
-                    const moveVal = isDesktop ? 144 : 124;
-                    gsap.to(slider, {
-                        x: moveVal,
-                        duration: 0.4,
-                        ease: "back.out"
-                    });
-                    animateTransition(autoG, motoG);
+                // Lấy tất cả nút để đổi màu chữ
+                const btnAll = document.getElementById('btn-all');
+                const btnAuto = document.getElementById('btn-auto');
+                const btnMoto = document.getElementById('btn-moto');
+
+                // Reset trạng thái chữ mờ
+                [btnAll, btnAuto, btnMoto].forEach(btn => {
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-white/50');
+                });
+
+                if (type === 'all') {
+                    groupAuto.style.display = 'block';
+                    groupMoto.style.display = 'block';
+                    slider.style.left = '4px'; // Vị trí nút 1
+                    btnAll.classList.replace('text-white/50', 'text-white');
+                } else if (type === 'auto') {
+                    groupAuto.style.display = 'block';
+                    groupMoto.style.display = 'none';
+                    // Di chuyển slider sang nút 2 (Width nút là 100px hoặc 120px tùy màn hình)
+                    const offset = window.innerWidth < 768 ? 104 : 124;
+                    slider.style.left = offset + 'px';
+                    btnAuto.classList.replace('text-white/50', 'text-white');
+                } else if (type === 'moto') {
+                    groupAuto.style.display = 'none';
+                    groupMoto.style.display = 'block';
+                    // Di chuyển slider sang nút 3
+                    const offset = window.innerWidth < 768 ? 204 : 244;
+                    slider.style.left = offset + 'px';
+                    btnMoto.classList.replace('text-white/50', 'text-white');
                 }
-            };
+
+                // Hiệu ứng mượt mà khi hiện card
+                gsap.from(".gallery-group[style*='display: block'] .plate-card", {
+                    y: 30,
+                    opacity: 0,
+                    stagger: 0.05,
+                    duration: 0.4,
+                    ease: "power2.out",
+                    overwrite: true
+                });
+            }
 
             function hideGallery(el, callback) {
                 gsap.to(el.querySelectorAll('.plate-card'), {
@@ -1681,40 +1856,68 @@
             const featuredPost = document.getElementById('featured-post');
             const parallaxImg = featuredPost?.querySelector('.parallax-img');
 
+            // Kiểm tra thiết bị ngay đầu sự kiện hoặc dùng biến toàn cục
+            const isMobile = window.innerWidth < 1024;
+
             if (featuredPost && parallaxImg) {
-                featuredPost.addEventListener('mousemove', (e) => {
-                    const {
-                        left,
-                        top,
-                        width,
-                        height
-                    } = featuredPost.getBoundingClientRect();
-                    const xVal = (e.clientX - left) / width;
-                    const yVal = (e.clientY - top) / height;
+                // CHỈ gán sự kiện nếu không phải là Mobile
+                if (!isMobile) {
+                    featuredPost.addEventListener('mousemove', (e) => {
+                        const {
+                            left,
+                            top,
+                            width,
+                            height
+                        } = featuredPost.getBoundingClientRect();
 
-                    gsap.to(parallaxImg, {
-                        x: (xVal - 0.5) * 30,
-                        y: (yVal - 0.5) * 30,
-                        duration: 0.6,
-                        ease: "power2.out",
-                        overwrite: 'auto' // Tránh xung đột hiệu ứng
+                        // Tính toán vị trí chuột tương đối trong card
+                        const xVal = (e.clientX - left) / width;
+                        const yVal = (e.clientY - top) / height;
+
+                        // Di chuyển ảnh nhẹ nhàng (Biên độ giảm xuống 20 để an toàn cho responsive)
+                        gsap.to(parallaxImg, {
+                            x: (xVal - 0.5) * 20,
+                            y: (yVal - 0.5) * 20,
+                            duration: 0.6,
+                            ease: "power2.out",
+                            overwrite: 'auto'
+                        });
                     });
-                });
 
-                featuredPost.addEventListener('mouseleave', () => {
-                    gsap.to(parallaxImg, {
-                        x: 0,
-                        y: 0,
-                        duration: 1
+                    featuredPost.addEventListener('mouseleave', () => {
+                        // Trả ảnh về vị trí trung tâm khi chuột rời đi
+                        gsap.to(parallaxImg, {
+                            x: 0,
+                            y: 0,
+                            scale: 1.1, // Giữ scale nhẹ để không bị lộ mép ảnh
+                            duration: 1,
+                            ease: "power2.out"
+                        });
+
+                        if (document.getElementById('intelligence-hub')) {
+                            document.getElementById('intelligence-hub').classList.remove('reading-mode');
+                        }
                     });
-                });
 
-                featuredPost.addEventListener('mouseenter', () =>
-                    document.getElementById('intelligence-hub').classList.add('reading-mode'));
-                featuredPost.addEventListener('mouseleave', () =>
-                    document.getElementById('intelligence-hub').classList.remove('reading-mode'));
+                    featuredPost.addEventListener('mouseenter', () => {
+                        if (document.getElementById('intelligence-hub')) {
+                            document.getElementById('intelligence-hub').classList.add('reading-mode');
+                        }
+                    });
+                } else {
+                    // ĐỐI VỚI MOBILE: Thay mousemove bằng hiệu ứng Scroll Parallax đơn giản
+                    gsap.to(parallaxImg, {
+                        scrollTrigger: {
+                            trigger: featuredPost,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        },
+                        y: -20, // Chỉ trượt dọc nhẹ khi cuộn trang
+                        ease: "none"
+                    });
+                }
             }
-
             // 4. Custom Cursor (Tách biệt khỏi load để chạy mượt)
             const readCursor = document.getElementById('custom-read-cursor');
             if (readCursor) {
