@@ -850,24 +850,24 @@
     const carConfigs = {
         'sedan': {
             platePos: {
-                top: '100%',
-                left: '-145%'
+                top: '40%',
+                left: '0%'
             },
             name: 'MAYBACH S680',
             img: 'mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png'
         },
         'suv': {
             platePos: {
-                top: '100%',
-                left: '-145%'
+               top: '50%',
+                left: '25%'
             },
             name: 'RR CULLINAN',
             img: 'Armored_Vehicle_Make_e3a8620860.png'
         },
         'hyper': {
             platePos: {
-                top: '100%',
-                left: '-145%'
+                top: '40%',
+                left: '0%'
             },
             name: 'LAMBO VENENO',
             img: '499540-removebg-preview.png'
