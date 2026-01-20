@@ -115,14 +115,14 @@
         <button class="bg-[#007FFF] px-10 py-4 rounded-full text-xl">KÝ GỬI NGAY</button>
     </div>
 
-    <div class="md:hidden fixed bottom-0 left-0 w-full px-4 pb-4 z-50">
+    <!-- <div class="md:hidden fixed bottom-0 left-0 w-full px-4 pb-4 z-50">
         <div class="bottom-nav flex justify-around items-center py-4 shadow-2xl">
             <a href="#" class="flex flex-col items-center text-[#001A33]"><i class="ri-home-5-line text-xl"></i></a>
             <a href="#" class="flex flex-col items-center text-[#001A33]"><i class="ri-search-2-line text-xl"></i></a>
             <a href="#" class="flex flex-col items-center text-[#001A33]"><i class="ri-phone-line text-xl"></i></a>
             <a href="#" class="flex flex-col items-center text-blue-500"><i class="ri-messenger-line text-xl"></i></a>
         </div>
-    </div>
+    </div> -->
 
     
 
