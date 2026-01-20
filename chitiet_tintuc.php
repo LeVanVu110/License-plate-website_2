@@ -183,6 +183,49 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Ẩn thanh cuộn nhưng vẫn cuộn được */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        #treasure-slider {
+            cursor: none !important;
+        }
+
+        /* Ẩn thanh cuộn mặc định của Slider */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Custom Cursor */
+        #slider-cursor {
+            position: fixed;
+            /* Bắt buộc là fixed */
+            top: 0;
+            left: 0;
+            pointer-events: none !important;
+            z-index: 99999;
+            /* Cho số thật lớn để luôn nằm trên cùng */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            will-change: transform;
+        }
+
+        /* Hiệu ứng xòe bài cho mobile (stack) */
+        @media (max-width: 1024px) {
+            .article-card {
+                margin-bottom: -20px;
+                /* Tạo hiệu ứng xếp chồng */
+                box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -346,6 +389,161 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="heritage-loop" class="relative py-24 bg-gradient-to-b from-[#00040A] to-black overflow-hidden border-t border-white/5">
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16 text-center lg:text-left">
+                <h2 class="text-4xl lg:text-6xl font-serif text-[#E0F2F7] tracking-[0.2em] uppercase italic opacity-0" id="loop-title">Khám Phá Tiếp</h2>
+                <div class="w-24 h-[2px] bg-[#00FFFF] mt-4 mx-auto lg:mx-0"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24" id="related-grid">
+                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                    <div class="aspect-[4/5] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="News">
+                        <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 backdrop-blur-md bg-black/40 border-t border-white/10">
+                        <span class="text-[9px] font-mono text-[#00FFFF] tracking-widest uppercase">Phân tích</span>
+                        <h4 class="text-lg font-serif text-white mt-2 leading-tight">Nghệ thuật chọn biển số theo bản mệnh</h4>
+                        <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
+                    </div>
+                </div>
+                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                    <div class="aspect-[4/5] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="Market News">
+                        <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 backdrop-blur-md bg-black/40 border-t border-white/10">
+                        <span class="text-[9px] font-mono text-[#00FFFF] tracking-widest uppercase">Thị trường</span>
+                        <h4 class="text-lg font-serif text-white mt-2 leading-tight">Biến động giá trị biển số Ngũ Quý 2026</h4>
+                        <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
+                    </div>
+                </div>
+
+                <div class="article-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 opacity-0 translate-y-20">
+                    <div class="aspect-[4/5] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1512446816042-444d641267d4?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110" alt="Legal Guide">
+                        <div class="absolute inset-0 bg-blue-900/40 group-hover:opacity-0 transition-opacity duration-500"></div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 backdrop-blur-md bg-black/40 border-t border-white/10">
+                        <span class="text-[9px] font-mono text-[#00FFFF] tracking-widest uppercase">Pháp lý</span>
+                        <h4 class="text-lg font-serif text-white mt-2 leading-tight">Quy trình định danh biển số di sản số</h4>
+                        <button class="mt-4 text-[10px] font-bold text-white tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_15px_#00FFFF] border border-[#00FFFF] px-4 py-2 rounded-full">Đọc Tiếp</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-20">
+                <div class="flex justify-between items-end mb-8">
+                    <h3 class="text-xs font-mono text-gray-500 uppercase tracking-[0.5em]">Live Treasures</h3>
+                    <div class="hidden lg:flex gap-4">
+                        <button class="prev-slide text-white/50 hover:text-white"><i class="ri-arrow-left-s-line text-2xl"></i></button>
+                        <button class="next-slide text-white/50 hover:text-white"><i class="ri-arrow-right-s-line text-2xl"></i></button>
+                    </div>
+                </div>
+
+                <div id="treasure-slider" class="flex gap-6 overflow-x-auto pb-10 scrollbar-hide cursor-none">
+                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group/plate">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
+                            <div class="text-right">
+                                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Hệ phong thủy</p>
+                                <p class="text-[10px] text-yellow-400 font-bold uppercase tracking-wider">Lộc Phát Trường Cửu</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-12">
+                            <h4 class="text-3xl font-mono text-white tracking-tighter group-hover/plate:text-[#00FFFF] transition-colors duration-500">51K - 686.86</h4>
+                            <p class="text-xs text-gray-500 mt-2">Giá hiện tại: <span class="text-[#00FFFF] font-bold">1.85B</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                            <div class="countdown-timer font-mono text-red-500 text-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]" data-time="5400">01:30:00</div>
+                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ Ngay</button>
+                        </div>
+                    </div>
+                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
+                            <div class="text-right">
+                                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Hệ phong thủy</p>
+                                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Thủy - Phát Tài</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-12">
+                            <h4 class="text-3xl font-mono text-white tracking-tighter group-hover:text-[#00FFFF] transition-colors duration-500">51K - 666.88</h4>
+                            <p class="text-xs text-gray-500 mt-2">Giá hiện tại: <span class="text-[#00FFFF] font-bold">1.2B</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                            <div class="countdown-timer font-mono text-red-500 text-sm" data-time="7200">02:00:00</div>
+                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                        </div>
+                    </div>
+
+                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
+                            <div class="text-right">
+                                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Hệ phong thủy</p>
+                                <p class="text-[10px] text-yellow-500 font-bold uppercase tracking-wider">Thổ - Trường Tồn</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-12">
+                            <h4 class="text-3xl font-mono text-white tracking-tighter group-hover:text-[#00FFFF] transition-colors duration-500">30L - 999.99</h4>
+                            <p class="text-xs text-gray-500 mt-2">Giá hiện tại: <span class="text-[#00FFFF] font-bold">4.5B</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                            <div class="countdown-timer font-mono text-red-500 text-sm" data-time="1800">00:30:00</div>
+                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                        </div>
+                    </div>
+
+                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
+                            <div class="text-right">
+                                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Hệ phong thủy</p>
+                                <p class="text-[10px] text-purple-400 font-bold uppercase tracking-wider">Hỏa - Quyền Lực</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-12">
+                            <h4 class="text-3xl font-mono text-white tracking-tighter group-hover:text-[#00FFFF] transition-colors duration-500">51K - 868.68</h4>
+                            <p class="text-xs text-gray-500 mt-2">Giá hiện tại: <span class="text-[#00FFFF] font-bold">950M</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                            <div class="countdown-timer font-mono text-red-500 text-sm" data-time="10800">03:00:00</div>
+                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                        </div>
+                    </div>
+
+                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20">LIVE</span>
+                            <div class="text-right">
+                                <p class="text-[8px] text-gray-500 uppercase">Hệ phong thủy</p>
+                                <p class="text-[10px] text-emerald-400 font-bold uppercase">Phú Quý</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-12">
+                            <h4 class="text-3xl font-mono text-white tracking-tighter">51K - 999.99</h4>
+                            <p class="text-xs text-gray-500 mt-2">Giá hiện tại: <span class="text-[#00FFFF]">3.1B</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                            <div class="countdown-timer font-mono text-red-500 text-sm" data-time="7200">02:00:00</div>
+                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF]">Đặt Chỗ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div id="slider-cursor" class="fixed pointer-events-none z-[9999] opacity-0 flex items-center justify-center transition-opacity duration-300">
+            <div class="px-5 py-2 bg-cyan-400 text-black text-[10px] font-bold rounded-full shadow-[0_0_20px_rgba(34,211,238,0.8)] uppercase tracking-widest whitespace-nowrap">
+                ← Kéo để xem →
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -643,6 +841,135 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    window.addEventListener('load', () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. Hiệu ứng "The Infinity Reveal" (Giữ nguyên của bạn)
+        gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#heritage-loop",
+                    start: "top 70%",
+                }
+            })
+            .to("#loop-title", {
+                opacity: 1,
+                italic: true,
+                duration: 1
+            })
+            .to(".article-card", {
+                opacity: 1,
+                y: 0,
+                stagger: 0.2,
+                duration: 1.2,
+                ease: "back.out(1.7)"
+            }, "-=0.5");
+
+        // --- Code bổ sung cho Custom Cursor Section 4 ---
+        const slider = document.getElementById('treasure-slider');
+        const cursor = document.getElementById('slider-cursor');
+
+        if (slider && cursor) {
+            // 1. Cập nhật vị trí con trỏ theo tọa độ chuột toàn màn hình
+            document.addEventListener('mousemove', (e) => {
+                gsap.to(cursor, {
+                    x: e.clientX,
+                    y: e.clientY,
+                    duration: 0.1,
+                    ease: "power2.out"
+                });
+            });
+
+            // 2. Hiện con trỏ khi đi vào vùng slider
+            slider.addEventListener('mouseenter', () => {
+                gsap.to(cursor, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.3
+                });
+            });
+
+            // 3. Ẩn con trỏ khi ra khỏi vùng slider
+            slider.addEventListener('mouseleave', () => {
+                gsap.to(cursor, {
+                    opacity: 0,
+                    scale: 0.5,
+                    duration: 0.3
+                });
+            });
+
+            // 4. Hiệu ứng nhấn xuống (Drag)
+            slider.addEventListener('mousedown', () => {
+                gsap.to(cursor.firstElementChild, {
+                    scale: 0.9,
+                    backgroundColor: "#22d3ee",
+                    duration: 0.2
+                });
+            });
+
+            slider.addEventListener('mouseup', () => {
+                gsap.to(cursor.firstElementChild, {
+                    scale: 1,
+                    backgroundColor: "#22d3ee",
+                    duration: 0.2
+                });
+            });
+        }
+
+        // 3. Real-time Countdown (Giữ nguyên logic của bạn)
+        const timers = document.querySelectorAll('.countdown-timer');
+        timers.forEach(timer => {
+            let timeLeft = parseInt(timer.dataset.time);
+            const updateTimer = () => {
+                const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+                const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                timer.innerText = `${h}:${m}:${s}`;
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    setTimeout(updateTimer, 1000);
+                }
+            };
+            updateTimer();
+        });
+
+        // 4. CHỈNH SỬA: Horizontal Drag (Thêm hiệu ứng active cho cursor khi drag)
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+
+            // Hiệu ứng bóp nhỏ con trỏ khi nhấn xuống
+            gsap.to(cursor, {
+                scale: 0.8,
+                duration: 0.2
+            });
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            gsap.to(cursor, {
+                scale: 1,
+                duration: 0.2
+            });
+        });
+
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // Tốc độ kéo
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
