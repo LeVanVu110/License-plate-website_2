@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     <style>
         :root {
             --midnight: #000F1A;
@@ -117,6 +119,25 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        .text-ice-blue {
+            color: #E0F7FA;
+        }
+
+        /* Hiệu ứng Focus Spotlight */
+        .attribute-card:hover .spotlight {
+            opacity: 1;
+        }
+
+        .attribute-card:hover {
+            border-color: rgba(0, 242, 255, 0.4);
+            transform: translateY(-5px);
+            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        /* Đè CSS cho Chart.js để mượt hơn */
+        #radarChart {
+            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.2));
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -198,6 +219,66 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="numerology-matrix" class="relative py-20 bg-[#000810] overflow-hidden border-t border-white/5">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-20 bg-gradient-to-b from-cyan-500 to-transparent"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+
+                <div class="w-full lg:w-1/2 space-y-6">
+                    <h3 class="text-cyan-500 font-mono text-sm tracking-[0.4em] uppercase mb-12 flex items-center gap-4">
+                        <span class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
+                        The Core Attributes
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="attribute-grid">
+                        <div class="attribute-card group p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl relative overflow-hidden cursor-none">
+                            <div class="spotlight absolute inset-0 bg-cyan-500/10 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                            <p class="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-2">Mã Vùng</p>
+                            <h4 class="text-xl text-ice-blue font-semibold scramble-text" data-value="Hà Nội - 29G1">00000000000</h4>
+                        </div>
+
+                        <div class="attribute-card group p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl relative overflow-hidden cursor-none">
+                            <div class="spotlight absolute inset-0 bg-cyan-500/10 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                            <p class="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-2">Tình trạng</p>
+                            <h4 class="text-xl text-ice-blue font-semibold scramble-text" data-value="Chưa đăng ký">00000000000</h4>
+                        </div>
+
+                        <div class="attribute-card group p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl relative overflow-hidden cursor-none">
+                            <div class="spotlight absolute inset-0 bg-cyan-500/10 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                            <p class="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-2">Đời biển</p>
+                            <h4 class="text-xl text-ice-blue font-semibold scramble-text" data-value="Series 2025">00000000000</h4>
+                        </div>
+
+                        <div class="attribute-card group p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl relative overflow-hidden cursor-none">
+                            <div class="spotlight absolute inset-0 bg-cyan-500/10 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                            <p class="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-2">Pháp lý</p>
+                            <h4 class="text-xl text-ice-blue font-semibold scramble-text" data-value="Chính chủ">00000000000</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 flex flex-col items-center">
+                    <div class="relative w-full max-w-[450px] aspect-square">
+                        <div class="hidden md:block">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+
+                        <div class="block md:hidden space-y-6 w-full">
+                            <h4 class="text-white font-mono text-center mb-8 uppercase tracking-widest">Destiny Scores</h4>
+                            <div class="space-y-4">
+                                <div class="mobile-progress" data-label="Tài Lộc" data-value="95"></div>
+                                <div class="mobile-progress" data-label="Quyền Lực" data-value="88"></div>
+                                <div class="mobile-progress" data-label="Bình An" data-value="75"></div>
+                                <div class="mobile-progress" data-label="Độc Bản" data-value="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -290,6 +371,131 @@
     });
 
     // ----------------------------- section 2 ----------------------------- //
+    gsap.registerPlugin(TextPlugin, ScrollTrigger);
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // 1. Hiệu ứng Scramble Text khi cuộn tới
+        const scrambleTexts = document.querySelectorAll('.scramble-text');
+
+        ScrollTrigger.create({
+            trigger: "#numerology-matrix",
+            start: "top 70%",
+            onEnter: () => {
+                scrambleTexts.forEach(el => {
+                    const finalValue = el.getAttribute('data-value');
+                    gsap.to(el, {
+                        duration: 1,
+                        text: {
+                            value: finalValue,
+                            scrambleText: {
+                                chars: "0123456789ABCDEF",
+                                speed: 0.5
+                            }
+                        },
+                        ease: "none"
+                    });
+                });
+
+                // Kích hoạt Progress Bar Mobile
+                initMobileProgress();
+            }
+        });
+
+        // 2. Khởi tạo Biểu đồ Radar (Desktop)
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const radarData = {
+            labels: ['TÀI LỘC', 'QUYỀN LỰC', 'BÌNH AN', 'ĐỘC BẢN', 'TRƯỜNG CỬU'],
+            datasets: [{
+                label: 'Chỉ số phong thủy',
+                data: [95, 88, 75, 100, 92],
+                backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                borderColor: '#00f2ff',
+                borderWidth: 2,
+                pointBackgroundColor: '#00f2ff',
+                pointRadius: 4
+            }]
+        };
+
+        const myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: radarData,
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        pointLabels: {
+                            color: '#00f2ff',
+                            font: {
+                                family: 'Monospace',
+                                size: 10
+                            }
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutElastic'
+                }
+            }
+        });
+
+        // 3. Hiệu ứng Progress Bar Mobile
+        function initMobileProgress() {
+            const containers = document.querySelectorAll('.mobile-progress');
+            containers.forEach(container => {
+                if (container.innerHTML !== "") return;
+                const label = container.getAttribute('data-label');
+                const val = container.getAttribute('data-value');
+
+                container.innerHTML = `
+                <div class="flex justify-between text-[10px] text-cyan-400 font-mono mb-1">
+                    <span>${label}</span>
+                    <span>${val}%</span>
+                </div>
+                <div class="h-[2px] w-full bg-white/10 overflow-hidden">
+                    <div class="progress-bar h-full bg-cyan-500 w-0"></div>
+                </div>
+            `;
+
+                gsap.to(container.querySelector('.progress-bar'), {
+                    width: val + "%",
+                    duration: 1.5,
+                    ease: "power4.out"
+                });
+            });
+        }
+
+        // 4. Focus Spotlight Tracking
+        const cards = document.querySelectorAll('.attribute-card');
+        cards.forEach(card => {
+            const spotlight = card.querySelector('.spotlight');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                gsap.to(spotlight, {
+                    background: `radial-gradient(circle at ${x}px ${y}px, rgba(0,242,255,0.15) 0%, transparent 80%)`,
+                    duration: 0.3
+                });
+            });
+        });
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
