@@ -287,6 +287,99 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5), 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        .seal-ring {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .action-box {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .action-box:hover {
+            transform: scale(1.02);
+        }
+
+        /* --- CSS CHO TRUST SEAL - SECTION 4 --- */
+
+        #trust-seal {
+            z-index: 50;
+            pointer-events: none;
+            /* Hiệu ứng drop shadow để tạo độ nổi khối 3D */
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+        }
+
+        /* Vòng tròn lan tỏa xung quanh con dấu */
+        .seal-ring {
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--cyan-neon);
+            border-radius: 50%;
+            animation: seal-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+            opacity: 0;
+        }
+
+        /* Hiệu ứng sóng lan tỏa */
+        @keyframes seal-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        /* Hiệu ứng khi con dấu "đóng" xuống (Impact effect) */
+        .seal-impact {
+            animation: impact-shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes impact-shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        /* Đảm bảo icon bên trong sáng rực rỡ */
+        #trust-seal i {
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8);
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -487,6 +580,76 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="sovereign-gateway" class="relative min-h-screen bg-[#000814] flex items-center justify-center overflow-hidden py-20" style="height: 160vh!important">
+        <canvas id="liquid-data-canvas" class="absolute inset-0 z-0 opacity-30"></canvas>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div id="trust-seal" class="absolute top-[150px] left-1/2 -translate-x-1/2 w-32 h-32 opacity-0 pointer-events-none">
+                <div class="w-full h-full rounded-full border-2 border-cyan-500/50 flex items-center justify-center bg-cyan-500/10 backdrop-blur-md">
+                    <i class="ri-shield-check-fill text-cyan-400 text-5xl"></i>
+                </div>
+                <div class="seal-ring absolute inset-0 border border-cyan-400 rounded-full"></div>
+            </div>
+
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-serif text-white mb-4 tracking-tight">CHỦ NHÂN TIẾP THEO LÀ BẠN</h2>
+                <p class="text-cyan-500 font-mono text-sm tracking-[0.3em] uppercase">The Sovereign Ledger Entry</p>
+            </div>
+
+            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <div class="action-box group relative p-10 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl transition-all duration-500 hover:border-cyan-500/50">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
+
+                    <h3 class="text-xl font-semibold text-white mb-8 flex items-center gap-3">
+                        <i class="ri-flashlight-fill text-yellow-400"></i> Sở hữu tức thời
+                    </h3>
+
+                    <div class="mb-10">
+                        <span class="text-gray-400 text-sm font-mono block mb-2 uppercase tracking-widest">Giá niêm yết</span>
+                        <div class="text-5xl md:text-6xl font-bold text-white tracking-tighter neon-text">
+                            850.000.000<span class="text-xl text-cyan-400">₫</span>
+                        </div>
+                    </div>
+
+                    <button id="buy-now-btn" class="magnetic-wrap relative w-full py-5 bg-gradient-to-r from-blue-700 to-cyan-500 rounded-xl text-white font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(0,127,255,0.4)] overflow-hidden">
+                        <span class="relative z-10">Sở hữu ngay</span>
+                        <div class="inverse-glow absolute inset-0 bg-white opacity-0 transition-opacity duration-300"></div>
+                    </button>
+                </div>
+
+                <div class="action-box group relative p-10 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl transition-all duration-500 hover:border-blue-500/50">
+                    <h3 class="text-xl font-semibold text-white mb-8 flex items-center gap-3">
+                        <i class="ri-customer-service-2-fill text-blue-400"></i> Tư vấn đặc quyền
+                    </h3>
+
+                    <p class="text-gray-400 mb-10 leading-relaxed font-light">
+                        Kết nối trực tiếp với chuyên gia định danh di sản để nhận lộ trình pháp lý và giải pháp tài chính tối ưu nhất cho riêng bạn.
+                    </p>
+
+                    <button class="w-full py-5 border border-white/20 rounded-xl text-white font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all">
+                        Liên hệ chuyên gia
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-20 flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+                <div class="flex items-center gap-2 text-green-400 font-mono text-[10px] tracking-widest uppercase">
+                    <i class="ri-lock-2-line text-lg"></i> SSL Secured
+                </div>
+                <div class="flex items-center gap-2 text-green-400 font-mono text-[10px] tracking-widest uppercase">
+                    <i class="ri-bank-card-line text-lg"></i> PCI DSS
+                </div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4 invert">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-8">
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 w-full p-4 grid grid-cols-2 gap-3 bg-black/60 backdrop-blur-xl border-t border-white/10 z-[100] lg:hidden">
+            <button class="bg-white/10 text-white py-4 rounded-xl text-xs font-bold uppercase tracking-widest border border-white/10">Tư vấn</button>
+            <button onclick="triggerHaptic()" class="bg-cyan-600 text-white py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-cyan-900/40">Mua ngay</button>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -863,6 +1026,102 @@
     }
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Hiệu ứng "The Trust Seal" khi cuộn tới
+        ScrollTrigger.create({
+            trigger: "#sovereign-gateway",
+            start: "top 60%",
+            onEnter: () => {
+                const tl = gsap.timeline();
+                tl.to("#trust-seal", {
+                        opacity: 1,
+                        top: "-30%",
+                        duration: 0.8,
+                        ease: "bounce.out"
+                    })
+                    .to("#sovereign-gateway", {
+                        backgroundColor: "#001220",
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1
+                    }); // Hiệu ứng rung màn hình nhẹ
+            }
+        });
+
+        // 2. Hiệu ứng Lực hút năng lượng cho nút Mua ngay (Inverse Glow)
+        const buyBtn = document.getElementById('buy-now-btn');
+        const glow = buyBtn.querySelector('.inverse-glow');
+
+        buyBtn.addEventListener('mouseenter', () => {
+            gsap.to(glow, {
+                opacity: 0.2,
+                scale: 2,
+                duration: 0.4
+            });
+            gsap.to(buyBtn, {
+                boxShadow: "0 0 40px rgba(0, 242, 255, 0.8)",
+                duration: 0.4
+            });
+        });
+
+        buyBtn.addEventListener('mouseleave', () => {
+            gsap.to(glow, {
+                opacity: 0,
+                scale: 1,
+                duration: 0.4
+            });
+            gsap.to(buyBtn, {
+                boxShadow: "0 0 20px rgba(0, 127, 255, 0.4)",
+                duration: 0.4
+            });
+        });
+
+        // 3. Hiệu ứng Liquid Data Flow Background (Canvas)
+        const canvas = document.getElementById('liquid-data-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.speed = Math.random() * 0.5 + 0.1;
+                this.size = Math.random() * 2;
+            }
+            draw() {
+                ctx.fillStyle = "#007FFF";
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) this.y = 0;
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animateLiquid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateLiquid);
+        }
+        animateLiquid();
+    });
+
+    // 4. Mobile Haptic Feedback
+    function triggerHaptic() {
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate([50, 30, 50]); // Rung Double click
+        }
+        alert("Hệ thống đang khởi tạo cổng thanh toán an toàn...");
+    }
 
     // ----------------------------- section 5 ----------------------------- //
 
