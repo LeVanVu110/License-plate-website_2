@@ -149,6 +149,9 @@
             .pedestal-3d {
                 width: 300px;
             }
+            #hud-status{
+                top: -10px;
+            }
         }
 
         /* ----------------------------- section 2 -----------------------------  */
@@ -322,6 +325,71 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Hiệu ứng Liquid Metal cho nút Hunter */
+        .liquid-metal {
+            background: linear-gradient(45deg, rgba(0, 242, 255, 0.4), rgba(0, 102, 255, 0.4), rgba(0, 242, 255, 0.4));
+            background-size: 200% 200%;
+            animation: liquidMove 3s infinite linear;
+        }
+
+        @keyframes liquidMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        /* Nhịp thở Neon cho viền nút */
+        .neon-border-pulse {
+            animation: borderPulse 2s infinite ease-in-out;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+
+        @keyframes borderPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
+        /* 3D Tilt hiệu ứng cho Box */
+        #execution-box {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 1024px) {
+            #execution-box {
+                padding: 40px 20px;
+                border-radius: 30px;
+            }
+
+            /* Sticky action khi cuộn */
+            .mobile-sticky-actions {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 4, 10, 0.95);
+
+                padding: 15px;
+                z-index: 100;
+                border-top: 1px solid rgba(0, 242, 255, 0.2);
+                display: flex;
+                gap: 10px;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -571,6 +639,56 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="sovereign-decision" class="relative min-h-screen bg-gradient-to-b from-[#000810] to-[#000000] overflow-hidden flex items-center justify-center py-20">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" id="vault-grid" style="background-image: radial-gradient(#0066FF 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+        <div id="scanner-line" class="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#00f2ff] opacity-0 z-50"></div>
+
+        <div class="container mx-auto px-6 relative z-10 flex flex-col items-center">
+            <div id="execution-box" class="relative w-full max-w-4xl bg-white/5 backdrop-blur-3xl border border-cyan-500/30 rounded-[40px] p-8 lg:p-16 overflow-hidden transform-style-3d">
+
+                <div id="vault-lock" class="absolute inset-0 flex items-center justify-center bg-[#000810] z-40 transition-all duration-1000">
+                    <div class="lock-circle w-32 h-32 border-4 border-dashed border-cyan-500 rounded-full flex items-center justify-center">
+                        <i class="ri-lock-fill text-4xl text-cyan-400"></i>
+                    </div>
+                </div>
+
+                <div class="text-center mb-12">
+                    <h2 class="text-cyan-500 font-mono text-[10px] tracking-[0.6em] uppercase mb-4">Sovereign Decision</h2>
+                    <div class="text-4xl lg:text-6xl font-bold text-white mb-4 tracking-tighter">
+                        XÁC THỰC <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">SỞ HỮU</span>
+                    </div>
+                    <p class="text-gray-400 font-light max-w-md mx-auto text-sm">Tài sản số được bảo vệ bởi Sapphire Security Protocol v2.0</p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-6 justify-center items-stretch">
+                    <button onclick="triggerSignature()" class="group relative flex-1 bg-gradient-to-r from-blue-700 to-blue-500 p-[2px] rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95">
+                        <div class="relative bg-blue-600 h-full py-6 rounded-2xl flex flex-col items-center justify-center overflow-hidden">
+                            <div class="liquid-metal absolute inset-0 opacity-30"></div>
+                            <span class="relative z-10 text-white font-bold tracking-widest text-sm mb-1 uppercase">Tham gia đấu giá</span>
+                            <span class="relative z-10 text-blue-100 text-[10px] font-mono opacity-70">Price: 5.800.000.000₫</span>
+                            <div class="absolute inset-0 border-2 border-cyan-400 rounded-2xl opacity-0 group-hover:opacity-100 neon-border-pulse"></div>
+                        </div>
+                    </button>
+
+                    <button class="group flex-1 border border-white/20 bg-white/5 backdrop-blur-md py-6 rounded-2xl hover:border-cyan-400 transition-all flex flex-col items-center justify-center">
+                        <span class="text-white font-bold tracking-widest text-sm mb-1 uppercase">Liên hệ chuyên gia VIP</span>
+                        <span class="text-gray-500 text-[10px] font-mono">Private Transaction</span>
+                    </button>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-2 text-[9px] font-mono text-gray-500 uppercase tracking-widest">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Encrypted by Sapphire Security Protocol v2.0
+                    </div>
+                    <div class="text-[9px] font-mono text-gray-500">
+                        VERIFIED ASSET ID: 30K88888-2024
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -858,7 +976,7 @@
         },
         'suv': {
             platePos: {
-               top: '50%',
+                top: '50%',
                 left: '25%'
             },
             name: 'RR CULLINAN',
@@ -966,6 +1084,107 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    window.addEventListener('load', () => {
+        // 1. Hiệu ứng "The Final Lock" khi cuộn tới
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tlVault = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#sovereign-decision",
+                start: "top 60%",
+                onEnter: () => {
+                    // Visual Bass: Rung màn hình nhẹ
+                    gsap.to("body", {
+                        x: 1,
+                        yoyo: true,
+                        repeat: 5,
+                        duration: 0.05
+                    });
+                }
+            }
+        });
+
+        tlVault.to(".lock-circle", {
+                rotate: 360,
+                scale: 1.5,
+                opacity: 0,
+                duration: 1.5,
+                ease: "expo.inOut"
+            })
+            .to("#vault-lock", {
+                y: "-100%",
+                duration: 1,
+                ease: "power4.inOut"
+            }, "-=0.5")
+            .from("#execution-box", {
+                scale: 0.9,
+                opacity: 0,
+                duration: 1
+            }, "-=0.8");
+
+        // 2. Hiệu ứng 3D Tilt cho Desktop
+        if (window.innerWidth > 1024) {
+            document.addEventListener('mousemove', (e) => {
+                const box = document.getElementById('execution-box');
+                const rect = box.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                gsap.to(box, {
+                    rotateY: x * 10,
+                    rotateX: -y * 10,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+
+                // Di chuyển lưới mạch điện phía sau
+                gsap.to("#vault-grid", {
+                    x: x * 30,
+                    y: y * 30,
+                    duration: 0.7
+                });
+            });
+        }
+
+        // 3. Hiệu ứng "The Digital Signature" khi nhấn nút
+        window.triggerSignature = function() {
+            const scanner = document.getElementById('scanner-line');
+
+            // Hiện tia quét
+            gsap.set(scanner, {
+                opacity: 1,
+                top: "0%"
+            });
+
+            gsap.to(scanner, {
+                top: "100%",
+                duration: 1.5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    // Hiệu ứng hoàn tất: Màn hình lóe sáng xanh
+                    const flash = document.createElement('div');
+                    flash.className = "fixed inset-0 bg-cyan-500 z-[100] opacity-0";
+                    document.body.appendChild(flash);
+
+                    gsap.to(flash, {
+                        opacity: 0.3,
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1,
+                        onComplete: () => {
+                            alert("DANH TÍNH ĐÃ ĐƯỢC XÁC THỰC. ĐANG CHUYỂN ĐẾN CỔNG THANH TOÁN...");
+                            // window.location.href = "checkout.php";
+                        }
+                    });
+                }
+            });
+
+            // Haptic Feedback giả lập cho Mobile
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate([50, 30, 50]);
+            }
+        };
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
