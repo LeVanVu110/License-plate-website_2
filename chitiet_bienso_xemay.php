@@ -1,4 +1,15 @@
 <?php include "header.php"; ?>
+<?php
+// Lấy dữ liệu từ URL
+$full_plate = isset($_GET['plate']) ? $_GET['plate'] : "00A1-000.00";
+$price = isset($_GET['price']) ? $_GET['price'] : "0";
+
+// Tách biển số thành 2 phần để hiển thị lên phôi biển xe máy (nếu cần)
+// Ví dụ: 29G1-888.88 -> [0] => 29G1, [1] => 888.88
+$plate_parts = explode('-', $full_plate);
+$line1 = $plate_parts[0];
+$line2 = isset($plate_parts[1]) ? $plate_parts[1] : "";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -414,8 +425,8 @@
                 <div class="relic-card" id="plate">
                     <div class="plate-content">
                         <div class="scanline" id="scan-effect"></div>
-                        <p class="text-3xl font-bold tracking-widest font-mono">29-G1</p>
-                        <p class="text-5xl font-extrabold tracking-tighter font-mono mt-2">888.88</p>
+                        <p class="text-3xl font-bold tracking-widest font-mono"><?php echo $line1; ?></p>
+                        <p class="text-5xl font-extrabold tracking-tighter font-mono mt-2"><?php echo $line2; ?></p>
                     </div>
                 </div>
             </div>
@@ -426,7 +437,7 @@
         <div class="w-full lg:w-1/3 flex flex-col gap-8 z-20 mt-12 lg:mt-0">
             <div class="space-y-2">
                 <h4 class="text-cyan-500 font-mono text-xs tracking-[0.3em] uppercase italic">Current Valuation</h4>
-                <h2 class="text-5xl lg:text-6xl font-bold text-white tracking-tighter">850.000.000<span class="text-cyan-400 text-2xl">₫</span></h2>
+                <h2 class="text-5xl lg:text-6xl font-bold text-white tracking-tighter"><?php echo $price; ?> VNĐ<span class="text-cyan-400 text-2xl">₫</span></h2>
             </div>
 
             <div class="grid grid-cols-2 gap-4">

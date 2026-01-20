@@ -965,7 +965,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_oto.php?plate=30K-999.99&price=2.500.000.000" class="block">
+                        <a href="chitiet_bienso_oto.php?plate=29K-888.88&price=7.500.000.000" class="block">
                             <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
@@ -979,12 +979,12 @@
                                     </div>
 
                                     <div class="plate-number text-center">
-                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">29K - 888.88</h3>
                                     </div>
 
                                     <div class="flex justify-between items-end">
                                         <div class="price">
-                                            <p class="text-xs md:text-lg font-bold text-blue-500">2.500.000.000đ</p>
+                                            <p class="text-xs md:text-lg font-bold text-blue-500">7.500.000.000đ</p>
                                         </div>
                                         <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
                                     </div>
@@ -993,7 +993,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_oto.php?plate=30K-999.99&price=2.500.000.000" class="block">
+                        <a href="chitiet_bienso_oto.php?plate=27K-777.77&price=8.100.000.000" class="block">
                             <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
@@ -1007,12 +1007,12 @@
                                     </div>
 
                                     <div class="plate-number text-center">
-                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
+                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">27K - 777.77</h3>
                                     </div>
 
                                     <div class="flex justify-between items-end">
                                         <div class="price">
-                                            <p class="text-xs md:text-lg font-bold text-blue-500">2.500.000.000đ</p>
+                                            <p class="text-xs md:text-lg font-bold text-blue-500">8.100.000.000đ</p>
                                         </div>
                                         <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
                                     </div>
@@ -1030,7 +1030,7 @@
                         <div class="h-[1px] flex-1 bg-blue-500/20"></div>
                     </h4>
                     <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1041,11 +1041,11 @@
                                     <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-E2</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">999.99</p>
                                     </div>
 
-                                    <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                                    <p class="text-sm md:text-base font-bold text-white">1.200.000.000đ</p>
                                 </div>
 
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -1072,7 +1072,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1083,17 +1083,17 @@
                                     <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">59-T2</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">555.55</p>
                                     </div>
 
-                                    <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                                    <p class="text-sm md:text-base font-bold text-white">650.000.000đ</p>
                                 </div>
 
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1104,11 +1104,11 @@
                                     <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                        <p class="text-xl md:text-2xl font-mono text-white/90">36-M1</p>
+                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">688.88</p>
                                     </div>
 
-                                    <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
+                                    <p class="text-sm md:text-base font-bold text-white">185.000.000đ</p>
                                 </div>
 
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
