@@ -1,4 +1,10 @@
 <?php include "header.php"; ?>
+<?php
+// Nhận dữ liệu
+$ten = $_GET['name'] ?? 'Tiêu đề';
+$gia = $_GET['price'] ?? '0';
+$anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -239,7 +245,7 @@
 
         <div class="hero-image-container absolute inset-0 z-0">
             <div class="hero-overlay absolute inset-0 bg-gradient-to-t from-[#000F1A] via-transparent to-black/30 z-10"></div>
-            <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000"
+            <img src="<?php echo htmlspecialchars($anh); ?>"
                 id="hero-img"
                 class="w-full h-full object-cover opacity-0"
                 alt="Featured News Image">
@@ -249,8 +255,7 @@
 
             <div class="max-w-5xl">
                 <h1 id="news-headline" class="text-4xl md:text-6xl lg:text-8xl font-serif text-[#E0F2F7] leading-tight tracking-tighter opacity-0">
-                    TƯƠNG LAI CỦA <br>
-                    <span class="text-glow">DI SẢN SỐ</span> TRÊN BLOCKCHAIN
+                    <?php echo htmlspecialchars($ten); ?>
                 </h1>
             </div>
 
@@ -291,7 +296,7 @@
                 </div>
                 <span class="text-[8px] font-mono text-gray-500 uppercase tracking-widest">1.2k Views</span>
             </div>
-            <a href="journal.php" class="flex flex-col items-center gap-2 group">
+            <a href="tin_tuc.php" class="flex flex-col items-center gap-2 group">
                 <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 backdrop-blur-md group-hover:bg-[#00FFFF]/10 transition-all">
                     <i class="ri-arrow-left-line text-[#E0F2F7]"></i>
                 </div>

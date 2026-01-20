@@ -378,9 +378,11 @@
                             Từ một dãy số vô hồn trở thành di sản tài chính triệu đô. Khám phá bí ẩn phong thủy và lực đẩy thị trường phía sau những con số quyền lực nhất Việt Nam.
                         </p>
 
-                        <button id="btn-read-now" class="px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                        <a href="chitiet_tintuc.php?name=GIẢI MÃ: BIỂN SỐ TỈ ĐÔ 888.88 ĐỊNH DANH VẬN MỆNH THẾ NÀO&image=https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
+                            id="btn-read-now"
+                            class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
                             Đọc Ngay
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -418,7 +420,8 @@
 
             <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
 
-                <div class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                <a href="chitiet_tintuc.php?name=Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)&image=https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070"
+                    class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
                     <img src="https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
@@ -426,33 +429,37 @@
                         <span class="tag mb-4 inline-block">#PhongThuy</span>
                         <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight">Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)</h3>
                     </div>
-                </div>
+                </a>
 
-                <div class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                <a href="chitiet_tintuc.php?name=Tổng hợp giá đấu các phiên VIP tháng 1/2026&image=https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000"
+                    class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1611974714024-4621400d3063?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
                     <div class="absolute bottom-0 p-6">
                         <span class="tag mb-2 inline-block">#ThiTruong</span>
                         <h3 class="text-xl font-bold text-[#E0F7FA]">Tổng hợp giá đấu các phiên VIP tháng 1/2026</h3>
                     </div>
-                </div>
+                </a>
 
-                <div class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                <a href="chitiet_tintuc.php?name=Tương lai di sản số trên blockchain&image=https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000"
+                    class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
+                    <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
                     <div class="absolute bottom-0 p-6 z-20">
                         <span class="tag mb-2 inline-block">#PhapLy</span>
-                        <h3 class="text-sm font-bold text-[#E0F7FA]">Hướng dẫn thu hồi biển định danh theo luật mới</h3>
+                        <h3 class="text-sm font-bold text-[#E0F7FA]">Tương lai di sản số trên blockchain</h3>
                     </div>
-                </div>
+                </a>
 
-                <div class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"
+                    class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854" class="thumb-img absolute inset-0 w-full h-full object-cover opacity-40">
                     <div class="absolute bottom-0 p-6">
                         <h3 class="text-sm font-bold text-[#E0F7FA]">Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim</h3>
                     </div>
-                </div>
+                </a>
 
             </div>
         </div>
