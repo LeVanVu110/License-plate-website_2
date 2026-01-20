@@ -72,6 +72,77 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        /* Filter Buttons */
+        .filter-btn {
+            padding: 10px 24px;
+            border-radius: 99px;
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #22d3ee;
+            color: #000;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+
+        /* Knowledge Card Components */
+        .tag {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        /* Glint Effect */
+        .glint {
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 45%,
+                    rgba(34, 211, 238, 0.3) 50%,
+                    transparent 55%);
+            transition: all 0s;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .news-item:hover .glint {
+            top: 100%;
+            left: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .news-item:hover .thumb-img {
+            transform: scale(1.1);
+            filter: saturate(1.5);
+        }
+
+        /* Responsive Mobile Stack */
+        @media (max-width: 768px) {
+            #news-grid {
+                grid-template-columns: 1fr !important;
+                auto-rows: auto !important;
+            }
+
+            .news-item {
+                grid-column: span 1 !important;
+                grid-row: span 1 !important;
+                height: 250px;
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -132,6 +203,57 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="intelligence-grid" class="relative min-h-screen py-24 bg-[#000B18]">
+        <div class="container mx-auto px-6">
+
+            <div class="flex flex-wrap justify-center gap-4 mb-16" id="filter-controls">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="fengshui">Phong thủy</button>
+                <button class="filter-btn" data-filter="market">Thị trường</button>
+                <button class="filter-btn" data-filter="legal">Pháp lý</button>
+            </div>
+
+            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
+
+                <div class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <img src="https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 p-8">
+                        <span class="tag mb-4 inline-block">#PhongThuy</span>
+                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight">Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)</h3>
+                    </div>
+                </div>
+
+                <div class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <img src="https://images.unsplash.com/photo-1611974714024-4621400d3063?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
+                    <div class="absolute bottom-0 p-6">
+                        <span class="tag mb-2 inline-block">#ThiTruong</span>
+                        <h3 class="text-xl font-bold text-[#E0F7FA]">Tổng hợp giá đấu các phiên VIP tháng 1/2026</h3>
+                    </div>
+                </div>
+
+                <div class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <div class="glint"></div>
+                    <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
+                    <div class="absolute bottom-0 p-6 z-20">
+                        <span class="tag mb-2 inline-block">#PhapLy</span>
+                        <h3 class="text-sm font-bold text-[#E0F7FA]">Hướng dẫn thu hồi biển định danh theo luật mới</h3>
+                    </div>
+                </div>
+
+                <div class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                    <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854" class="thumb-img absolute inset-0 w-full h-full object-cover opacity-40">
+                    <div class="absolute bottom-0 p-6">
+                        <h3 class="text-sm font-bold text-[#E0F7FA]">Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -143,6 +265,7 @@
 
     <?php include "footer.php"; ?>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
 <script>
     // ----------------------------- section 1 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
@@ -268,6 +391,98 @@
     });
 
     // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(Flip);
+
+        const newsItems = gsap.utils.toArray(".news-item");
+        const grid = document.getElementById("news-grid");
+
+        // 1. STAGGERED FLUID REVEAL
+        gsap.from(newsItems, {
+            scrollTrigger: {
+                trigger: "#intelligence-grid",
+                start: "top 70%",
+            },
+            y: 100,
+            opacity: 0,
+            scale: 0.9,
+            stagger: 0.1,
+            duration: 1.2,
+            ease: "power4.out"
+        });
+
+        // 2. CATEGORY SWITCHER (FLIP LOGIC)
+        const buttons = document.querySelectorAll(".filter-btn");
+
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                // Cập nhật trạng thái Active của nút
+                buttons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                const filter = btn.dataset.filter;
+
+                // Ghi lại trạng thái Flip
+                const state = Flip.getState(newsItems);
+
+                // Xử lý ẩn/hiện dựa trên filter
+                newsItems.forEach(item => {
+                    if (filter === "all" || item.classList.contains(filter)) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                // Thực hiện hiệu ứng Flip mượt mà
+                Flip.from(state, {
+                    duration: 0.8,
+                    ease: "power3.inOut",
+                    stagger: 0.05,
+                    onEnter: elements => gsap.fromTo(elements, {
+                        opacity: 0,
+                        scale: 0
+                    }, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.6
+                    }),
+                    onLeave: elements => gsap.to(elements, {
+                        opacity: 0,
+                        scale: 0,
+                        duration: 0.4
+                    })
+                });
+            });
+        });
+
+        // 3. 3D GLASS TILT (DESKTOP)
+        if (window.innerWidth > 1024) {
+            newsItems.forEach(card => {
+                card.addEventListener("mousemove", (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                    gsap.to(card, {
+                        rotationY: x * 10,
+                        rotationX: -y * 10,
+                        transformPerspective: 1000,
+                        ease: "power2.out",
+                        duration: 0.4
+                    });
+                });
+
+                card.addEventListener("mouseleave", () => {
+                    gsap.to(card, {
+                        rotationY: 0,
+                        rotationX: 0,
+                        duration: 0.6
+                    });
+                });
+            });
+        }
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
