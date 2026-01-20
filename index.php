@@ -939,7 +939,7 @@
                     <div id="gallery-auto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
                         <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                                <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between">
                                 <div class="flex justify-between items-start">
@@ -959,7 +959,7 @@
                         </div>
                         <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                                <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between">
                                 <div class="flex justify-between items-start">
@@ -979,7 +979,7 @@
                         </div>
                         <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                                <img src="https://purepng.com/public/uploads/large/purepng.com-rolls-royce-ghost-white-carcarvehicletransportrolls-royce-17015276229158n80m.png" class="w-4/5 grayscale invert" alt="Silhouette">
+                                <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between">
                                 <div class="flex justify-between items-start">
@@ -1008,7 +1008,7 @@
                     <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
                         <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                                <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between text-center">
                                 <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
@@ -1021,7 +1021,7 @@
                         </div>
                         <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                                <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between text-center">
                                 <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
@@ -1034,7 +1034,7 @@
                         </div>
                         <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                                <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between text-center">
                                 <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
@@ -1047,7 +1047,7 @@
                         </div>
                         <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden">
                             <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all">
-                                <img src="https://images.squarespace-cdn.com/content/v1/5a940f533e2d1033230b561c/1544605934507-6I1S6P7U3P6U6G6U6S6S/Vespa+Primavera+50+White.png" class="w-3/4 grayscale invert" alt="Moto">
+                                <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
                             </div>
                             <div class="relative z-10 h-full flex flex-col justify-between text-center">
                                 <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
@@ -1058,6 +1058,7 @@
                                 <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
