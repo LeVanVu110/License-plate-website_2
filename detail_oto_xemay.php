@@ -23,9 +23,11 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
 
         body {
             background-color: var(--midnight);
-            color: white;
+            /* color: white; */
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            min-height: 0;
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
         }
 
         .space-mono {
@@ -248,6 +250,52 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Flip Card CSS */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-container:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Magnetic Area */
+        #magnetic-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile floating icons */
+        .floating-contact {
+            animation: pulse-blue 2s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 127, 255, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(0, 127, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 127, 255, 0);
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -264,7 +312,7 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
         <div class="h-[1px] w-24 bg-blue-500/30 mx-auto"></div>
     </header>
 
-    <div class="flex md:hidden justify-center gap-4 p-3 px-6" style="background-color: #000814;">
+    <div class="flex md:hidden justify-center gap-4 p-3 px-6" style="background-color: #000814; color: #fff;">
         <button onclick="switchTab('auto')" id="btn-auto" class="flex-1 py-4 bg-blue-600/20 border border-blue-500/50 rounded-xl text-[10px] tracking-[3px] font-bold uppercase active-tab-btn">Ô tô (24)</button>
         <button onclick="switchTab('moto')" id="btn-moto" class="flex-1 py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] tracking-[3px] font-bold uppercase">Xe máy (15)</button>
     </div>
@@ -470,6 +518,84 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="acquisition-hub" class="relative min-h-screen bg-gradient-to-b from-[#00050a] to-[#000000] py-32 px-6 overflow-hidden">
+
+        <div id="beacon-line" class="absolute left-1/2 top-0 w-[1px] h-full bg-gradient-to-b from-blue-500 via-cyan-400 to-transparent -translate-x-1/2 opacity-30"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-24 h-20">
+                <h2 id="morphing-text" class="serif text-white text-4xl md:text-5xl tracking-tight">Tìm thấy báu vật?</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+
+                <div class="hub-lane p-10 rounded-[40px] bg-white/[0.02] border border-white/5 backdrop-blur-2xl hover:border-blue-500/30 transition-all duration-700">
+                    <span class="text-[10px] tracking-[5px] text-blue-500 uppercase block mb-6">Lối 01 // Gợi ý tối ưu</span>
+                    <h3 class="text-white text-2xl mb-10 serif">Sở hữu ngay di sản tương đồng</h3>
+
+                    <div class="space-y-4 mb-12">
+                        <div class="flex justify-between items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors group">
+                            <span class="space-mono text-white group-hover:text-blue-400">30K-889.88</span>
+                            <span class="text-xs text-white/40 italic">Đại cát - 1.2 tỷ</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors group">
+                            <span class="space-mono text-white group-hover:text-blue-400">30K-888.89</span>
+                            <span class="text-xs text-white/40 italic">Tiến bước - 950tr</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full py-4 border border-blue-500/50 text-blue-400 text-[10px] tracking-[4px] font-bold uppercase hover:bg-blue-500 hover:text-white transition-all">Xem danh sách mở rộng</button>
+                </div>
+
+                <div class="flip-card-container h-[450px] perspective-1000">
+                    <div class="flip-card-inner relative w-full h-full transition-transform duration-1000 transform-style-3d cursor-pointer">
+
+                        <div class="flip-front absolute inset-0 backface-hidden p-10 rounded-[40px] bg-blue-600/10 border border-blue-500/20 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] tracking-[5px] text-cyan-400 uppercase block mb-6">Lối 02 // Đặc quyền VIP</span>
+                                <h3 class="text-white text-3xl serif leading-tight">Chưa tìm thấy<br>dãy số định mệnh?</h3>
+                            </div>
+                            <p class="text-white/60 text-sm leading-relaxed">Kích hoạt đội ngũ "Heritage Hunter" để săn tìm đúng dãy số bạn mong muốn trong kho số quốc gia.</p>
+                            <div class="text-cyan-400 text-[10px] font-bold tracking-[2px]">HOVER ĐỂ XEM QUY TRÌNH ➔</div>
+                        </div>
+
+                        <div class="flip-back absolute inset-0 backface-hidden p-10 rounded-[40px] bg-[#001a33] border border-blue-500/50 rotate-y-180 flex flex-col justify-center space-y-8">
+                            <div class="step flex gap-6">
+                                <span class="space-mono text-2xl text-blue-500">01</span>
+                                <p class="text-white text-sm">Gửi yêu cầu dãy số & ngân sách dự kiến.</p>
+                            </div>
+                            <div class="step flex gap-6">
+                                <span class="space-mono text-2xl text-blue-500">02</span>
+                                <p class="text-white text-sm">Quản gia check kho & đấu giá ủy quyền.</p>
+                            </div>
+                            <div class="step flex gap-6">
+                                <span class="space-mono text-2xl text-blue-500">03</span>
+                                <p class="text-white text-sm">Bàn giao biển số tận nơi trong 7 ngày.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 md:mt-32 flex justify-center w-full">
+                <div id="magnetic-area" class="p-8 md:p-20 flex justify-center items-center w-full">
+                    <button id="magnetic-btn" class="w-full max-w-[300px] md:w-auto bg-cyan-500 text-black px-8 md:px-16 py-5 md:py-6 rounded-full font-bold tracking-[3px] md:tracking-[5px] text-[10px] md:text-[11px] uppercase shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95 transition-transform">
+                        ĐẶT HÀNG SỐ RIÊNG
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
+            <div class="flex gap-10 items-center">
+                <img src="images__1_-removebg-preview.png" class="h-10 grayscale hover:grayscale-0 transition-all duration-500"
+                    alt="Secure Certification">
+                <span class="text-[9px] tracking-[3px] text-white uppercase">Mã hóa giao dịch quân đội 256-bit</span>
+            </div>
+            <p class="text-[9px] text-white tracking-[2px]">© 2024 THE GRAND GALLERY. ALL RIGHTS RESERVED.</p>
+        </footer>
+
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -784,6 +910,102 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
     }
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Text Morphing
+        const phrases = ["Tìm thấy báu vật?", "Sở hữu di sản?", "Tạo ra huyền thoại?"];
+        let currentIndex = 0;
+        const textElement = document.getElementById('morphing-text');
+
+        function morphText() {
+            gsap.to(textElement, {
+                opacity: 0,
+                y: -10,
+                duration: 0.8,
+                onComplete: () => {
+                    currentIndex = (currentIndex + 1) % phrases.length;
+                    textElement.innerText = phrases[currentIndex];
+                    gsap.to(textElement, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8
+                    });
+                }
+            });
+        }
+        setInterval(morphText, 3500);
+
+        // 2. Magnetic Button Effect
+        const magneticArea = document.getElementById('magnetic-area');
+        const magneticBtn = document.getElementById('magnetic-btn');
+        // Kiểm tra nếu không phải thiết bị di động
+        if (window.innerWidth > 768) {
+            magneticArea.addEventListener('mousemove', (e) => {
+                const rect = magneticArea.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                gsap.to(magneticBtn, {
+                    x: x * 0.4,
+                    y: y * 0.4,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+
+            magneticArea.addEventListener('mouseleave', () => {
+                gsap.to(magneticBtn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        } else {
+            // Hiệu ứng riêng cho Mobile: Rung khi chạm
+            magneticBtn.addEventListener('touchstart', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(10); // Rung nhẹ 10ms
+                }
+            });
+        }
+
+        magneticArea.addEventListener('mousemove', (e) => {
+            const rect = magneticArea.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            gsap.to(magneticBtn, {
+                x: x * 0.4,
+                y: y * 0.4,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+
+        magneticArea.addEventListener('mouseleave', () => {
+            gsap.to(magneticBtn, {
+                x: 0,
+                y: 0,
+                duration: 0.5,
+                ease: "elastic.out(1, 0.3)"
+            });
+        });
+
+        // 3. Beacon Line Animation
+        gsap.fromTo("#beacon-line", {
+            scaleY: 0,
+            transformOrigin: "top"
+        }, {
+            scaleY: 1,
+            duration: 3,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#acquisition-hub",
+                start: "top center",
+                scrub: true
+            }
+        });
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
