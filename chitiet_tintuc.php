@@ -451,7 +451,8 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                 </div>
 
                 <div id="treasure-slider" class="flex gap-6 overflow-x-auto pb-10 scrollbar-hide cursor-none">
-                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group/plate">
+                    <div
+                        class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group/plate">
                         <div class="flex justify-between items-start mb-12">
                             <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
                             <div class="text-right">
@@ -465,10 +466,13 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         </div>
                         <div class="flex justify-between items-center pt-6 border-t border-white/5">
                             <div class="countdown-timer font-mono text-red-500 text-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]" data-time="5400">01:30:00</div>
-                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ Ngay</button>
+                            <a href="chitiet_bienso_oto.php?plate=51K-686.86&price=1.850.000.000">
+                                <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            </a>
                         </div>
                     </div>
-                    <div class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                    <div
+                        class="min-w-[280px] lg:min-w-[350px] bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group">
                         <div class="flex justify-between items-start mb-12">
                             <span class="bg-red-500/10 text-red-500 text-[9px] font-bold px-3 py-1 rounded-full border border-red-500/20 animate-pulse">LIVE</span>
                             <div class="text-right">
@@ -482,7 +486,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         </div>
                         <div class="flex justify-between items-center pt-6 border-t border-white/5">
                             <div class="countdown-timer font-mono text-red-500 text-sm" data-time="7200">02:00:00</div>
-                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            <a href="chitiet_bienso_oto.php?plate=51K-666.88&price=1.200.000.000">
+                                <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            </a>
                         </div>
                     </div>
 
@@ -500,7 +506,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         </div>
                         <div class="flex justify-between items-center pt-6 border-t border-white/5">
                             <div class="countdown-timer font-mono text-red-500 text-sm" data-time="1800">00:30:00</div>
-                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            <a href="chitiet_bienso_oto.php?plate=30L-999.99&price=4.500.000.000">
+                                <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            </a>
                         </div>
                     </div>
 
@@ -518,7 +526,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         </div>
                         <div class="flex justify-between items-center pt-6 border-t border-white/5">
                             <div class="countdown-timer font-mono text-red-500 text-sm" data-time="10800">03:00:00</div>
-                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            <a href="chitiet_bienso_oto.php?plate=51K-868.68&price=950.000.000">
+                                <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            </a>
                         </div>
                     </div>
 
@@ -536,7 +546,9 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
                         </div>
                         <div class="flex justify-between items-center pt-6 border-t border-white/5">
                             <div class="countdown-timer font-mono text-red-500 text-sm" data-time="7200">02:00:00</div>
-                            <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF]">Đặt Chỗ</button>
+                            <a href="chitiet_bienso_oto.php?plate=51K-999.99&price=3.100.000.000">
+                                <button class="text-[9px] font-bold text-white uppercase border-b border-[#00FFFF] hover:text-[#00FFFF] transition-all">Đặt Chỗ</button>
+                            </a>
                         </div>
                     </div>
                 </div>
