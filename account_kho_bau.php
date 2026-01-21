@@ -197,6 +197,12 @@
             font-family: 'Space Mono', monospace;
         }
 
+        .market-grid-bg {
+            background-image: linear-gradient(#007FFF 1px, transparent 1px),
+                linear-gradient(90deg, #007FFF 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
         /* Hiệu ứng Pulse cho các điểm nút */
         .chart-node,
         #peak-point {
@@ -224,9 +230,21 @@
         /* Mobile: Ẩn biểu đồ phức tạp thay bằng cột nếu cần, 
        nhưng ở đây chúng ta tối ưu SVG để nó co giãn tốt */
         @media (max-width: 768px) {
+            .market-grid-bg {
+                background-size: 30px 30px;
+                /* Lưới dày hơn trên mobile */
+            }
+
             #growth-chart {
+                /* Phóng to biểu đồ một chút để dễ nhìn trên màn hình nhỏ */
                 transform: scale(1.1);
-                margin-left: 20px;
+                margin-top: 20px;
+            }
+
+            /* Đảm bảo tooltip không bị tràn màn hình */
+            #chart-tooltip {
+                font-size: 10px;
+                padding: 8px;
             }
         }
 
@@ -416,65 +434,60 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
-    <section id="market-pulse" class="relative min-h-screen py-24 px-6 bg-[#000814] overflow-hidden border-t border-white/5">
-        <div class="absolute inset-0 opacity-10 pointer-events-none"
-            style="background-image: linear-gradient(#007FFF 1px, transparent 1px), linear-gradient(90deg, #007FFF 1px, transparent 1px); background-size: 50px 50px;">
-        </div>
+    <section id="market-pulse" class="relative min-h-screen py-16 md:py-24 px-4 md:px-6 bg-[#000814] overflow-hidden border-t border-white/5">
+        <div class="market-grid-bg absolute inset-0 opacity-10 pointer-events-none"></div>
 
         <div class="container mx-auto max-w-7xl relative z-10">
-            <div class="flex flex-col lg:flex-row gap-12 items-center">
+            <div class="flex flex-col lg:flex-row gap-10 md:gap-12 items-start lg:items-center">
 
-                <div class="w-full lg:w-1/3 space-y-8">
-                    <div class="header-content">
+                <div class="w-full lg:w-1/3 space-y-6 md:space-y-8">
+                    <div class="header-content text-center lg:text-left">
                         <h2 class="text-[10px] tracking-[5px] text-blue-400 uppercase mb-4">Market Performance</h2>
-                        <h3 class="serif text-4xl text-white font-light leading-tight">Chỉ Số <br> <span class="text-cyan-400">Tăng Trưởng</span></h3>
+                        <h3 class="serif text-3xl md:text-4xl text-white font-light leading-tight">Chỉ Số <br> <span class="text-cyan-400">Tăng Trưởng</span></h3>
                     </div>
 
-                    <div class="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 rounded-[32px]">
+                    <div class="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[24px] md:rounded-[32px] max-w-sm mx-auto lg:mx-0">
                         <p class="text-[10px] text-white/40 tracking-[2px] uppercase mb-2">Lợi nhuận ước tính</p>
                         <div class="flex items-center gap-4">
-                            <span id="profit-counter" class="text-5xl font-bold text-[#50C878] space-mono" data-value="15.8">+0.0%</span>
+                            <span id="profit-counter" class="text-4xl md:text-5xl font-bold text-[#50C878] space-mono" data-value="15.8">+0.0%</span>
                             <div class="p-2 bg-[#50C878]/10 rounded-full">
-                                <i class="ri-arrow-right-up-line text-[#50C878] text-2xl"></i>
+                                <i class="ri-arrow-right-up-line text-[#50C878] text-xl md:text-2xl"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-white/30 mt-4 leading-relaxed font-light">
+                        <p class="text-[11px] md:text-xs text-white/30 mt-4 leading-relaxed font-light">
                             Giá trị kho báu đã tăng trưởng ổn định nhờ vào sự khan hiếm của các dãy số Ngũ Quý trên thị trường.
                         </p>
                     </div>
                 </div>
 
-                <div class="w-full lg:w-2/3 relative min-h-[400px] flex items-center">
-                    <svg id="growth-chart" viewBox="0 0 800 400" class="w-full h-auto drop-shadow-[0_0_20px_rgba(0,242,255,0.2)] overflow-visible">
+                <div class="w-full lg:w-2/3 relative min-h-[300px] md:min-h-[400px] flex items-center justify-center">
+                    <svg id="growth-chart" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-auto drop-shadow-[0_0_20px_rgba(0,242,255,0.2)] overflow-visible">
                         <defs>
                             <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stop-color="#00f2ff" stop-opacity="0.3" />
                                 <stop offset="100%" stop-color="#00f2ff" stop-opacity="0" />
                             </linearGradient>
                         </defs>
-
                         <path id="chart-area" d="M 0 350 Q 200 300 400 250 T 800 100 L 800 400 L 0 400 Z" fill="url(#chart-gradient)" opacity="0"></path>
+                        <path id="chart-line" d="M 0 350 Q 200 300 400 250 T 800 100" fill="none" stroke="#00f2ff" stroke-width="3" stroke-linecap="round"></path>
 
-                        <path id="chart-line" d="M 0 350 Q 200 300 400 250 T 800 100"
-                            fill="none" stroke="#00f2ff" stroke-width="3" stroke-linecap="round"></path>
-
-                        <circle class="chart-node" cx="200" cy="300" r="5" fill="#00f2ff"></circle>
-                        <circle class="chart-node" cx="400" cy="250" r="5" fill="#00f2ff"></circle>
-                        <circle class="chart-node" cx="600" cy="180" r="5" fill="#00f2ff"></circle>
-                        <circle id="peak-point" cx="800" cy="100" r="6" fill="#00f2ff" class="cursor-pointer"></circle>
+                        <circle class="chart-node" cx="200" cy="300" r="6" fill="#00f2ff"></circle>
+                        <circle class="chart-node" cx="400" cy="250" r="6" fill="#00f2ff"></circle>
+                        <circle class="chart-node" cx="600" cy="180" r="6" fill="#00f2ff"></circle>
+                        <circle id="peak-point" cx="800" cy="100" r="8" fill="#00f2ff" class="cursor-pointer"></circle>
                     </svg>
 
-                    <div id="chart-tooltip" class="absolute hidden bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl pointer-events-none">
-                        <p class="text-[9px] text-white/60 space-mono">GIA TRỊ ƯỚC TÍNH</p>
+                    <div id="chart-tooltip" class="absolute hidden bg-black/60 backdrop-blur-md border border-white/20 p-3 rounded-xl pointer-events-none z-50 whitespace-nowrap">
+                        <p class="text-[9px] text-white/60 space-mono uppercase tracking-tighter">Giá trị ước tính</p>
                         <p class="text-xs text-white font-bold">92.400.000.000 VNĐ</p>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-20 grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-blue-500/30 transition-all">
-                    <p class="text-[9px] text-white/30 uppercase mb-2">Đang hót nhất</p>
-                    <p class="text-white space-mono text-sm">30K-999.99</p>
+            <div class="mt-16 md:mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div class="p-5 md:p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-blue-500/30 transition-all group">
+                    <p class="text-[9px] text-white/30 uppercase mb-2 tracking-widest">Đang hót nhất</p>
+                    <p class="text-white space-mono text-sm group-hover:text-cyan-400 transition-colors">30K-999.99</p>
                     <p class="text-[10px] text-blue-400 mt-2">Đang đấu giá: 4.2 tỷ</p>
                 </div>
             </div>
@@ -670,86 +683,114 @@
 
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener("DOMContentLoaded", () => {
-        // 1. Hiệu ứng Vẽ Biểu Đồ (DrawSVG-like)
+        // 1. Hiệu ứng Vẽ Biểu Đồ (Living Graph Animation)
         const path = document.querySelector('#chart-line');
-        const length = path.getTotalLength();
-
-        // Thiết lập trạng thái ẩn ban đầu cho line
-        gsap.set(path, {
-            strokeDasharray: length,
-            strokeDashoffset: length
-        });
-
-        ScrollTrigger.create({
-            trigger: "#market-pulse",
-            start: "top 70%",
-            onEnter: () => {
-                // Vẽ đường Line
-                gsap.to(path, {
-                    strokeDashoffset: 0,
-                    duration: 2.5,
-                    ease: "power2.inOut"
-                });
-
-                // Hiện vùng Area Gradient
-                gsap.to("#chart-area", {
-                    opacity: 1,
-                    duration: 1.5,
-                    delay: 1,
-                    ease: "power1.out"
-                });
-
-                // Nhảy số phần trăm
-                const profit = document.getElementById('profit-counter');
-                const targetVal = parseFloat(profit.getAttribute('data-value'));
-                gsap.to(profit, {
-                    innerText: targetVal,
-                    duration: 2,
-                    snap: {
-                        innerText: 0.1
-                    },
-                    onUpdate: function() {
-                        profit.innerText = "+" + parseFloat(profit.innerText).toFixed(1) + "%";
-                    }
-                });
-            }
-        });
-
-        // 2. Tooltip Interaction (Desktop Mouse Tracking)
+        const chartArea = document.querySelector('#chart-area');
+        const profitCounter = document.getElementById('profit-counter');
+        const growthChart = document.getElementById('growth-chart');
         const peakPoint = document.getElementById('peak-point');
         const tooltip = document.getElementById('chart-tooltip');
 
-        if (window.innerWidth > 1024) {
-            document.getElementById('growth-chart').addEventListener('mousemove', (e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
+        if (path) {
+            const length = path.getTotalLength();
+            // Thiết lập trạng thái ẩn ban đầu
+            gsap.set(path, {
+                strokeDasharray: length,
+                strokeDashoffset: length
+            });
+            gsap.set(chartArea, {
+                opacity: 0
+            });
+
+            ScrollTrigger.create({
+                trigger: "#market-pulse",
+                start: "top 70%",
+                onEnter: () => {
+                    // Vẽ đường line
+                    gsap.to(path, {
+                        strokeDashoffset: 0,
+                        duration: 2.5,
+                        ease: "power2.inOut"
+                    });
+
+                    // Hiện vùng đổ màu gradient sau khi vẽ line được 1 nửa
+                    gsap.to(chartArea, {
+                        opacity: 1,
+                        duration: 1.5,
+                        delay: 0.8,
+                        ease: "power1.out"
+                    });
+
+                    // Nhảy số phần trăm sinh lời
+                    if (profitCounter) {
+                        const targetVal = parseFloat(profitCounter.getAttribute('data-value'));
+                        gsap.to(profitCounter, {
+                            innerText: targetVal,
+                            duration: 2,
+                            snap: {
+                                innerText: 0.1
+                            },
+                            onUpdate: function() {
+                                profitCounter.innerText = "+" + parseFloat(profitCounter.innerText).toFixed(1) + "%";
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        // 2. Xử lý Tooltip Tương tác (Desktop & Mobile)
+        const isMobile = window.innerWidth <= 1024;
+
+        if (!isMobile) {
+            // LOGIC CHO DESKTOP: Tooltip bám theo chuột
+            growthChart.addEventListener('mousemove', (e) => {
+                const rect = growthChart.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
 
                 tooltip.classList.remove('hidden');
                 gsap.to(tooltip, {
-                    left: x + 20,
-                    top: y - 40,
-                    duration: 0.3
+                    left: x,
+                    top: y - 20,
+                    xPercent: -50,
+                    yPercent: -100,
+                    duration: 0.3,
+                    ease: "power2.out"
                 });
             });
 
-            document.getElementById('growth-chart').addEventListener('mouseleave', () => {
+            growthChart.addEventListener('mouseleave', () => {
                 tooltip.classList.add('hidden');
             });
+        } else {
+            // LOGIC CHO MOBILE: Chạm vào điểm nút để hiện thông tin
+            const allNodes = document.querySelectorAll('.chart-node, #peak-point');
+
+            allNodes.forEach(node => {
+                node.addEventListener('touchstart', (e) => {
+                    // Rung phản hồi (Haptic)
+                    if (window.navigator.vibrate) window.navigator.vibrate(20);
+
+                    // Hiển thị Tooltip cố định phía trên biểu đồ để dễ đọc
+                    tooltip.classList.remove('hidden');
+                    tooltip.style.left = "50%";
+                    tooltip.style.top = "0px";
+                    tooltip.style.transform = "translateX(-50%) translateY(-120%)";
+
+                    // Ngăn sự kiện nổi bọt để không bị đóng ngay lập tức
+                    e.stopPropagation();
+                });
+            });
+
+            // Chạm ra ngoài biểu đồ để ẩn tooltip
+            document.addEventListener('touchstart', (e) => {
+                if (!growthChart.contains(e.target)) {
+                    tooltip.classList.add('hidden');
+                }
+            });
         }
-
-        // 3. Mobile Haptic Feedback (Chạm vào điểm cao nhất)
-        peakPoint.addEventListener('touchstart', () => {
-            if (window.navigator.vibrate) {
-                window.navigator.vibrate([50, 30, 50]); // Rung nhịp kép khi đạt đỉnh
-            }
-            tooltip.classList.remove('hidden');
-            tooltip.style.left = "50%";
-            tooltip.style.top = "10%";
-            tooltip.style.transform = "translateX(-50%)";
-        });
     });
-
     // ----------------------------- section 4 ----------------------------- //
 
     // ----------------------------- section 5 ----------------------------- //
