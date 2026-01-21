@@ -201,6 +201,51 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Bệ đỡ cẩm thạch 3D */
+        .pedestal-container {
+            perspective: 1200px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .marble-pedestal {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%) rotateX(70deg);
+            width: 80%;
+            height: 200px;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 70%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 127, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        /* Hiệu ứng kính spec */
+        .glass-spec {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        }
+
+        /* Nút kích hoạt */
+        .active-v-btn {
+            background: #007FFF !important;
+            border-color: #007FFF !important;
+            box-shadow: 0 0 20px rgba(0, 127, 255, 0.4);
+        }
+
+        /* Animation cho biển số khi bay */
+        .ghost-plate {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            background: white;
+            color: black;
+            font-family: 'Space Mono';
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 127, 255, 0.5);
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -328,8 +373,101 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
     <button id="mobile-filter-fab" class="md:hidden fixed bottom-8 right-6 w-14 h-14 bg-blue-600 rounded-full shadow-2xl z-[90] flex items-center justify-center text-white text-2xl border border-white/20">
         <i class="ri-filter-3-line"></i>
     </button>
+    <div id="mobile-filter-overlay" class="fixed inset-0 z-[100] hidden">
+        <div id="filter-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0"></div>
+
+        <div id="filter-sheet" class="absolute bottom-0 left-0 w-full bg-[#000d1a] rounded-t-[30px] p-8 border-t border-white/10 transform translate-y-full">
+            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-8"></div>
+
+            <h3 class="serif text-white text-2xl mb-6">Bộ Lọc Chuyên Sâu</h3>
+
+            <div class="space-y-8">
+                <div>
+                    <p class="text-[10px] tracking-[3px] text-white/40 uppercase mb-4">Loại hình di sản</p>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="filter-tag active">Tất cả</button>
+                        <button class="filter-tag">Sảnh tiến</button>
+                        <button class="filter-tag">Tứ quý</button>
+                        <button class="filter-tag">Lộc phát</button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] tracking-[3px] text-white/40 uppercase mb-4">Tương hợp Ngũ hành</p>
+                    <div class="flex justify-between bg-white/5 p-4 rounded-2xl">
+                        <button class="element-btn kim scale-125">
+                            <div class="dot"></div>
+                        </button>
+                        <button class="element-btn moc scale-125">
+                            <div class="dot"></div>
+                        </button>
+                        <button class="element-btn thuy scale-125">
+                            <div class="dot"></div>
+                        </button>
+                        <button class="element-btn hoa scale-125">
+                            <div class="dot"></div>
+                        </button>
+                        <button class="element-btn tho scale-125">
+                            <div class="dot"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="close-filter-mobile" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl tracking-[2px] text-xs">ÁP DỤNG BỘ LỌC</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="reality-preview" class="relative min-h-screen bg-[#00050a] py-24 px-6 overflow-hidden border-t border-white/5">
+
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+            <div class="lg:col-span-4 order-2 lg:order-1">
+                <div class="glass-spec p-8 rounded-3xl border border-white/10 backdrop-blur-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+
+                    <span class="text-[10px] tracking-[5px] text-blue-500 uppercase">Quick Analysis</span>
+                    <h3 id="preview-plate-display" class="space-mono text-3xl text-white mt-4 mb-8">000.00</h3>
+
+                    <div class="space-y-6">
+                        <div class="flex justify-between border-b border-white/5 pb-4">
+                            <span class="text-white/40 text-xs">Phong thủy</span>
+                            <span id="spec-fengshui" class="text-white text-xs font-bold uppercase tracking-widest">Đại cát - Kim</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/5 pb-4">
+                            <span class="text-white/40 text-xs">Giá chốt nhanh</span>
+                            <span id="spec-price" class="text-blue-400 space-mono font-bold">---</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-10">
+                        <button onclick="switchVehicle('auto')" id="btn-view-auto" class="flex-1 py-4 bg-white/5 border border-white/10 rounded-xl text-[9px] tracking-[2px] font-bold text-white hover:bg-blue-600 transition-all active-v-btn">XEM TRÊN Ô TÔ</button>
+                        <button onclick="switchVehicle('moto')" id="btn-view-moto" class="flex-1 py-4 bg-white/5 border border-white/10 rounded-xl text-[9px] tracking-[2px] font-bold text-white hover:bg-blue-600 transition-all">XEM TRÊN XE MÁY</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 order-1 lg:order-2 relative min-h-[500px] flex items-center justify-center">
+                <div class="pedestal-container relative">
+                    <div class="marble-pedestal"></div>
+
+                    <div id="vehicle-model" class="relative z-10 transition-all duration-700 transform-gpu">
+                        <img id="model-img" src="350-xanh-tt.webp" class="w-full max-w-lg mx-auto grayscale opacity-50 brightness-150" alt="Vehicle Model">
+
+                        <div id="snap-point" class="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-8 w-32 h-10 border border-blue-500/30 bg-blue-500/5 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+                            <div id="target-plate" class="text-black font-black text-[10px] space-mono bg-white px-2 py-1 rounded shadow-lg opacity-0"></div>
+                            <div class="snap-flash absolute inset-0 bg-blue-400 opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-0 text-center w-full">
+                    <p class="serif-italic text-white/20 text-sm italic">Xoay để cảm nhận ánh sáng phản chiếu trên lớp dập nổi kim loại</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -482,9 +620,168 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                 window.navigator.vibrate(10);
             }
         });
+        // --- Code bổ sung cho Mobile Filter ---
+        const fab = document.getElementById('mobile-filter-fab');
+        const overlay = document.getElementById('mobile-filter-overlay');
+        const backdrop = document.getElementById('filter-backdrop');
+        const sheet = document.getElementById('filter-sheet');
+        const closeBtn = document.getElementById('close-filter-mobile');
+
+        // Hàm mở bộ lọc
+        fab.addEventListener('click', () => {
+            overlay.classList.remove('hidden');
+
+            // Rung nhẹ điện thoại (Haptic)
+            if (window.navigator.vibrate) window.navigator.vibrate(15);
+
+            gsap.to(backdrop, {
+                opacity: 1,
+                duration: 0.4
+            });
+            gsap.to(sheet, {
+                y: 0,
+                duration: 0.6,
+                ease: "expo.out"
+            });
+        });
+
+        // Hàm đóng bộ lọc
+        function closeMobileFilter() {
+            gsap.to(backdrop, {
+                opacity: 0,
+                duration: 0.3
+            });
+            gsap.to(sheet, {
+                y: "100%",
+                duration: 0.5,
+                ease: "expo.in",
+                onComplete: () => {
+                    overlay.classList.add('hidden');
+                }
+            });
+        }
+
+        closeBtn.addEventListener('click', closeMobileFilter);
+        backdrop.addEventListener('click', closeMobileFilter);
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    // 1. Hàm Teleport Biển số từ Section 1 xuống Section 3
+    function previewPlate(element, plateNumber, price, fengshui) {
+        // Lấy vị trí bắt đầu (thẻ được click)
+        const rect = element.getBoundingClientRect();
+        const target = document.getElementById('snap-point').getBoundingClientRect();
+
+        // Tạo Ghost Element
+        const ghost = document.createElement('div');
+        ghost.className = 'ghost-plate';
+        ghost.innerText = plateNumber;
+        document.body.appendChild(ghost);
+
+        // Đặt vị trí ban đầu
+        gsap.set(ghost, {
+            x: rect.left,
+            y: rect.top
+        });
+
+        // Hiệu ứng bay theo đường cong Bezier
+        gsap.to(ghost, {
+            duration: 1.2,
+            motionPath: {
+                path: [{
+                        x: rect.left - 100,
+                        y: rect.top + (target.top - rect.top) / 2
+                    },
+                    {
+                        x: target.left,
+                        y: target.top
+                    }
+                ],
+                curviness: 1.5
+            },
+            scale: 0.5,
+            opacity: 0.8,
+            ease: "power2.inOut",
+            onComplete: () => {
+                ghost.remove();
+                triggerMagneticSnap(plateNumber, price, fengshui);
+            }
+        });
+    }
+
+    // 2. Hiệu ứng Magnetic Snap & Flash
+    function triggerMagneticSnap(plate, price, fengshui) {
+        const targetPlate = document.getElementById('target-plate');
+        const flash = document.querySelector('.snap-flash');
+
+        targetPlate.innerText = plate;
+
+        const tl = gsap.timeline();
+        tl.to(targetPlate, {
+                opacity: 1,
+                scale: 1.2,
+                duration: 0.1
+            })
+            .to(targetPlate, {
+                scale: 1,
+                duration: 0.3,
+                ease: "back.out"
+            })
+            .to(flash, {
+                opacity: 0.8,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1
+            })
+            .to(flash, {
+                opacity: 0,
+                duration: 0.5
+            });
+
+        // Cập nhật bảng thông số
+        document.getElementById('preview-plate-display').innerText = plate;
+        document.getElementById('spec-price').innerText = price;
+        document.getElementById('spec-fengshui').innerText = fengshui;
+    }
+
+    // 3. Xoay mô hình theo chuột
+    const stage = document.getElementById('reality-preview');
+    const model = document.getElementById('vehicle-model');
+
+    stage.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 30;
+        const y = (window.innerHeight / 2 - e.pageY) / 30;
+        gsap.to(model, {
+            rotateY: -x,
+            rotateX: y,
+            duration: 0.5,
+            ease: "power1.out"
+        });
+    });
+
+    // 4. Chuyển đổi loại xe
+    function switchVehicle(type) {
+        const img = document.getElementById('model-img');
+        const btns = [document.getElementById('btn-view-auto'), document.getElementById('btn-view-moto')];
+
+        // Hiệu ứng chuyển cảnh mờ
+        gsap.to(img, {
+            opacity: 0,
+            scale: 0.9,
+            duration: 0.3,
+            onComplete: () => {
+                img.src = type === 'auto' ? 'Armored_Vehicle_Make_e3a8620860.png' : 'anh-mo-ta-removebg-preview.png';
+                gsap.to(img, {
+                    opacity: 0.5,
+                    scale: 1,
+                    duration: 0.5
+                });
+            }
+        });
+
+        btns.forEach(b => b.classList.remove('active-v-btn'));
+        document.getElementById(`btn-view-${type}`).classList.add('active-v-btn');
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
