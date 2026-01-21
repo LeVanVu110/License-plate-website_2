@@ -3,6 +3,7 @@
 // Lấy dữ liệu từ URL
 $full_plate = isset($_GET['plate']) ? $_GET['plate'] : "00A1-000.00";
 $price = isset($_GET['price']) ? $_GET['price'] : "0";
+$address = isset($_GET['address']) ? $_GET['address'] : "";
 
 // Tách biển số thành 2 phần để hiển thị lên phôi biển xe máy (nếu cần)
 // Ví dụ: 29G1-888.88 -> [0] => 29G1, [1] => 888.88
@@ -443,7 +444,7 @@ $line2 = isset($plate_parts[1]) ? $plate_parts[1] : "";
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white/5 border border-white/10 p-4 rounded-xl backdrop-blur-md">
                     <p class="text-gray-500 text-[10px] uppercase font-bold">Mã vùng</p>
-                    <p class="text-white font-mono">Hà Nội (G1)</p>
+                    <p class="text-white font-mono"><?php echo $address;?></p>
                 </div>
                 <div class="bg-white/5 border border-white/10 p-4 rounded-xl backdrop-blur-md">
                     <p class="text-gray-500 text-[10px] uppercase font-bold">Độ hiếm</p>

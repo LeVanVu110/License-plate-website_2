@@ -15,86 +15,104 @@ include "header.php";
 
         /* ----------------------------- section 1 -----------------------------  */
         /* 1. Dynamic Grid Animation */
-        .grid-lines {
-            /* Sử dụng translate3d để đẩy việc render lên card đồ họa */
-            will-change: transform;
-            transform: translate3d(0, 0, 0);
-            animation: grid-zoom 15s linear infinite;
+        /* Radial Gradient mờ ở tâm */
+        /* 1. IMPORT FONT CHỮ CAO CẤP */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@100;200&display=swap');
+
+        /* 2. CẤU HÌNH NỀN VÀ KHÔNG GIAN (THE VAULT) */
+        #silent-vault {
+            background-color: #000814;
+            /* Midnight Navy */
+            perspective: 1000px;
+            font-family: 'Cormorant Garamond', serif;
         }
 
-        @keyframes grid-zoom {
-            from {
-                transform: perspective(1000px) rotateX(20deg) translate3d(0, 0, 0);
+        /* Hiệu ứng tối 4 góc tạo cảm giác hầm bảo mật */
+        .vignette-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center,
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.4) 40%,
+                    rgba(0, 8, 20, 1) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* 3. KHỐI SAPPHIRE (FROSTED GLASS) */
+        #sapphire-cube {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px) saturate(120%);
+            -webkit-backdrop-filter: blur(25px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 0 30px rgba(30, 58, 138, 0.1);
+            /* Hưởng sáng Deep Sapphire */
+            position: relative;
+            z-index: 10;
+            transition: border 0.5s ease;
+        }
+
+        #sapphire-cube:hover {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* 4. HIỆU ỨNG QUÉT SÁNG DỊU (SOFT LIGHT SWEEP) */
+        #light-sweep {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.03) 45%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    rgba(255, 255, 255, 0.03) 55%,
+                    transparent 100%);
+            transform: skewX(-25deg);
+            pointer-events: none;
+        }
+
+        /* 5. TYPOGRAPHY (ICE SILVER) */
+        #vault-est {
+            font-family: 'Montserrat', sans-serif;
+            color: #A3ABB8;
+            /* Ice Silver mờ */
+            letter-spacing: 0.6em;
+            text-shadow: 0 0 10px rgba(163, 171, 184, 0.2);
+        }
+
+        #vault-title {
+            color: #E2E8F0;
+            /* Ice Silver sáng */
+            letter-spacing: 1em;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            font-weight: 300;
+        }
+
+        /* 6. BIỂN SỐ TRUNG TÂM */
+        #star-plate h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 100;
+            background: linear-gradient(to bottom, #ffffff 0%, #A3ABB8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+        }
+
+        /* 7. RESPONSIVE TINH TẾ */
+        @media (max-width: 768px) {
+            #vault-title {
+                letter-spacing: 0.5em !important;
+                font-size: 1.5rem;
             }
 
-            to {
-                transform: perspective(1000px) rotateX(20deg) translate3d(0, 50px, 0);
+            #sapphire-cube {
+                width: 85vw;
+                height: 200px;
             }
-        }
-
-        /* 2. Optimized Data Streams */
-        .stream-line {
-            will-change: transform;
-            animation: stream-flow 3s linear infinite;
-        }
-
-        @keyframes stream-flow {
-            to {
-                transform: translate3d(0, 100vh, 0);
-                opacity: 0;
-            }
-        }
-
-        /* 3. Sticky Morphing Class (Kích hoạt bởi GSAP) */
-        #crystal-console.sticky-mode {
-            position: fixed;
-            top: 20px;
-            /* Cách header một khoảng để không bị đè */
-            z-index: 1000;
-        }
-
-        #crystal-console.sticky-mode label,
-        #crystal-console.sticky-mode .md\:flex,
-        #crystal-console.sticky-mode .lg\:col-span-3 {
-            display: none !important;
-            /* Thu gọn khi dính */
-        }
-
-        #crystal-console {
-            /* Hạn chế backdrop-filter quá cao trên mobile */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            /* Giảm shadow phức tạp khi cuộn */
-            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                padding 0.4s ease,
-                border-radius 0.4s ease;
-        }
-
-        #crystal-console.is-morphing {
-            background: rgba(0, 13, 26, 0.8);
-            backdrop-blur: 20px;
-            border-color: rgba(0, 127, 255, 0.3);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Ẩn các thành phần thừa khi thu nhỏ trên Desktop */
-        .is-morphing .hide-on-sticky {
-            display: none !important;
-        }
-
-        /* Đảm bảo container không bị hẫng chiều cao khi pin */
-        #command-center {
-            overflow: visible !important;
-        }
-
-        /* 4. Mobile Bottom Sheet */
-        #bottom-sheet {
-            transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        #bottom-sheet.open {
-            transform: translateY(0);
         }
 
         /* ----------------------------- section 2 -----------------------------  */
@@ -477,6 +495,39 @@ include "header.php";
             </button>
         </div>
     </section> -->
+    <section id="silent-vault" class="relative min-h-screen w-full bg-[#000814] overflow-hidden flex flex-col items-center justify-center">
+
+        <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.9)] z-10"></div>
+        <div class="absolute inset-0 bg-radial-gradient from-transparent via-[#000814]/50 to-[#000814] z-0"></div>
+
+        <div class="absolute top-12 text-center z-20">
+            <p class="text-[#A3ABB8] text-[10px] tracking-[0.5em] font-light uppercase opacity-0" id="vault-est">
+                Established 2026
+            </p>
+        </div>
+
+        <div class="relative z-20 flex items-center justify-center" id="focus-container">
+            <div id="sapphire-cube" class="relative w-72 h-44 md:w-[500px] md:h-[300px] rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/10 shadow-[0_0_50px_rgba(30,58,138,0.2)] flex items-center justify-center overflow-hidden">
+
+                <div id="light-sweep" class="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]"></div>
+
+                <div id="star-plate" class="text-center">
+                    <h2 class="text-3xl md:text-6xl font-mono text-[#E2E8F0] tracking-tighter opacity-80">
+                        30L - 888.88
+                    </h2>
+                    <div class="w-12 h-[1px] bg-white/20 mx-auto mt-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-16 text-center z-20">
+            <h1 id="vault-title" class="text-[#E2E8F0] text-4xl md:text-6xl font-serif font-light tracking-[1em] uppercase opacity-0 translate-y-4">
+                Kho Báu Số
+            </h1>
+        </div>
+
+    </section>
+
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="grid-destiny" class="relative py-20 bg-[#000D1A] overflow-hidden">
@@ -487,12 +538,11 @@ include "header.php";
             </div>
 
             <div id="destiny-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-start">
-
                 <div class="legacy-card auto group col-span-2" data-tilt>
                     <div class="digital-case chrome-border p-6 md:p-10 min-h-[220px] flex flex-col justify-between" style="margin: 30px;">
                         <div class="tag-ribbon">VIP HERITAGE</div>
                         <div class="car-silhouette">
-                            <img src="https://fumo.com.vn/wp-content/uploads/2025/06/ly-do-hinh-nen-lamborghini-duoc-tim-kiem-nhieu.jpg" class="w-2/3">
+                            <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-2/3">
                         </div>
                         <div class="card-inner relative z-10 text-center py-4">
                             <h4 class="plate-num text-4xl md:text-6xl font-black text-white tracking-tighter">30K - 888.88</h4>
@@ -509,21 +559,27 @@ include "header.php";
                         </div>
                     </div>
                     <div class="digital-case chrome-border p-6 md:p-10 min-h-[220px] flex flex-col justify-between" style="margin: 30px;">
-                        <div class="tag-ribbon">VIP HERITAGE</div>
+                        <div class="tag-ribbon">ROYAL LEGACY</div>
                         <div class="car-silhouette">
-                            <img src="https://fumo.com.vn/wp-content/uploads/2025/06/ly-do-hinh-nen-lamborghini-duoc-tim-kiem-nhieu.jpg" class="w-2/3">
+                            <img src="https://www.pngplay.com/wp-content/uploads/13/Bentley-Continental-GT-Transparent-Images.png"
+                                class="w-2/3 mx-auto opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                                style="filter: drop-shadow(0 0 20px rgba(0, 127, 255, 0.2));">
                         </div>
                         <div class="card-inner relative z-10 text-center py-4">
-                            <h4 class="plate-num text-4xl md:text-6xl font-black text-white tracking-tighter">30K - 888.88</h4>
+                            <h4 class="plate-num text-4xl md:text-6xl font-black text-white tracking-tighter">51K - 999.99</h4>
                         </div>
                         <div class="relative z-10 flex justify-between items-end">
                             <div class="actions flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-600 flex items-center justify-center"><i class="ri-search-eye-line text-white"></i></button>
-                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 flex items-center justify-center"><i class="ri-heart-fill text-white"></i></button>
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-600 flex items-center justify-center transition-colors">
+                                    <i class="ri-search-eye-line text-white"></i>
+                                </button>
+                                <button class="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 flex items-center justify-center transition-colors">
+                                    <i class="ri-heart-fill text-white"></i>
+                                </button>
                             </div>
                             <div class="price-box text-right">
                                 <p class="text-[10px] text-white/40 uppercase tracking-widest">Giá sở hữu</p>
-                                <p class="price text-xl md:text-2xl font-bold text-[#007FFF]">2.450.000.000đ</p>
+                                <p class="price text-xl md:text-2xl font-bold text-[#007FFF]">3.890.000.000đ</p>
                             </div>
                         </div>
                     </div>
@@ -535,7 +591,7 @@ include "header.php";
                     <div class="digital-case silver-border p-6 aspect-[4/5] flex flex-col justify-between">
                         <div class="tag-ribbon !bg-gray-600">SẢNH TIẾN</div>
                         <div class="car-silhouette">
-                            <img src="https://hoangvietauto.vn/wp-content/uploads/E1BAA2nh-siC3AAu-xe-C491E1BAB9p-chE1BAA5t-lC6B0E1BBA3ng-cao.jpg" class="w-3/4">
+                            <img src="anh-mo-ta-removebg-preview.png" class="w-3/4">
                         </div>
                         <div class="card-inner relative z-10 text-center moto-style">
                             <p class="plate-top text-lg text-white/60 font-mono">29-G1</p>
@@ -551,7 +607,7 @@ include "header.php";
                     <div class="digital-case silver-border p-6 aspect-[4/5] flex flex-col justify-between">
                         <div class="tag-ribbon">PHÁT LỘC</div>
                         <div class="car-silhouette">
-                            <img src="https://hoangvietauto.vn/wp-content/uploads/E1BAA2nh-siC3AAu-xe-C491E1BAB9p-chE1BAA5t-lC6B0E1BBA3ng-cao.jpg" class="w-3/4">
+                            <img src="anh-mo-ta-removebg-preview.png" class="w-3/4">
                         </div>
                         <div class="card-inner relative z-10 text-center moto-style pt-10">
                             <p class="plate-top text-lg text-white/60 font-mono">59-S3</p>
@@ -742,7 +798,7 @@ include "header.php";
                         </div>
                     </a>
                     <a href="chitiet_tintuc.php?name=Quy trình định danh biển số xe trên ứng dụng VNeID mới nhất năm 2026&image=https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=200"
-                    class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
+                        class="news-item-card p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-cyan-500/5 hover:border-cyan-500/30 transition-all duration-500">
                         <div class="flex gap-4 items-center">
                             <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                                 <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=200"
@@ -778,58 +834,103 @@ include "header.php";
     include "footer.php";
     ?>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
     // ----------------------------- section 1 ----------------------------- //
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const consoleElem = document.getElementById('crystal-console');
-        const wrapper = document.getElementById('crystal-console-wrapper');
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const consoleElem = document.getElementById('crystal-console');
+    //     const wrapper = document.getElementById('crystal-console-wrapper');
 
-        // 1. BOOT ANIMATION: Sử dụng force3D để mượt hơn
-        const bootTl = gsap.timeline({
-            defaults: {
-                force3D: true
-            }
+    //     // 1. BOOT ANIMATION: Sử dụng force3D để mượt hơn
+    //     const bootTl = gsap.timeline({
+    //         defaults: {
+    //             force3D: true
+    //         }
+    //     });
+    //     bootTl.from(consoleElem, {
+    //             scaleX: 0,
+    //             opacity: 0,
+    //             duration: 1,
+    //             ease: "expo.out"
+    //         })
+    //         .from("#crystal-console > div > div", {
+    //             opacity: 0,
+    //             y: 15,
+    //             stagger: 0.05,
+    //             duration: 0.5
+    //         }, "-=0.5");
+
+
+
+    //     // 3. TỐI ƯU INPUT (Chỉ chạy khi thực sự cần)
+    //     const searchInput = consoleElem.querySelector('input');
+    //     searchInput.addEventListener('focus', () => {
+    //         gsap.to(consoleElem, {
+    //             borderColor: "rgba(0, 127, 255, 0.6)",
+    //             boxShadow: "0 0 20px rgba(0, 127, 255, 0.2)",
+    //             duration: 0.3
+    //         });
+    //     });
+    //     searchInput.addEventListener('blur', () => {
+    //         gsap.to(consoleElem, {
+    //             borderColor: "rgba(255, 255, 255, 0.1)",
+    //             boxShadow: "none",
+    //             duration: 0.3
+    //         });
+    //     });
+
+    //     // 4. PREVENT LAYOUT SHIFT
+    //     ScrollTrigger.addEventListener("refreshInit", () => {
+    //         // Giữ vị trí console ổn định khi trình duyệt tính toán lại
+    //         gsap.set(consoleElem, {
+    //             clearProps: "all"
+    //         });
+    //     });
+    // });
+    window.addEventListener('load', () => {
+
+        // 1. Xuất hiện tiêu đề (Text Reveal)
+        gsap.to("#vault-est", {
+            opacity: 0.5,
+            duration: 2,
+            delay: 0.5,
+            ease: "power2.out"
         });
-        bootTl.from(consoleElem, {
-                scaleX: 0,
-                opacity: 0,
-                duration: 1,
-                ease: "expo.out"
-            })
-            .from("#crystal-console > div > div", {
-                opacity: 0,
-                y: 15,
-                stagger: 0.05,
-                duration: 0.5
-            }, "-=0.5");
 
+        gsap.to("#vault-title", {
+            opacity: 1,
+            y: 0,
+            letterSpacing: "1.2em", // Giãn rộng dần ra
+            duration: 3,
+            ease: "power3.out",
+            delay: 0.8
+        });
 
+        // 2. Hiệu ứng "The Subtle Breathe" (Hơi thở nhẹ)
+        // Khối sapphire và biển số nhấp nhô cực chậm
+        gsap.to("#focus-container", {
+            y: -15,
+            duration: 5,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true
+        });
 
-        // 3. TỐI ƯU INPUT (Chỉ chạy khi thực sự cần)
-        const searchInput = consoleElem.querySelector('input');
-        searchInput.addEventListener('focus', () => {
-            gsap.to(consoleElem, {
-                borderColor: "rgba(0, 127, 255, 0.6)",
-                boxShadow: "0 0 20px rgba(0, 127, 255, 0.2)",
-                duration: 0.3
+        // 3. Hiệu ứng "Soft Light Sweep" (Quét sáng dịu)
+        // Cứ mỗi 10 giây quét một lần
+        const sweepAnimation = () => {
+            gsap.fromTo("#light-sweep", {
+                left: "-100%"
+            }, {
+                left: "200%",
+                duration: 3,
+                ease: "power1.inOut"
             });
-        });
-        searchInput.addEventListener('blur', () => {
-            gsap.to(consoleElem, {
-                borderColor: "rgba(255, 255, 255, 0.1)",
-                boxShadow: "none",
-                duration: 0.3
-            });
-        });
+        };
 
-        // 4. PREVENT LAYOUT SHIFT
-        ScrollTrigger.addEventListener("refreshInit", () => {
-            // Giữ vị trí console ổn định khi trình duyệt tính toán lại
-            gsap.set(consoleElem, {
-                clearProps: "all"
-            });
-        });
+        setInterval(sweepAnimation, 10000); // 10 giây một lần
+        sweepAnimation(); // Chạy lần đầu
     });
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {

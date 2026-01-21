@@ -1030,7 +1030,7 @@
                         <div class="h-[1px] flex-1 bg-blue-500/20"></div>
                     </h4>
                     <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
-                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000&address=Hà nội" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1038,7 +1038,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Hà nội</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">29-E2</p>
@@ -1051,7 +1051,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000&address=TP. HCM" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1059,7 +1059,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
@@ -1072,7 +1072,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000&address=TP. HCM" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1080,7 +1080,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">59-T2</p>
@@ -1093,7 +1093,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000&address=Hà nội" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1101,7 +1101,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">hà nội</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">36-M1</p>
