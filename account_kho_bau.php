@@ -73,6 +73,9 @@
         /* Pulse of Provenance: Vòng tròn xác thực Blockchain */
         .verify-circle {
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .verify-circle::after {
@@ -106,8 +109,14 @@
         }
 
         .plate-image {
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
+
+            background: radial-gradient(circle at center, #001A33 0%, #000814 100%);
+            transition: transform 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        #collection-gallery {
+            background-color: #000814;
         }
 
         /* Carousel cho Mobile */
@@ -115,16 +124,72 @@
             #collection-gallery .container {
                 padding: 0;
                 overflow-x: auto;
-                display: flex;
+                /* display: flex; */
                 scroll-snap-type: x mandatory;
             }
 
-            .pod-wrapper {
-                flex: 0 0 85%;
-                margin-right: 20px;
+            pod-wrapper {
+                flex: 0 0 85vw;
+                /* Mỗi báu vật chiếm 85% chiều rộng màn hình */
                 scroll-snap-align: center;
+                perspective: 1000px;
+            }
+
+            .sapphire-pod {
+                aspect-ratio: 3/4;
+                /* Tỷ lệ thẻ đứng hơn trên mobile */
+            }
+
+            #collection-gallery h3 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            #collection-gallery .museum-grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 1.5rem;
+                padding-bottom: 2rem;
+                scrollbar-width: none;
+                /* Firefox */
+            }
+
+            #collection-gallery .museum-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .museum-grid {
+                display: flex !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory;
+                gap: 1.5rem !important;
+                padding: 0 10px 30px 10px !important;
+                scrollbar-width: none;
+                /* Ẩn scrollbar Firefox */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .museum-grid::-webkit-scrollbar {
+                display: none;
+                /* Ẩn scrollbar Chrome/Safari */
+            }
+        }
+
+        /* Mask mờ sương khi chưa Reveal */
+        .reveal-mask {
+            background: rgba(0, 26, 51, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            z-index: 20;
+        }
+
+        @media (max-width: 1024px) {
+            .pod-wrapper {
                 margin-top: 0 !important;
             }
+
+
         }
 
         /* ----------------------------- section 3 -----------------------------  */
@@ -257,7 +322,7 @@
                 <h3 class="serif text-5xl text-white font-light">Phòng Trưng Bày <span class="text-[#D4AF37]">Báu Vật</span></h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+            <div class="museum-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
 
                 <div class="pod-wrapper lg:mt-20 group">
                     <div class="sapphire-pod relative aspect-[4/5] bg-black rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
@@ -527,6 +592,7 @@
 
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener("DOMContentLoaded", () => {
+        const isMobile = window.innerWidth <= 768;
         // 1. Hiệu ứng The Glass Reveal (Mở màn sương mù Sapphire)
         gsap.utils.toArray('.sapphire-pod').forEach(pod => {
             const mask = pod.querySelector('.reveal-mask');
@@ -543,42 +609,48 @@
                 }
             });
 
-            // 2. Hiệu ứng 3D Depth Parallax
-            pod.addEventListener('mousemove', (e) => {
-                if (window.innerWidth > 1024) {
+            // 2. Chỉ chạy 3D Parallax trên Desktop (Tránh giật lag mobile)
+            if (!isMobile) {
+                pod.addEventListener('mousemove', (e) => {
                     const rect = pod.getBoundingClientRect();
                     const x = (e.clientX - rect.left) / rect.width - 0.5;
                     const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-                    // Di chuyển plate sâu hơn khung nền
                     gsap.to(pod.querySelector('.plate-3d-container'), {
-                        x: x * 40,
-                        y: y * 40,
-                        rotateX: -y * 20,
-                        rotateY: x * 20,
+                        x: x * 30,
+                        y: y * 30,
+                        rotateX: -y * 15,
+                        rotateY: x * 15,
                         duration: 0.6,
                         ease: "power2.out"
                     });
-
-                    gsap.to(content, {
-                        x: x * 15,
-                        y: y * 15,
-                        duration: 0.6,
-                        ease: "power2.out"
-                    });
-                }
-            });
-
-            pod.addEventListener('mouseleave', () => {
-                gsap.to([pod.querySelector('.plate-3d-container'), content], {
-                    x: 0,
-                    y: 0,
-                    rotateX: 0,
-                    rotateY: 0,
-                    duration: 1,
-                    ease: "elastic.out(1, 0.5)"
                 });
-            });
+
+                pod.addEventListener('mouseleave', () => {
+                    gsap.to(pod.querySelector('.plate-3d-container'), {
+                        x: 0,
+                        y: 0,
+                        rotateX: 0,
+                        rotateY: 0,
+                        duration: 1,
+                        ease: "elastic.out(1, 0.5)"
+                    });
+                });
+            } else {
+                // 3. Hiệu ứng chạm nhẹ trên Mobile
+                pod.addEventListener('touchstart', () => {
+                    gsap.to(pod, {
+                        scale: 0.95,
+                        duration: 0.3
+                    });
+                });
+                pod.addEventListener('touchend', () => {
+                    gsap.to(pod, {
+                        scale: 1,
+                        duration: 0.3
+                    });
+                });
+            }
 
             // 3. Mobile Double Tap (Xem nhanh chứng nhận)
             let lastTap = 0;
