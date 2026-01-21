@@ -249,6 +249,45 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Heartbeat cho chuông bạc */
+        .bell-pulse {
+            animation: heartbeat 2s infinite ease-in-out;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Stacking Cards cho Mobile */
+        @media (max-width: 768px) {
+            .services-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .service-card {
+                width: 100%;
+                position: sticky;
+                top: 100px;
+                margin-bottom: 2rem;
+                transition: transform 0.3s ease;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -495,6 +534,94 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="sovereign-services" class="relative min-h-screen py-24 px-6 bg-[#000814] overflow-hidden border-t border-white/5">
+        <div class="container mx-auto max-w-7xl relative z-10">
+            <div class="mb-20 text-center lg:text-left relative">
+                <h2 class="text-[10px] tracking-[5px] text-[#C5A059] uppercase mb-4 opacity-80">VIP Concierge</h2>
+                <h3 class="serif text-5xl text-white font-light">Đặc Quyền <span class="text-[#C5A059]">Thượng Hạng</span></h3>
+
+                <div class="absolute top-0 right-0 lg:right-auto lg:left-80 ml-4">
+                    <div class="bell-pulse cursor-pointer">
+                        <i class="ri-notification-3-line text-[#C5A059] text-2xl"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="services-container relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <div class="service-card group relative h-[450px] bg-gradient-to-b from-[#001A33] to-[#000814] rounded-2xl border border-white/10 overflow-hidden cursor-pointer" data-speed="0.1">
+                    <div class="golden-slot-line absolute top-0 left-0 w-[2px] h-full bg-[#C5A059] scale-y-0 origin-top transition-transform duration-500 group-hover:scale-y-100"></div>
+
+                    <div class="p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 mb-6 flex items-center justify-center rounded-full border border-[#C5A059]/30 text-[#C5A059]">
+                                <i class="ri-brush-line text-2xl"></i>
+                            </div>
+                            <h4 class="serif text-2xl text-white mb-4 uppercase tracking-wider">Refurbishment</h4>
+                            <p class="text-xs text-white/40 font-light leading-relaxed">Làm mới di sản: Phục chế, vệ sinh biển số vật lý và khung biển số cao cấp theo tiêu chuẩn bảo tàng.</p>
+                        </div>
+                        <div class="flex items-center text-[10px] text-[#C5A059] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                            Khám phá quy trình <i class="ri-arrow-right-line ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card group relative h-[450px] bg-gradient-to-b from-[#001A33] to-[#000814] rounded-2xl border border-white/10 overflow-hidden cursor-pointer" data-speed="0.2">
+                    <div class="golden-slot-line absolute top-0 left-0 w-[2px] h-full bg-[#C5A059] scale-y-0 origin-top transition-transform duration-500 group-hover:scale-y-100"></div>
+                    <div class="p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 mb-6 flex items-center justify-center rounded-full border border-[#C5A059]/30 text-[#C5A059]">
+                                <i class="ri-shield-star-line text-2xl"></i>
+                            </div>
+                            <h4 class="serif text-2xl text-white mb-4 uppercase tracking-wider">Legal Concierge</h4>
+                            <p class="text-xs text-white/40 font-light leading-relaxed">Quản gia pháp lý: Hỗ trợ thủ tục sang tên, định danh, thừa kế trọn gói nhanh chóng và bảo mật.</p>
+                        </div>
+                        <div class="flex items-center text-[10px] text-[#C5A059] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                            Xem chi tiết <i class="ri-arrow-right-line ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card group relative h-[450px] bg-gradient-to-b from-[#001A33] to-[#000814] rounded-2xl border border-white/10 overflow-hidden cursor-pointer" data-speed="0.05">
+                    <div class="golden-slot-line absolute top-0 left-0 w-[2px] h-full bg-[#C5A059] scale-y-0 origin-top transition-transform duration-500 group-hover:scale-y-100"></div>
+                    <div class="p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 mb-6 flex items-center justify-center rounded-full border border-[#C5A059]/30 text-[#C5A059]">
+                                <i class="ri-compass-3-line text-2xl"></i>
+                            </div>
+                            <h4 class="serif text-2xl text-white mb-4 uppercase tracking-wider">Feng Shui Audit</h4>
+                            <p class="text-xs text-white/40 font-light leading-relaxed">Thẩm định phong thủy: Kết nối trực tiếp chuyên gia tư vấn biển số phù hợp vận mệnh và dòng xe.</p>
+                        </div>
+                        <div class="flex items-center text-[10px] text-[#C5A059] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                            Kết nối chuyên gia <i class="ri-arrow-right-line ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card group relative h-[450px] bg-gradient-to-b from-[#001A33] to-[#000814] rounded-2xl border border-white/10 overflow-hidden cursor-pointer" data-speed="0.15">
+                    <div class="golden-slot-line absolute top-0 left-0 w-[2px] h-full bg-[#C5A059] scale-y-0 origin-top transition-transform duration-500 group-hover:scale-y-100"></div>
+                    <div class="p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 mb-6 flex items-center justify-center rounded-full border border-[#C5A059]/30 text-[#C5A059]">
+                                <i class="ri-safe-2-line text-2xl"></i>
+                            </div>
+                            <h4 class="serif text-2xl text-white mb-4 uppercase tracking-wider">Asset Insurance</h4>
+                            <p class="text-xs text-white/40 font-light leading-relaxed">Bảo hiểm bảo vật: Gói đặc quyền bảo hiểm giá trị tài sản cho các dãy số triệu đô.</p>
+                        </div>
+                        <div class="flex items-center text-[10px] text-[#C5A059] tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                            Xem gói bảo hiểm <i class="ri-arrow-right-line ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="fixed bottom-8 right-8 w-16 h-16 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-[#C5A059] shadow-2xl z-50 lg:hidden shadow-[#C5A059]/20">
+                <i class="ri-user-star-line text-3xl"></i>
+            </button>
+        </div>
+    </section>
+
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -792,6 +919,71 @@
         }
     });
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Desktop: Parallax Scrolling Effect
+        if (window.innerWidth > 1024) {
+            gsap.utils.toArray('.service-card').forEach(card => {
+                const speed = card.getAttribute('data-speed');
+                gsap.to(card, {
+                    y: -100 * speed,
+                    scrollTrigger: {
+                        trigger: "#sovereign-services",
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: true
+                    }
+                });
+            });
+        }
+
+        // 2. Morphing Expand Effect (Khi nhấn vào thẻ)
+        const cards = document.querySelectorAll('.service-card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Tạo một khối giả lập Morphing
+                const state = Flip.getState(card);
+
+                // Logic ở đây thường sẽ mở rộng ra toàn màn hình
+                // Ví dụ đơn giản: Scale nhẹ tạo cảm giác phản hồi
+                gsap.to(card, {
+                    scale: 0.95,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1
+                });
+            });
+        });
+
+        // 3. Mobile: Stacking Cards Swipe (Logic giả lập ném thẻ)
+        if (window.innerWidth <= 768) {
+            gsap.utils.toArray('.service-card').forEach((card, i) => {
+                ScrollTrigger.create({
+                    trigger: card,
+                    start: "top center",
+                    onEnter: () => {
+                        if (i > 0) {
+                            gsap.to(cards[i - 1], {
+                                scale: 0.8,
+                                opacity: 0.5,
+                                y: -50,
+                                duration: 0.5
+                            });
+                        }
+                    },
+                    onLeaveBack: () => {
+                        if (i > 0) {
+                            gsap.to(cards[i - 1], {
+                                scale: 1,
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.5
+                            });
+                        }
+                    }
+                });
+            });
+        }
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
