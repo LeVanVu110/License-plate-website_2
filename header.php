@@ -18,7 +18,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f0f4f8 0%, #d7e2eb 100%);
+            /* background: linear-gradient(135deg, #f0f4f8 0%, #d7e2eb 100%); */
             min-height: 200vh;
             /* Để test hiệu ứng scroll */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
