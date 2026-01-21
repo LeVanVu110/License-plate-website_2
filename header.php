@@ -153,7 +153,7 @@
 
                     <div id="account-menu" class="absolute top-[calc(100%+15px)] right-0 w-64 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 transition-all duration-300 z-[120]">
                         <div class="p-5 space-y-3">
-                            <a href="#" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                            <a href="account_kho_bau.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
                                 KHO BÁU CỦA TÔI <i class="ri-gem-line"></i>
                             </a>
                             <a href="#" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
