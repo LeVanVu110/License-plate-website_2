@@ -80,14 +80,18 @@
 
         /* Đảm bảo nội dung không bị Header fixed che mất */
         #market-grid {
-            padding-top: 140px;
+            /* padding-top: 140px; */
             /* Khoảng cách này đủ để Header lơ lửng không đè lên content */
+            z-index: 10;
+            /* Khoảng cách an toàn để hiện 3 sản phẩm đầu */
+            margin-top: 20px;
         }
 
         /* Trên mobile, Header có thể cao hơn, ta điều chỉnh thêm */
         @media (max-width: 1024px) {
             #market-grid {
                 padding-top: 100px;
+                margin-left: 0 !important;
             }
 
             .frontsize {
@@ -187,6 +191,44 @@
             transform: translateY(-4px) scale(1.01);
             z-index: 10;
         }
+
+        .custom-grid-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            /* Độ rộng thanh cuộn rất mỏng */
+            /* padding-right: 8px; */
+        }
+
+        .custom-grid-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .custom-grid-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #06b6d4, #3b82f6);
+            /* Gradient từ Cyan sang Blue */
+            border-radius: 10px;
+        }
+
+        .custom-grid-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+        }
+
+        /* Hiệu ứng mượt mà khi cuộn trên Mobile */
+        .custom-grid-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #06b6d4 rgba(255, 255, 255, 0.02);
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #grid-container {
+            min-height: 450px;
+            /* Đảm bảo khung hình ổn định khi trang chỉ có 1-2 sản phẩm */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
 
         /* Mobile Hybrid Cards */
         @media (max-width: 1023px) {
@@ -345,7 +387,7 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
-        /* ----------------------------- section 4 -----------------------------  */
+
         .animate-pulse-fast {
             animation: pulse-glow 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
@@ -471,175 +513,230 @@
     </button>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="market-grid" class="relative pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
+    <section id="market-grid" class="relative pt-[120px] pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
         <div class="container mx-auto max-w-[1600px]">
 
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h3 class="playfair text-white text-xl font-bold tracking-wider">THE INTELLIGENCE MATRIX</h3>
-                    <p class="space-mono text-[10px] text-white/30 uppercase tracking-[3px]">Real-time Asset Monitoring</p>
-                </div>
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            </div>
+            <h3 class="playfair text-white text-xl font-bold tracking-wider">THE INTELLIGENCE MATRIX</h3>
+            <p class="space-mono text-[10px] text-white/30 uppercase tracking-[3px]">Real-time Asset Monitoring</p>
+        </div>
 
-                <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
-                    <button onclick="sortGrid('price')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
-                    <button onclick="sortGrid('time')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
+        <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
+            <button onclick="sortGrid('price')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
+            <button onclick="sortGrid('time')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
+        </div>
+        </div>
+
+        <div class="w-full bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+
+            <div class="hidden lg:grid grid-cols-12 px-8 py-4 bg-white/10 border-b border-white/10 space-mono text-[10px] text-white/40 uppercase tracking-widest">
+                <div class="col-span-3">Asset Identifier</div>
+                <div class="col-span-2">Valuation Pulse</div>
+                <div class="col-span-2">Density</div>
+                <div class="col-span-2">Time Horizon</div>
+                <div class="col-span-3 text-right">Authority Tools</div>
+            </div>
+
+            <div id="grid-container" class="max-h-[700px] overflow-y-auto custom-grid-scrollbar p-4 space-y-3 scroll-mt-10">
+                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
+                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                    <div class="col-span-3 flex items-center gap-4">
+                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                            </div>
+                        </div>
+                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
+                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-eye-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-auction-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">42</span>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-3">
+                        <div class="relative w-10 h-10">
+                            <svg class="w-full h-full -rotate-90">
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
+                            </svg>
+                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
+                        </div>
+                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
+                    </div>
+
+                    <div class="col-span-3 flex justify-end gap-2">
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
+                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
+                    </div>
+                </div>
+                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
+                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                    <div class="col-span-3 flex items-center gap-4">
+                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                            </div>
+                        </div>
+                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
+                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-eye-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-auction-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">42</span>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-3">
+                        <div class="relative w-10 h-10">
+                            <svg class="w-full h-full -rotate-90">
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
+                            </svg>
+                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
+                        </div>
+                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
+                    </div>
+
+                    <div class="col-span-3 flex justify-end gap-2">
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
+                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
+                    </div>
+                </div>
+                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
+                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                    <div class="col-span-3 flex items-center gap-4">
+                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                            </div>
+                        </div>
+                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
+                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-eye-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-auction-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">42</span>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-3">
+                        <div class="relative w-10 h-10">
+                            <svg class="w-full h-full -rotate-90">
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
+                            </svg>
+                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
+                        </div>
+                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
+                    </div>
+
+                    <div class="col-span-3 flex justify-end gap-2">
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
+                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
+                    </div>
+                </div>
+                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
+                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                    <div class="col-span-3 flex items-center gap-4">
+                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                            </div>
+                        </div>
+                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
+                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-eye-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="ri-auction-line text-white/20 text-xs"></i>
+                            <span class="text-white/60 jetbrains text-[10px]">42</span>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-3">
+                        <div class="relative w-10 h-10">
+                            <svg class="w-full h-full -rotate-90">
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
+                            </svg>
+                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
+                        </div>
+                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
+                    </div>
+
+                    <div class="col-span-3 flex justify-end gap-2">
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
+                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
+                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center gap-4 mt-8 pb-10">
+                    <button onclick="prevPage()" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:bg-cyan-500 hover:text-black transition-all duration-300">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </button>
+
+                    <div id="pagination-numbers" class="flex gap-2">
+                    </div>
+
+                    <button onclick="nextPage()" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:bg-cyan-500 hover:text-black transition-all duration-300">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="w-full overflow-x-auto custom-scrollbar">
-                <div id="grid-container" class="min-w-[1000px] lg:min-w-full space-y-4">
-
-                    <div class="hidden lg:grid grid-cols-12 px-8 py-4 bg-white/5 border-b border-white/10 rounded-t-2xl space-mono text-[10px] text-white/40 uppercase tracking-widest">
-                        <div class="col-span-3">Asset Identifier</div>
-                        <div class="col-span-2">Valuation Pulse</div>
-                        <div class="col-span-2">Density</div>
-                        <div class="col-span-2">Time Horizon</div>
-                        <div class="col-span-3 text-right">Authority Tools</div>
-                    </div>
-
-                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 relative overflow-hidden"
-                        data-price="850000000" data-time="3600" onclick="openIntervention('30L-888.88')">
-                        <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                        <div class="col-span-3 flex items-center gap-4">
-                            <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                                <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
-                                    <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
-                                </div>
-                            </div>
-                            <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
-                        </div>
-
-                        <div class="col-span-2">
-                            <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                            <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-4">
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-eye-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-auction-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">42</span>
-                            </div>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-3">
-                            <div class="relative w-10 h-10">
-                                <svg class="w-full h-full -rotate-90">
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                                </svg>
-                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                            </div>
-                            <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                        </div>
-
-                        <div class="col-span-3 flex justify-end gap-2">
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                            <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                        </div>
-                    </div>
-                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 relative overflow-hidden"
-                        data-price="850000000" data-time="3600" onclick="openIntervention('30L-888.88')">
-                        <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                        <div class="col-span-3 flex items-center gap-4">
-                            <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                                <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
-                                    <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
-                                </div>
-                            </div>
-                            <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
-                        </div>
-
-                        <div class="col-span-2">
-                            <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                            <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-4">
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-eye-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-auction-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">42</span>
-                            </div>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-3">
-                            <div class="relative w-10 h-10">
-                                <svg class="w-full h-full -rotate-90">
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                                </svg>
-                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                            </div>
-                            <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                        </div>
-
-                        <div class="col-span-3 flex justify-end gap-2">
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                            <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                        </div>
-                    </div>
-                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 relative overflow-hidden"
-                        data-price="850000000" data-time="3600" onclick="openIntervention('30L-888.88')">
-                        <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                        <div class="col-span-3 flex items-center gap-4">
-                            <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                                <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
-                                    <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
-                                </div>
-                            </div>
-                            <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
-                        </div>
-
-                        <div class="col-span-2">
-                            <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                            <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-4">
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-eye-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="ri-auction-line text-white/20 text-xs"></i>
-                                <span class="text-white/60 jetbrains text-[10px]">42</span>
-                            </div>
-                        </div>
-
-                        <div class="col-span-2 flex items-center gap-3">
-                            <div class="relative w-10 h-10">
-                                <svg class="w-full h-full -rotate-90">
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                                </svg>
-                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                            </div>
-                            <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                        </div>
-
-                        <div class="col-span-3 flex justify-end gap-2">
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                            <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+        </div>
         </div>
     </section>
+
 
     <!-- ----------------------------- section 3 -----------------------------  -->
     <section id="intervention-panel" class="fixed top-0 right-0 h-full w-[420px] bg-[#050505]/90 backdrop-blur-3xl border-l border-white/10 z-[100] translate-x-full shadow-[-30px_0_60px_rgba(0,0,0,0.9)] transition-all duration-500">
@@ -879,6 +976,72 @@
                 stagger: 0.05
             });
         };
+    });
+    let currentPage = 1;
+    const recordsPerPage = 3; // Chỉ hiện 3 sản phẩm mỗi trang
+
+    function renderPagination() {
+        const container = document.getElementById('grid-container');
+        const rows = Array.from(container.getElementsByClassName('grid-row'));
+        const totalPages = Math.ceil(rows.length / recordsPerPage);
+
+        // 1. Ẩn/Hiện các hàng dựa trên trang hiện tại
+        rows.forEach((row, index) => {
+            row.style.display = 'none';
+            if (index >= (currentPage - 1) * recordsPerPage && index < currentPage * recordsPerPage) {
+                row.style.display = 'grid'; // Hoặc 'flex' tùy cấu trúc row của bạn
+
+                // Thêm hiệu ứng xuất hiện mượt mà của GSAP
+                gsap.fromTo(row, {
+                    opacity: 0,
+                    y: 10
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.4,
+                    delay: (index % 3) * 0.1
+                });
+            }
+        });
+
+        // 2. Sinh số trang
+        const paginationNumbers = document.getElementById('pagination-numbers');
+        paginationNumbers.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            btn.className = `w-10 h-10 rounded-xl border transition-all duration-300 jetbrains text-xs ${
+            i === currentPage 
+            ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.5)]' 
+            : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+        }`;
+            btn.onclick = () => {
+                currentPage = i;
+                renderPagination();
+            };
+            paginationNumbers.appendChild(btn);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPagination();
+        }
+    }
+
+    function nextPage() {
+        const rows = document.getElementsByClassName('grid-row');
+        if (currentPage < Math.ceil(rows.length / recordsPerPage)) {
+            currentPage++;
+            renderPagination();
+        }
+    }
+
+    // Khởi chạy khi trang load xong
+    document.addEventListener('DOMContentLoaded', () => {
+        renderPagination();
     });
 
     // ----------------------------- section 3 ----------------------------- //
