@@ -162,6 +162,71 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Hoạt động cũ mờ dần */
+        #activity-waterfall .activity-card {
+            transition: opacity 0.5s ease;
+        }
+
+        #activity-waterfall .activity-card:nth-last-child(n+6) {
+            opacity: 0.4;
+        }
+
+        #activity-waterfall .activity-card:nth-last-child(n+8) {
+            opacity: 0.1;
+        }
+
+        /* Hiệu ứng Glitch cho thẻ cực lớn */
+        .glitch-gold {
+            border: 1px solid rgba(255, 215, 0, 0.5) !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+            animation: glitch-border 0.2s infinite;
+        }
+
+        @keyframes glitch-border {
+            0% {
+                border-color: rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                border-color: rgba(255, 215, 0, 1);
+                transform: translateX(1px);
+            }
+
+            100% {
+                border-color: rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        /* Motion Blur khi trượt xuống */
+        .motion-blur-in {
+            filter: blur(5px);
+            transform: translateY(-20px);
+        }
+
+        @media (max-width: 1024px) {
+
+            /* Trên Mobile/Tablet: Thu nhỏ thẻ hoạt động */
+            .activity-card {
+                padding: 0.75rem !important;
+            }
+
+            .activity-card p {
+                font-size: 8px !important;
+            }
+        }
+
+        /* Hiệu ứng Ticker cho Mobile: Chỉ thẻ đầu tiên rực rỡ */
+        @media (max-width: 640px) {
+            #activity-waterfall .activity-card:not(:first-child) {
+                opacity: 0.2;
+                transform: scale(0.95);
+            }
+
+            #activity-waterfall .activity-card:first-child {
+                border-color: rgba(6, 182, 212, 0.5);
+                background: rgba(6, 182, 212, 0.05);
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -327,6 +392,51 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="live-pulse-feed" class="relative pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
+        <div class="container mx-auto max-w-[1600px]">
+
+            <div class="flex lg:hidden bg-black/40 p-1 rounded-xl border border-white/5 mb-6">
+                <button onclick="switchTab('stream')" id="btn-stream" class="flex-1 py-2 rounded-lg jetbrains text-[10px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/20">DÒNG CHẢY</button>
+                <button onclick="switchTab('rank')" id="btn-rank" class="flex-1 py-2 rounded-lg jetbrains text-[10px] text-white/40">XẾP HẠNG</button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6 h-auto lg:h-[600px]">
+
+                <div id="col-stream" class="w-full lg:w-3/5 bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 relative overflow-hidden flex flex-col h-[500px] lg:h-full transition-all duration-500">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <h3 class="jetbrains text-white text-[10px] lg:text-sm font-bold tracking-widest uppercase">Live Activity Stream</h3>
+                        </div>
+                        <span class="hidden sm:block text-[10px] jetbrains text-white/20">AUTO-UPDATE: ENABLED</span>
+                    </div>
+
+                    <div id="activity-waterfall" class="flex-1 overflow-y-hidden relative space-y-3 pr-2">
+                    </div>
+                </div>
+
+                <div id="col-rank" class="hidden lg:flex w-full lg:w-2/5 bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 flex-col h-full transition-all duration-500">
+                    <h3 class="jetbrains text-white text-sm font-bold tracking-widest uppercase mb-6 flex items-center gap-2">
+                        <i class="ri-trophy-line text-amber-500"></i> Top Performers (1h)
+                    </h3>
+
+                    <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+                        <div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full border border-cyan-500/30 flex items-center justify-center jetbrains text-cyan-400 text-xs bg-cyan-500/5">#1</div>
+                                <div>
+                                    <p class="text-white text-[11px] font-bold jetbrains uppercase">Shark Nguyễn</p>
+                                    <p class="text-[9px] text-white/40 jetbrains">Total Bid: 12.5B</p>
+                                </div>
+                            </div>
+                            <i class="ri-fire-line text-orange-500"></i>
+                        </div>
+                    </div>
+                    <button class="mt-4 w-full py-3 border border-white/5 rounded-xl jetbrains text-[10px] text-white/30 hover:bg-white/5 transition-all">FULL RANKING</button>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -550,6 +660,119 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        const waterfall = document.getElementById('activity-waterfall');
+
+        const activityTypes = [{
+                type: 'DEPOSIT',
+                label: 'Nạp tiền thành công',
+                color: '#00FFC2',
+                icon: 'ri-add-circle-line'
+            },
+            {
+                type: 'BID',
+                label: 'Lệnh trả giá mới',
+                color: '#00C2FF',
+                icon: 'ri-auction-line'
+            },
+            {
+                type: 'KYC',
+                label: 'Yêu cầu phê duyệt KYC',
+                color: '#FBBF24',
+                icon: 'ri-shield-user-line'
+            },
+            {
+                type: 'VIP',
+                label: 'Thành viên VIP mới',
+                color: '#8B5CF6',
+                icon: 'ri-vip-crown-line'
+            }
+        ];
+
+        function switchTab(tab) {
+            const colStream = document.getElementById('col-stream');
+            const colRank = document.getElementById('col-rank');
+            const btnStream = document.getElementById('btn-stream');
+            const btnRank = document.getElementById('btn-rank');
+
+            if (tab === 'stream') {
+                colStream.classList.remove('hidden');
+                colRank.classList.add('hidden');
+
+                btnStream.className = "flex-1 py-2 rounded-lg jetbrains text-[10px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/20";
+                btnRank.className = "flex-1 py-2 rounded-lg jetbrains text-[10px] text-white/40";
+            } else {
+                colStream.classList.add('hidden');
+                colRank.classList.remove('hidden', 'lg:flex'); // Hiện cột rank
+                colRank.classList.add('flex');
+
+                btnRank.className = "flex-1 py-2 rounded-lg jetbrains text-[10px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/20";
+                btnStream.className = "flex-1 py-2 rounded-lg jetbrains text-[10px] text-white/40";
+            }
+
+            // Rung phản hồi khi đổi tab
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+
+        // Logic Double Tap trên Mobile để mở chi tiết (Thêm vào trong loop render card)
+        // card.addEventListener('dblclick', () => { alert('Mở chi tiết đối tượng...'); });
+
+        function createActivity(data) {
+            const card = document.createElement('div');
+            const isBigBoss = data.amount > 5000000000; // Trên 5 tỷ
+
+            card.className = `activity-card relative flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-xl ${isBigBoss ? 'glitch-gold' : ''}`;
+            card.innerHTML = `
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: ${data.color}20; color: ${data.color}">
+                    <i class="${data.icon}"></i>
+                </div>
+                <div>
+                    <p class="text-white text-[10px] jetbrains font-bold uppercase">${data.label}</p>
+                    <p class="text-[9px] text-white/40 jetbrains">${data.user} • ${data.time}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="jetbrains text-[10px] font-bold" style="color: ${data.color}">${data.value}</p>
+            </div>
+        `;
+
+            // Thêm vào đầu danh sách
+            waterfall.prepend(card);
+
+            // Hiệu ứng Fluid Influx
+            gsap.from(card, {
+                y: -50,
+                opacity: 0,
+                filter: "blur(10px)",
+                duration: 0.6,
+                ease: "power3.out"
+            });
+
+            // Giới hạn số lượng thẻ để tránh lag
+            if (waterfall.children.length > 10) {
+                waterfall.lastElementChild.remove();
+            }
+
+            // Rung Haptic nếu là giao dịch lớn
+            if (isBigBoss && window.navigator.vibrate) {
+                window.navigator.vibrate([200, 100, 200]);
+            }
+        }
+
+        // Mô phỏng dòng chảy dữ liệu thực tế
+        setInterval(() => {
+            const randomType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
+            const mockData = {
+                ...randomType,
+                user: "User_" + Math.floor(Math.random() * 9999),
+                time: "Vừa xong",
+                value: (Math.random() * 1000).toFixed(1) + "M VND",
+                amount: Math.random() * 6000000000 // Random số tiền để test Glitch
+            };
+            createActivity(mockData);
+        }, 4000); // Mỗi 4 giây có 1 hoạt động mới
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
