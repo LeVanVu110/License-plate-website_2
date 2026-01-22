@@ -70,6 +70,115 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Space+Grotesk:wght@700&display=swap');
+
+        .space-grotesk {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .countdown-timer {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Hiệu ứng nhịp tim cho thẻ Outbid */
+        .outbid-pulse {
+            animation: heartbeat-card 1.5s infinite ease-in-out;
+        }
+
+        @keyframes heartbeat-card {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.2);
+            }
+
+            50% {
+                transform: scale(1.01);
+                box-shadow: 0 0 20px 0 rgba(255, 0, 85, 0.4);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.2);
+            }
+        }
+
+        /* Glitch Effect */
+        .glitch-flash {
+            animation: glitch 0.2s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                opacity: 1;
+                transform: translate(0);
+            }
+
+            20% {
+                opacity: 0.8;
+                transform: translate(-2px, 2px);
+            }
+
+            80% {
+                opacity: 0.9;
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+
+            /* Section 1: Chuyển Totems thành Carousel ngang */
+            .totems-wrapper {
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory;
+                gap: 2rem !important;
+                padding: 40px 20px !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .totems-wrapper::-webkit-scrollbar {
+                display: none;
+            }
+
+            .totem-item {
+                flex: 0 0 80vw;
+                /* Chiếm 80% màn hình để lộ thẻ tiếp theo */
+                scroll-snap-align: center;
+                display: flex;
+                justify-content: center;
+            }
+
+            /* Section 2: Tối ưu thẻ đấu giá trên Tablet */
+            .auction-card .flex-col.lg\:flex-row {
+                gap: 1.5rem;
+            }
+
+            #live-war-room .auction-card .flex-col {
+                gap: 1.5rem;
+            }
+        }
+
+        /* Mobile Stacking Layout */
+        @media (max-width: 768px) {
+            .auction-card {
+                padding: 1.5rem !important;
+            }
+
+            .countdown-timer {
+                font-size: 2.25rem !important;
+            }
+
+            .bid-btn {
+                font-size: 11px !important;
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -144,6 +253,74 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="live-war-room" class="relative min-h-screen py-16 md:py-24 px-4 md:px-6 bg-[#000814] overflow-hidden">
+        <div class="container mx-auto max-w-6xl relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 border-b border-white/10 pb-6 gap-4">
+                <div class="text-center md:text-left">
+                    <h2 class="text-[10px] tracking-[5px] text-red-500 uppercase mb-2">Live Situation</h2>
+                    <h3 class="serif text-3xl md:text-4xl text-white">Phòng <span class="text-red-500">Lệnh Chiến</span></h3>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-[10px] text-white/40 space-mono">STRIKE TIME: 22:45:01</p>
+                    <p class="text-xs text-emerald-400">Hệ thống bảo mật Quantum</p>
+                </div>
+            </div>
+
+            <div class="war-room-container flex flex-col gap-6">
+
+                <div id="card-1" class="auction-card leading group relative bg-[#050505] rounded-2xl p-5 md:p-6 border border-[#00FFC2]/20 transition-all duration-500">
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                        <div class="w-full lg:w-1/4">
+                            <div class="plate-render bg-gradient-to-br from-white/10 to-transparent p-4 rounded-xl border border-white/5 shadow-2xl">
+                                <div class="text-center">
+                                    <p class="text-white/20 text-[8px] uppercase tracking-tighter mb-1">TP. Hồ Chí Minh</p>
+                                    <p class="space-mono text-2xl md:text-3xl text-white font-bold tracking-tighter">30K-999.99</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-1/3 text-center">
+                            <p class="text-[9px] text-white/30 uppercase tracking-[3px] mb-2">Thời gian còn lại</p>
+                            <div class="countdown-timer font-mono text-3xl md:text-5xl text-white tracking-widest" data-time="3600">00:59:42</div>
+                        </div>
+                        <div class="w-full lg:w-2/5 flex flex-col sm:flex-row items-center justify-between lg:justify-end gap-6">
+                            <div class="text-center lg:text-right">
+                                <p class="text-[9px] text-[#00FFC2] uppercase mb-1">Giá hiện tại (Leading)</p>
+                                <div class="price-wrapper relative overflow-hidden h-8 md:h-10">
+                                    <span class="current-price block text-2xl md:text-3xl text-white font-bold space-grotesk">1,250,000,000</span>
+                                </div>
+                            </div>
+                            <button class="bid-btn w-full sm:w-auto px-8 py-4 bg-white/5 backdrop-blur-md border border-[#00FFC2]/50 rounded-xl text-[#00FFC2] text-xs font-bold hover:bg-[#00FFC2] hover:text-black transition-all">NÂNG GIÁ NHANH</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="card-2" class="auction-card outbid outbid-pulse group relative bg-[#050505] rounded-2xl p-5 md:p-6 border border-[#FF0055]/30 transition-all duration-500">
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                        <div class="w-full lg:w-1/4">
+                            <div class="plate-render bg-gradient-to-br from-red-500/10 to-transparent p-4 rounded-xl border border-red-500/20">
+                                <div class="text-center">
+                                    <p class="text-white/20 text-[8px] uppercase mb-1">Hà Nội</p>
+                                    <p class="space-mono text-2xl md:text-3xl text-white/90 font-bold tracking-tighter">29A-888.88</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-1/3 text-center">
+                            <p class="text-[9px] text-red-500 uppercase tracking-[3px] mb-2 animate-pulse">Critical Time</p>
+                            <div class="countdown-timer font-mono text-3xl md:text-5xl text-red-500" data-time="45">00:00:45</div>
+                        </div>
+                        <div class="w-full lg:w-2/5 flex flex-col sm:flex-row items-center justify-between lg:justify-end gap-6">
+                            <div class="text-center lg:text-right">
+                                <p class="text-[9px] text-red-500 uppercase mb-1">Bị vượt mặt!</p>
+                                <span class="text-2xl md:text-3xl text-white font-bold">2,100,000,000</span>
+                            </div>
+                            <button class="bid-btn w-full sm:w-auto px-8 py-4 bg-red-500/20 backdrop-blur-md border border-red-500 rounded-xl text-red-500 text-xs font-bold hover:bg-red-500 hover:text-white transition-all">LẤY LẠI VỊ THẾ</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -246,6 +423,71 @@
     });
 
     // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        const isMobile = window.innerWidth <= 768;
+
+        // 1. Hàm cập nhật giá (Gọi thủ công khi cần)
+        window.updatePrice = function(cardId, newPrice) {
+            const card = document.querySelector(cardId);
+            if (!card) return;
+            const priceWrapper = card.querySelector('.price-wrapper');
+            const oldPrice = priceWrapper.querySelector('.current-price');
+
+            const nextPrice = document.createElement('span');
+            nextPrice.className = 'current-price block text-2xl md:text-3xl text-white font-bold space-grotesk absolute top-full left-0 w-full';
+            nextPrice.innerText = newPrice;
+            priceWrapper.appendChild(nextPrice);
+
+            gsap.to(oldPrice, {
+                y: -40,
+                opacity: 0,
+                duration: 0.4,
+                onComplete: () => oldPrice.remove()
+            });
+            gsap.to(nextPrice, {
+                y: -40,
+                opacity: 1,
+                duration: 0.4
+            });
+        };
+
+        // 2. Logic Countdown & Rung Mobile
+        const timers = document.querySelectorAll('.countdown-timer');
+        timers.forEach(timer => {
+            let time = parseInt(timer.getAttribute('data-time'));
+            if (time < 60) {
+                // Hiệu ứng cảnh báo khẩn cấp
+                gsap.to(timer, {
+                    opacity: 0.5,
+                    repeat: -1,
+                    yoyo: true,
+                    duration: 0.5
+                });
+
+                if (isMobile && window.navigator.vibrate) {
+                    // Rung nhẹ khi load nếu có kèo khẩn cấp
+                    window.navigator.vibrate([100, 50, 100]);
+                }
+            }
+        });
+
+        // 3. Phản hồi Touch cho nút bấm
+        if (isMobile) {
+            document.querySelectorAll('.bid-btn').forEach(btn => {
+                btn.addEventListener('touchstart', () => gsap.to(btn, {
+                    scale: 0.95,
+                    duration: 0.1
+                }));
+                btn.addEventListener('touchend', () => {
+                    gsap.to(btn, {
+                        scale: 1,
+                        duration: 0.1
+                    });
+                    if (window.navigator.vibrate) window.navigator.vibrate(20);
+                });
+            });
+        }
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
