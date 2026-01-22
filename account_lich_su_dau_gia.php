@@ -244,6 +244,60 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+
+        .jetbrains {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Custom Scrollbar Siêu mảnh */
+        .ledger-container {
+            scrollbar-width: thin;
+            scrollbar-color: #00FFC2 transparent;
+        }
+
+        .ledger-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ledger-container::-webkit-scrollbar-thumb {
+            background: #00FFC2;
+            border-radius: 10px;
+        }
+
+        /* Hiệu ứng Scanline */
+        .scanline {
+            height: 1px;
+            box-shadow: 0 0 10px #00FFC2;
+            opacity: 0;
+        }
+
+        /* Responsive Mobile: Chuyển sang Card */
+        @media (max-width: 767px) {
+            .ledger-row {
+                grid-template-columns: 1fr 1fr;
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+
+            /* Mobile chỉ hiện thông tin quan trọng */
+            .ledger-row>div:nth-child(1),
+            /* ID */
+            .ledger-row>div:nth-child(3),
+            /* Loại phí */
+            .ledger-row>div:nth-child(6)
+
+            /* Nút tải */
+                {
+                display: none;
+            }
+
+            .ledger-row>div:nth-child(4) {
+                text-align: right;
+            }
+
+            /* Số tiền */
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -465,6 +519,74 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="ledger-trust" class="relative min-h-screen py-24 bg-[#000814] px-4 md:px-6">
+        <div class="container mx-auto max-w-6xl">
+            <div class="mb-12">
+                <h2 class="text-[10px] tracking-[5px] text-emerald-400 uppercase mb-4">Financial Vault</h2>
+                <h3 class="serif text-4xl text-white font-light">Sổ Cái <span class="text-emerald-400 italic">Minh Bạch</span></h3>
+            </div>
+
+            <div class="ledger-container overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-xl">
+                <div class="scanline absolute top-0 left-0 w-full h-[2px] bg-emerald-400/30 z-20 pointer-events-none"></div>
+
+                <div class="hidden md:grid grid-cols-6 gap-4 p-6 border-b border-white/10 bg-white/[0.03] text-[10px] text-white/40 tracking-widest uppercase jetbrains">
+                    <div>Mã Giao Dịch</div>
+                    <div>Đối Tượng</div>
+                    <div>Loại Phí</div>
+                    <div class="text-right">Số Tiền</div>
+                    <div class="text-center">Trạng Thái</div>
+                    <div class="text-right">Chứng Từ</div>
+                </div>
+
+                <div class="ledger-rows jetbrains">
+                    <div class="ledger-row group grid grid-cols-1 md:grid-cols-6 gap-4 p-6 border-b border-white/5 items-center transition-all duration-300 hover:bg-emerald-400/[0.03]">
+                        <div class="text-[11px] text-white/20 group-hover:text-white/60 transition-colors">#0x7F22A1...</div>
+                        <div class="text-sm text-white font-bold">51K-888.88</div>
+                        <div class="text-[11px] text-white/40">Hoàn cọc đấu giá</div>
+                        <div class="text-right text-emerald-400 font-bold">+50,000,000</div>
+                        <div class="flex justify-center">
+                            <span class="px-3 py-1 rounded-full border border-emerald-400/30 text-emerald-400 text-[9px] uppercase tracking-tighter bg-emerald-400/5">Đã kết toán</span>
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="download-receipt text-white/30 hover:text-white transition-colors">
+                                <i class="ri-download-2-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="ledger-row group grid grid-cols-1 md:grid-cols-6 gap-4 p-6 border-b border-white/5 items-center transition-all duration-300 hover:bg-white/[0.03]">
+                        <div class="text-[11px] text-white/20 group-hover:text-white/60 transition-colors">#0x3B99C4...</div>
+                        <div class="text-sm text-white font-bold">30L-123.45</div>
+                        <div class="text-[11px] text-white/40">Thanh toán nốt</div>
+                        <div class="text-right text-white font-bold">-850,000,000</div>
+                        <div class="flex justify-center">
+                            <span class="px-3 py-1 rounded-full border border-amber-400/30 text-amber-400 text-[9px] uppercase tracking-tighter bg-amber-400/5">Đang xử lý</span>
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="download-receipt text-white/30 hover:text-white transition-colors">
+                                <i class="ri-printer-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="ledger-row group grid grid-cols-1 md:grid-cols-6 gap-4 p-6 border-b border-white/5 items-center transition-all duration-300 hover:bg-white/[0.03]">
+                        <div class="text-[11px] text-white/20 group-hover:text-white/60">#0x1A2B3C...</div>
+                        <div class="text-sm text-white font-bold">99A-999.99</div>
+                        <div class="text-[11px] text-white/40">Tiền đặt cọc</div>
+                        <div class="text-right text-white font-bold">-100,000,000</div>
+                        <div class="flex justify-center">
+                            <span class="px-3 py-1 rounded-full border border-white/20 text-white/40 text-[9px] uppercase tracking-tighter">Đã hoàn trả</span>
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="download-receipt text-white/30 hover:text-white transition-colors">
+                                <i class="ri-file-paper-2-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -693,6 +815,99 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Ledger Reveal Animation (Quét dòng tiền)
+        const scanline = document.querySelector('.scanline');
+        const rows = document.querySelectorAll('.ledger-row');
+
+        gsap.set(rows, {
+            opacity: 0,
+            x: -10
+        });
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#ledger-trust",
+                start: "top 60%",
+            }
+        });
+
+        // Tia sáng quét qua
+        tl.to(scanline, {
+                opacity: 1,
+                duration: 0.1
+            })
+            .to(scanline, {
+                top: "100%",
+                duration: 1.5,
+                ease: "power2.inOut"
+            });
+
+        // Các dòng hiện ra theo nhịp quét
+        rows.forEach((row, index) => {
+            tl.to(row, {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                ease: "power2.out"
+            }, `-=1.2`); // Xuất hiện xen kẽ với tia quét
+        });
+
+        // 2. Receipt Interaction (Hiệu ứng rút hóa đơn)
+        document.querySelectorAll('.download-receipt').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+
+                // Animation mô phỏng in giấy
+                gsap.timeline()
+                    .to(icon, {
+                        y: 10,
+                        opacity: 0,
+                        duration: 0.2
+                    })
+                    .set(icon, {
+                        y: -20,
+                        className: "ri-check-line text-emerald-400"
+                    })
+                    .to(icon, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: "back.out(1.7)"
+                    })
+                    .to(icon, {
+                        delay: 2,
+                        y: 0,
+                        opacity: 1,
+                        className: "ri-download-2-line",
+                        duration: 0.2
+                    });
+
+                // Gửi thông báo rung nhẹ trên mobile
+                if (window.navigator.vibrate) window.navigator.vibrate(20);
+            });
+        });
+
+        // 3. Row Hover Effect (Lift effect đã có qua CSS, bổ sung tinh tế bằng GSAP)
+        if (window.innerWidth > 1024) {
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    gsap.to(row, {
+                        backgroundColor: "rgba(0, 255, 194, 0.05)",
+                        x: 5,
+                        duration: 0.3
+                    });
+                });
+                row.addEventListener('mouseleave', () => {
+                    gsap.to(row, {
+                        backgroundColor: "transparent",
+                        x: 0,
+                        duration: 0.3
+                    });
+                });
+            });
+        }
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 
