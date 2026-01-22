@@ -156,7 +156,7 @@
                             <a href="account_kho_bau.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
                                 KHO BÁU CỦA TÔI <i class="ri-gem-line"></i>
                             </a>
-                            <a href="#" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                            <a href="account_lich_su_dau_gia.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
                                 LỊCH SỬ ĐẤU GIÁ <i class="ri-history-line"></i>
                             </a>
                             <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
