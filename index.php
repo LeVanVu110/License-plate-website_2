@@ -12,6 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@100;200;400&display=swap" rel="stylesheet">
     <style>
         :root {
             --electric-blue: #007FFF;
@@ -132,6 +135,11 @@
                 width: 131px !important;
             } */
         }
+
+        /* code update  */
+        
+
+
 
         /* ----------------------------- section 2 -----------------------------  */
         /* Font mô phỏng biển số thực tế */
@@ -904,14 +912,28 @@
                     <div class="glint" id="glint"></div>
                     <div class="flex-1 flex items-center px-6 border-r border-white/10 w-full relative z-20">
                         <i class="ri-search-2-line text-white/50 mr-3"></i>
-                        <input type="text" placeholder="TÌM KIẾM DÃY SỐ PHONG THỦY..."
+                        <input type="text" id="main-search-input" placeholder="TÌM KIẾM DÃY SỐ PHONG THỦY..."
                             class="bg-transparent border-none focus:ring-0 text-white placeholder-white/30 w-full py-4 text-sm tracking-widest uppercase cursor-text">
                     </div>
-                    <button class="relative z-20 bg-[#007FFF] text-white px-10 py-4 rounded-full font-bold sans-text text-sm hover:bg-white hover:text-[#007FFF] transition-all duration-500 shadow-lg shadow-blue-500/20">
+                    <button onclick="searchPlate()" class="relative z-20 bg-[#007FFF] text-white px-10 py-4 rounded-full font-bold sans-text text-sm hover:bg-white hover:text-[#007FFF] transition-all duration-500 shadow-lg shadow-blue-500/20">
                         KHÁM PHÁ NGAY
                     </button>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="py-32 flex flex-col md:flex-row items-center justify-center gap-16 px-10 border-t border-white/5 bg-[#000D1A]">
+        <div class="w-full md:w-1/3 overflow-hidden rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000">
+            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000" class="w-full h-96 object-cover transform hover:scale-110 transition-transform duration-700">
+        </div>
+        <div class="md:w-1/2">
+            <span class="text-blue-500 text-[10px] tracking-[5px] uppercase">Heritage Journal</span>
+            <h2 class="serif text-white text-4xl mt-4 mb-8">Giải mã ý nghĩa biển số Ngũ Quý 9 <br> dưới góc độ đầu tư di sản.</h2>
+            <button class="discovery-btn group text-[10px] tracking-[4px] uppercase text-white px-10 py-4" onclick="window.location.href='detail_news.php'">
+                Khám phá chi tiết
+                <div class="flow-light"></div>
+            </button>
         </div>
     </section>
 
@@ -1030,7 +1052,7 @@
                         <div class="h-[1px] flex-1 bg-blue-500/20"></div>
                     </h4>
                     <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
-                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000&address=Hà nội" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1038,7 +1060,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Hà nội</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">29-E2</p>
@@ -1051,7 +1073,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000&address=TP. HCM" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1059,7 +1081,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
@@ -1072,7 +1094,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000&address=TP. HCM" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1080,7 +1102,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">59-T2</p>
@@ -1093,7 +1115,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </a>
-                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000" class="block">
+                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000&address=Hà nội" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1101,7 +1123,7 @@
                                 </div>
 
                                 <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">Jewelry</span>
+                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">hà nội</span>
 
                                     <div class="plate-number-moto leading-tight py-2">
                                         <p class="text-xl md:text-2xl font-mono text-white/90">36-M1</p>
@@ -1503,6 +1525,31 @@
             ease: "power2.inOut"
         });
     })();
+    // update code 
+    function searchPlate() {
+        // 1. Lấy giá trị từ ô input
+        const searchValue = document.getElementById('main-search-input').value.trim();
+
+        if (searchValue !== "") {
+            // 2. Chuyển hướng trang kèm tham số tìm kiếm (query)
+            // Ví dụ: detail_oto_xemay.php?plate=30K88888
+            window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`;
+        } else {
+            // Nếu không nhập gì mà bấm nút thì rung nhẹ ô input để báo hiệu
+            const wrapper = document.querySelector('.crystal-search');
+            wrapper.classList.add('animate-shake');
+            setTimeout(() => wrapper.classList.remove('animate-shake'), 500);
+            alert("Vui lòng nhập dãy số bạn muốn tìm!");
+        }
+    }
+
+    // Thêm tính năng: Nhấn phím Enter cũng tìm kiếm luôn
+    document.getElementById('main-search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchPlate();
+        }
+    });
+
     // ----------------------------- section 2 ----------------------------- //
     (function() {
         document.addEventListener('DOMContentLoaded', () => {

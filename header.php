@@ -10,6 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --navy-dark: #001A33;
@@ -63,6 +66,45 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 24px 24px 0 0;
         }
+
+        .status-pulse {
+            box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.7);
+            animation: pulse-neon 2s infinite;
+        }
+
+        @keyframes pulse-neon {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(0, 242, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+            }
+        }
+
+
+
+        #account-menu {
+            display: block !important;
+            /* Luôn cho phép block để GSAP điều khiển opacity */
+            pointer-events: none;
+            /* Mặc định không cho bấm khi đang ẩn */
+        }
+
+        #account-menu.is-visible {
+            pointer-events: auto;
+            /* Cho phép bấm khi đang hiện */
+        }
+
+        @media (max-width: 768px) {
+            #search-input {
+                width: 131px;
+            }
+        }
     </style>
 </head>
 
@@ -95,15 +137,42 @@
                     </button>
                 </div>
 
-                <button id="btn-ky-gui" class="hidden md:block bg-[#007FFF] text-white px-6 py-2 rounded-lg font-semibold shadow-lg shadow-blue-500/30">
-                    KÝ GỬI
-                </button>
+                <div class="relative group" id="account-dropdown-trigger">
+                    <div class="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-500 relative z-20">
+                        <div class="hidden sm:block text-right pointer-events-none">
+                            <p class="text-[8px] text-[#001A33]/50 tracking-[1px] uppercase font-bold">Thành viên VIP</p>
+                            <p class="text-[11px] text-[#001A33] font-semibold leading-tight">Mr. Sapphire</p>
+                        </div>
+                        <div class="relative pointer-events-none">
+                            <div class="w-10 h-10 rounded-full border-2 border-[#007FFF]/30 p-0.5 overflow-hidden shadow-lg">
+                                <img src="https://i.pravatar.cc/100?img=11" alt="Avatar" class="w-full h-full rounded-full object-cover">
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-[#00f2ff] border-2 border-white rounded-full status-pulse"></div>
+                        </div>
+                    </div>
+
+                    <div id="account-menu" class="absolute top-[calc(100%+15px)] right-0 w-64 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 transition-all duration-300 z-[120]">
+                        <div class="p-5 space-y-3">
+                            <a href="account_kho_bau.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                                KHO BÁU CỦA TÔI <i class="ri-gem-line"></i>
+                            </a>
+                            <a href="account_lich_su_dau_gia.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                                LỊCH SỬ ĐẤU GIÁ <i class="ri-history-line"></i>
+                            </a>
+                            <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
+                            <a href="Admin/login.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-red-500 hover:scale-105 transition-all">
+                                ĐĂNG XUẤT <i class="ri-logout-box-r-line"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 <button class="md:hidden text-2xl" id="menu-toggle">
                     <i class="ri-menu-4-line"></i>
                 </button>
             </div>
         </div>
+
     </header>
 
     <div id="mobile-menu" class="fixed inset-0 bg-[#001A33]/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center space-y-8 text-white translate-y-[-100%] hidden">
@@ -124,7 +193,7 @@
         </div>
     </div> -->
 
-    
+
 
     <script>
         // 1. Initial Reveal (Chào mừng)
@@ -181,24 +250,50 @@
         const searchInput = document.getElementById('search-input');
 
         searchBtn.addEventListener('click', () => {
-            if (!searchOpen) {
-                gsap.to(searchInput, {
-                    width: 131,
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    duration: 0.5,
-                    ease: "expo.out"
-                });
-            } else {
-                gsap.to(searchInput, {
-                    width: 0,
-                    paddingLeft: 0,
-                    paddingRight: 0,
-                    duration: 0.5,
-                    ease: "expo.in"
-                });
+            // desktop
+            if (window.innerWidth > 768) {
+                if (!searchOpen) {
+                    gsap.to(searchInput, {
+                        width: 300,
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        duration: 0.5,
+                        ease: "expo.out"
+                    });
+                } else {
+                    gsap.to(searchInput, {
+                        width: 0,
+                        paddingLeft: 0,
+                        paddingRight: 0,
+                        duration: 0.5,
+                        ease: "expo.in"
+                    });
+                }
+                searchOpen = !searchOpen;
             }
-            searchOpen = !searchOpen;
+            // mobite
+            if (window.innerWidth <= 768) {
+                if (!searchOpen) {
+                    gsap.to(searchInput, {
+                        width: 95,
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        duration: 0.5,
+                        ease: "expo.out"
+                    });
+                } else {
+                    gsap.to(searchInput, {
+                        width: 0,
+                        paddingLeft: 0,
+                        paddingRight: 0,
+                        duration: 0.5,
+                        ease: "expo.in"
+                    });
+                }
+                searchOpen = !searchOpen;
+            }
+
+
         });
 
         // 5. Mobile Liquid Menu
@@ -243,12 +338,10 @@
 
             item.addEventListener('mousemove', (e) => {
                 const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
                 gsap.to(glow, {
                     opacity: 0.4,
-                    x: x - 25,
-                    y: y - 25,
+                    x: e.clientX - rect.left - 25,
+                    y: e.clientY - rect.top - 25,
                     duration: 0.2
                 });
             });
@@ -259,7 +352,79 @@
                     duration: 0.3
                 });
             });
+
         });
+        // XỬ LÝ MENU TÀI KHOẢN (ACCOUNT DROPDOWN) - BẢN FIX CUỐI CÙNG
+        const accountTrigger = document.getElementById('account-dropdown-trigger');
+        const accountMenu = document.getElementById('account-menu');
+        let isAccountMenuOpen = false;
+
+        // Hàm mở menu
+        function openAccountMenu() {
+            accountMenu.classList.add('is-visible');
+            gsap.to(accountMenu, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            isAccountMenuOpen = true;
+        }
+
+        // Hàm đóng menu
+        function closeAccountMenu() {
+            gsap.to(accountMenu, {
+                autoAlpha: 0,
+                y: 15,
+                duration: 0.3,
+                onComplete: () => accountMenu.classList.remove('is-visible')
+            });
+            isAccountMenuOpen = false;
+        }
+
+        // 1. Dành cho Desktop (Hover)
+        accountTrigger.addEventListener('mouseenter', () => {
+            if (window.innerWidth > 768) openAccountMenu();
+        });
+
+        accountTrigger.addEventListener('mouseleave', () => {
+            if (window.innerWidth > 768) {
+                e.preventDefault(); // Quan trọng: Chặn click giả lập sau touch
+                e.stopPropagation();
+
+                if (!isAccountMenuOpen) {
+                    openAccountMenu();
+                } else {
+                    closeAccountMenu();
+                }
+            }
+        });
+
+        // 2. Dành cho Mobile (Dùng duy nhất Touchstart để tránh xung đột Click)
+        accountTrigger.addEventListener('touchstart', (e) => {
+            if (window.innerWidth <= 768) {
+                e.preventDefault(); // Quan trọng: Chặn click giả lập sau touch
+                e.stopPropagation();
+
+                if (!isAccountMenuOpen) {
+                    openAccountMenu();
+                } else {
+                    closeAccountMenu();
+                }
+            }
+        }, {
+            passive: false
+        });
+
+        // 3. Đóng menu khi chạm/bấm ra vùng ngoài
+        const handleOutsideClick = (e) => {
+            if (isAccountMenuOpen && !accountTrigger.contains(e.target)) {
+                closeAccountMenu();
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick); // Cho Desktop
+        document.addEventListener('touchstart', handleOutsideClick); // Cho Mobile
     </script>
 </body>
 
