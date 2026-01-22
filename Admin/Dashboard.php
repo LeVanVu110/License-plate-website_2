@@ -576,19 +576,27 @@
             }]
         };
 
+        // Cập nhật cấu hình trong hàm khởi tạo wealthChart ở thẻ <script>
         const wealthChart = new Chart(ctx, {
             type: 'line',
             data: chartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: false, // Quan trọng để chiếm hết chiều cao container
                 interaction: {
                     intersect: false,
                     mode: 'index',
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: window.innerWidth > 768, // Chỉ hiện legend trên màn hình lớn
+                        labels: {
+                            color: 'rgba(255,255,255,0.5)',
+                            font: {
+                                family: 'JetBrains Mono',
+                                size: 10
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -601,8 +609,9 @@
                             color: 'rgba(255,255,255,0.3)',
                             font: {
                                 family: 'JetBrains Mono',
-                                size: 10
-                            }
+                                size: window.innerWidth < 640 ? 8 : 10
+                            },
+                            maxTicksLimit: 5 // Giới hạn số lượng nhãn trục Y trên mobile
                         }
                     },
                     x: {
@@ -613,12 +622,22 @@
                             color: 'rgba(255,255,255,0.3)',
                             font: {
                                 family: 'JetBrains Mono',
-                                size: 10
-                            }
+                                size: window.innerWidth < 640 ? 8 : 10
+                            },
+                            maxRotation: 0 // Giữ nhãn nằm ngang dễ đọc
                         }
                     }
                 }
             }
+        });
+
+        // Thêm sự kiện Window Resize để cập nhật biểu đồ khi Admin xoay màn hình
+        window.addEventListener('resize', () => {
+            const isMobile = window.innerWidth < 640;
+            wealthChart.options.scales.x.ticks.font.size = isMobile ? 8 : 10;
+            wealthChart.options.scales.y.ticks.font.size = isMobile ? 8 : 10;
+            wealthChart.options.plugins.legend.display = window.innerWidth > 768;
+            wealthChart.update();
         });
 
         // 1. Fluid Draw Animation với GSAP ScrollTrigger
