@@ -143,6 +143,12 @@
             /* Ánh xanh nhẹ */
         }
 
+        /* Đảm bảo khung chứa biểu đồ co giãn đúng */
+        .chart-container {
+            position: relative;
+            width: 100%;
+        }
+
         /* Mobile Landscape Hint */
         @media (max-width: 640px) and (orientation: portrait) {
             #global-wealth-chart::after {
@@ -158,6 +164,11 @@
                 font-size: 10px;
                 z-index: 20;
                 pointer-events: none;
+            }
+
+            #wealthChart {
+                margin-left: -10px;
+                /* Tận dụng không gian lề */
             }
         }
 
@@ -326,61 +337,53 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="global-wealth-chart" class="relative pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
+    <section id="global-wealth-chart" class="relative pb-20 px-4 md:px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
         <div class="container mx-auto max-w-[1600px]">
             <div class="flex flex-col xl:flex-row gap-6">
 
-                <div class="xl:w-2/3 bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group">
+                <div class="w-full xl:w-2/3 bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 md:p-8 relative overflow-hidden group">
                     <div class="absolute inset-0 sapphire-grid opacity-10 pointer-events-none"></div>
 
-                    <div class="flex justify-between items-center mb-8 relative z-10">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 relative z-10 gap-4">
                         <div>
-                            <h3 class="jetbrains text-white text-lg font-bold">FINANCIAL HORIZON</h3>
-                            <p class="text-[10px] text-white/30 jetbrains tracking-[3px] uppercase">Real-time Market Flow</p>
+                            <h3 class="jetbrains text-white text-base md:text-lg font-bold">FINANCIAL HORIZON</h3>
+                            <p class="text-[9px] md:text-[10px] text-white/30 jetbrains tracking-[2px] md:tracking-[3px] uppercase">Real-time Market Flow</p>
                         </div>
-                        <div class="flex bg-black/40 p-1 rounded-xl border border-white/5 shadow-inner">
-                            <button class="time-filter active px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white transition-all" data-range="day">DAY</button>
-                            <button class="time-filter px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all" data-range="week">WEEK</button>
-                            <button class="time-filter px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all" data-range="month">MONTH</button>
+                        <div class="flex bg-black/40 p-1 rounded-xl border border-white/5 shadow-inner w-full sm:w-auto overflow-x-auto">
+                            <button class="time-filter active flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white transition-all whitespace-nowrap" data-range="day">DAY</button>
+                            <button class="time-filter flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all whitespace-nowrap" data-range="week">WEEK</button>
+                            <button class="time-filter flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all whitespace-nowrap" data-range="month">MONTH</button>
                         </div>
                     </div>
 
-                    <div class="relative h-[400px] w-full">
+                    <div class="relative h-[300px] md:h-[400px] w-full">
                         <canvas id="wealthChart"></canvas>
                     </div>
                 </div>
 
-                <div class="xl:w-1/3 flex flex-col gap-6">
-                    <div class="bg-gradient-to-br from-cyan-950/40 to-black/60 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-8 flex-1 relative overflow-hidden">
+                <div class="w-full xl:w-1/3 flex flex-col sm:flex-row xl:flex-col gap-6">
+                    <div class="bg-gradient-to-br from-cyan-950/40 to-black/60 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-6 md:p-8 flex-1 relative overflow-hidden">
                         <div class="absolute -right-10 -top-10 w-40 h-40 bg-cyan-500/5 rounded-full blur-3xl"></div>
 
-                        <h4 class="jetbrains text-cyan-400 text-xs mb-6 flex items-center gap-2">
+                        <h4 class="jetbrains text-cyan-400 text-[10px] md:text-xs mb-6 flex items-center gap-2">
                             <i class="ri-robot-line animate-pulse"></i> AI PREDICTION ENGINE
                         </h4>
 
-                        <div class="space-y-8">
+                        <div class="space-y-6 md:space-y-8">
                             <div class="forecast-item">
-                                <p class="text-[10px] text-white/40 jetbrains mb-2">EXPECTED REVENUE (EOD)</p>
+                                <p class="text-[9px] md:text-[10px] text-white/40 jetbrains mb-2">EXPECTED REVENUE (EOD)</p>
                                 <div class="flex justify-between items-end">
-                                    <span class="text-2xl text-white jetbrains font-bold">120%</span>
-                                    <span class="text-[#00FFC2] text-[10px] jetbrains">↑ EXCEEDING TARGET</span>
+                                    <span class="text-xl md:text-2xl text-white jetbrains font-bold">120%</span>
+                                    <span class="text-[#00FFC2] text-[9px] md:text-[10px] jetbrains">↑ EXCEEDING</span>
                                 </div>
                                 <div class="w-full bg-white/5 h-1 mt-3 rounded-full overflow-hidden">
                                     <div class="bg-cyan-500 h-full w-[85%] shadow-[0_0_10px_#06b6d4]"></div>
                                 </div>
                             </div>
 
-                            <div class="forecast-item">
-                                <p class="text-[10px] text-white/40 jetbrains mb-2">BID INTENSITY FORECAST</p>
-                                <div class="flex justify-between items-end">
-                                    <span class="text-2xl text-white jetbrains font-bold">High</span>
-                                    <span class="text-cyan-400 text-[10px] jetbrains italic">PHASE: PEAK REACH</span>
-                                </div>
-                            </div>
-
-                            <div class="p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl mt-4">
-                                <p class="text-[11px] leading-relaxed text-white/60 italic font-light">
-                                    "Dựa trên lưu lượng hiện tại, hệ thống dự báo một đợt bùng nổ giá vào lúc 21:00 đêm nay tại sảnh đấu giá Tứ Quý."
+                            <div class="p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl">
+                                <p class="text-[10px] md:text-[11px] leading-relaxed text-white/60 italic font-light">
+                                    "Hệ thống dự báo một đợt bùng nổ giá vào lúc 21:00 đêm nay."
                                 </p>
                             </div>
                         </div>
