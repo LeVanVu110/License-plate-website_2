@@ -6,13 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            background-color: #000814;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sapphire-dust-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         /* ----------------------------- section 1 -----------------------------  */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -48,6 +72,14 @@
             }
         }
 
+        #command-metrics {
+            background-color: #000814;
+            /* Màu đen xanh sâu */
+            background-image:
+                radial-gradient(circle at 50% -20%, rgba(6, 182, 212, 0.1), transparent 50%);
+            position: relative;
+        }
+
         /* Mobile Swipe Optimization */
         @media (max-width: 768px) {
             #command-metrics {
@@ -71,6 +103,63 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        /* Sapphire Grid Texture */
+        .sapphire-grid {
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+        }
+
+        .time-filter.active {
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.2);
+        }
+
+        /* Hiệu ứng thở (Breathe) cho vùng Area */
+        @keyframes breathe {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        #wealthChart {
+            filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.1));
+        }
+
+        #global-wealth-chart {
+            background-color: #000814;
+            background-image:
+                radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.03), transparent 40%),
+                /* Ánh tím nhẹ */
+                radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.03), transparent 40%);
+            /* Ánh xanh nhẹ */
+        }
+
+        /* Mobile Landscape Hint */
+        @media (max-width: 640px) and (orientation: portrait) {
+            #global-wealth-chart::after {
+                content: "Xoay ngang để xem chi tiết biểu đồ";
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(34, 211, 238, 0.2);
+                padding: 5px 15px;
+                border-radius: 20px;
+                color: #22d3ee;
+                font-size: 10px;
+                z-index: 20;
+                pointer-events: none;
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -172,6 +261,70 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="global-wealth-chart" class="relative pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500">
+        <div class="container mx-auto max-w-[1600px]">
+            <div class="flex flex-col xl:flex-row gap-6">
+
+                <div class="xl:w-2/3 bg-[#050505]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 sapphire-grid opacity-10 pointer-events-none"></div>
+
+                    <div class="flex justify-between items-center mb-8 relative z-10">
+                        <div>
+                            <h3 class="jetbrains text-white text-lg font-bold">FINANCIAL HORIZON</h3>
+                            <p class="text-[10px] text-white/30 jetbrains tracking-[3px] uppercase">Real-time Market Flow</p>
+                        </div>
+                        <div class="flex bg-black/40 p-1 rounded-xl border border-white/5 shadow-inner">
+                            <button class="time-filter active px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white transition-all" data-range="day">DAY</button>
+                            <button class="time-filter px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all" data-range="week">WEEK</button>
+                            <button class="time-filter px-4 py-1.5 rounded-lg text-[10px] jetbrains text-white/40 transition-all" data-range="month">MONTH</button>
+                        </div>
+                    </div>
+
+                    <div class="relative h-[400px] w-full">
+                        <canvas id="wealthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="xl:w-1/3 flex flex-col gap-6">
+                    <div class="bg-gradient-to-br from-cyan-950/40 to-black/60 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-8 flex-1 relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-cyan-500/5 rounded-full blur-3xl"></div>
+
+                        <h4 class="jetbrains text-cyan-400 text-xs mb-6 flex items-center gap-2">
+                            <i class="ri-robot-line animate-pulse"></i> AI PREDICTION ENGINE
+                        </h4>
+
+                        <div class="space-y-8">
+                            <div class="forecast-item">
+                                <p class="text-[10px] text-white/40 jetbrains mb-2">EXPECTED REVENUE (EOD)</p>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-2xl text-white jetbrains font-bold">120%</span>
+                                    <span class="text-[#00FFC2] text-[10px] jetbrains">↑ EXCEEDING TARGET</span>
+                                </div>
+                                <div class="w-full bg-white/5 h-1 mt-3 rounded-full overflow-hidden">
+                                    <div class="bg-cyan-500 h-full w-[85%] shadow-[0_0_10px_#06b6d4]"></div>
+                                </div>
+                            </div>
+
+                            <div class="forecast-item">
+                                <p class="text-[10px] text-white/40 jetbrains mb-2">BID INTENSITY FORECAST</p>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-2xl text-white jetbrains font-bold">High</span>
+                                    <span class="text-cyan-400 text-[10px] jetbrains italic">PHASE: PEAK REACH</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl mt-4">
+                                <p class="text-[11px] leading-relaxed text-white/60 italic font-light">
+                                    "Dựa trên lưu lượng hiện tại, hệ thống dự báo một đợt bùng nổ giá vào lúc 21:00 đêm nay tại sảnh đấu giá Tứ Quý."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -275,6 +428,126 @@
     });
 
     // ----------------------------- section 2 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        const ctx = document.getElementById('wealthChart').getContext('2d');
+
+        // Gradient tạo màu Sapphire rực rỡ
+        const gradientRevenue = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientRevenue.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+        gradientRevenue.addColorStop(1, 'rgba(6, 182, 212, 0)');
+
+        const chartData = {
+            labels: ['09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00'],
+            datasets: [{
+                label: 'Doanh thu',
+                data: [450, 620, 580, 890, 720, 1100, 950],
+                borderColor: '#22d3ee',
+                borderWidth: 3,
+                backgroundColor: gradientRevenue,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#22d3ee',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 2
+            }, {
+                label: 'Lượt trả giá',
+                data: [300, 400, 350, 500, 480, 700, 650],
+                borderColor: '#8b5cf6',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        };
+
+        const wealthChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255,255,255,0.03)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: {
+                                family: 'JetBrains Mono',
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: {
+                                family: 'JetBrains Mono',
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 1. Fluid Draw Animation với GSAP ScrollTrigger
+        gsap.from(wealthChart.data.datasets[0].data, {
+            duration: 2,
+            value: 0,
+            ease: "power4.out",
+            scrollTrigger: {
+                trigger: "#wealthChart",
+                start: "top 80%",
+            },
+            onUpdate: () => wealthChart.update()
+        });
+
+        // 2. Time Range Switching (Morphing effect simulation)
+        document.querySelectorAll('.time-filter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.time-filter').forEach(b => b.classList.remove('active', 'text-white'));
+                this.classList.add('active', 'text-white');
+
+                // Randomize data to simulate switching
+                wealthChart.data.datasets[0].data = wealthChart.data.datasets[0].data.map(v => v + (Math.random() - 0.5) * 200);
+                wealthChart.update('active'); // Chart.js mượt mà chuyển đổi
+
+                if (window.navigator.vibrate) window.navigator.vibrate(5);
+            });
+        });
+
+        // 3. Magnetic Tooltip Vertical Line (Simulated via Chart.js options)
+        // Hiệu ứng Haptic khi đạt đỉnh (Peak)
+        wealthChart.options.onHover = (event, elements) => {
+            if (elements.length > 0) {
+                const index = elements[0].index;
+                const val = wealthChart.data.datasets[0].data[index];
+                const maxVal = Math.max(...wealthChart.data.datasets[0].data);
+
+                if (val === maxVal && window.navigator.vibrate) {
+                    window.navigator.vibrate(10); // Rung nhẹ khi chạm đỉnh
+                }
+            }
+        };
+    });
 
     // ----------------------------- section 3 ----------------------------- //
 
