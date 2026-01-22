@@ -345,6 +345,55 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* ----------------------------- section 4 -----------------------------  */
+        .animate-pulse-fast {
+            animation: pulse-glow 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scaleY(1.1);
+            }
+        }
+
+        #strategy-marquee {
+            animation: marquee-scroll 25s linear infinite;
+            padding-left: 100%;
+        }
+
+        @keyframes marquee-scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .temp-bar {
+            transform-origin: bottom;
+        }
+
+        /* Mobile Drawer Logic */
+        @media (max-width: 1023px) {
+            #sentiment-hub {
+                left: 0 !important;
+                margin-left: 0 !important;
+            }
+
+            #sentiment-content.drawer-open {
+                height: 220px !important;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -666,6 +715,62 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="sentiment-hub" class="fixed bottom-0 left-0 right-0 lg:left-[260px] group-[.collapsed]:lg:left-[80px] z-[40] transition-all duration-500">
+        <div onclick="toggleSentimentDrawer()" class="lg:hidden bg-gradient-to-r from-[#001D3D] to-[#003566] p-3 flex justify-between items-center border-t border-white/10 cursor-pointer shadow-2xl">
+            <div class="flex items-center gap-2">
+                <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
+                <span class="space-mono text-[10px] text-white">MARKET SENTIMENT: HIGH 🔥</span>
+            </div>
+            <i id="drawer-icon" class="ri-arrow-up-s-line text-white"></i>
+        </div>
+
+        <div id="sentiment-content" class="bg-[#000814]/95 backdrop-blur-2xl border-t border-white/10 px-6 py-4 lg:py-6 h-[0px] lg:h-auto overflow-hidden lg:overflow-visible transition-all duration-500">
+            <div class="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 items-center">
+
+                <div class="lg:col-span-3 flex items-center gap-6">
+                    <div class="space-y-2">
+                        <p class="space-mono text-[9px] text-white/40 uppercase tracking-widest">Market Temp</p>
+                        <div class="flex items-end gap-1.5 h-12">
+                            <div class="temp-bar w-2 bg-blue-500/30 rounded-full h-[40%] transition-all duration-700"></div>
+                            <div class="temp-bar w-2 bg-blue-400/50 rounded-full h-[60%] transition-all duration-700"></div>
+                            <div class="temp-bar w-2 bg-cyan-400 rounded-full h-[85%] animate-pulse-fast shadow-[0_0_10px_#22d3ee]"></div>
+                            <div class="temp-bar w-2 bg-orange-500 rounded-full h-[70%] transition-all duration-700"></div>
+                            <div class="temp-bar w-2 bg-red-500 rounded-full h-[95%] shadow-[0_0_15px_#ef4444]"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-xl font-bold space-mono">48 <span class="text-xs text-white/40">BPM</span></h4>
+                        <p class="text-[9px] text-orange-400 font-bold uppercase tracking-tighter">Extreme Tension</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 border-l border-white/5 pl-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="space-mono text-[9px] text-white/40 uppercase tracking-widest">Spending Readiness (AI)</span>
+                        <span class="text-emerald-400 text-[10px] space-mono">92%</span>
+                    </div>
+                    <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-600 to-emerald-400 w-[92%] shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
+                    </div>
+                    <p class="text-[10px] text-white/30 mt-2 inter italic font-light">"High-net-worth behavior detected in 3 active sessions."</p>
+                </div>
+
+                <div class="lg:col-span-5 relative overflow-hidden bg-black/20 rounded-xl py-3 px-4 border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                            <i class="ri-lightbulb-flash-line text-emerald-400"></i>
+                        </div>
+                        <div class="marquee-container w-full overflow-hidden whitespace-nowrap">
+                            <p id="strategy-marquee" class="inline-block text-[11px] text-emerald-400 inter font-medium tracking-wide">
+                                AI INSIGHT: Thị trường đang nóng, gợi ý mở thêm 2 phiên Ngũ Quý vào 20:00 tối nay • Khối lượng truy cập từ khu vực Hà Nội tăng 140% • Đề xuất gia hạn biển 30L-888.88 thêm 5 phút...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -824,6 +929,46 @@
         });
     }
     // ----------------------------- section 4 ----------------------------- //
+    // ----------------------------- section 4 ----------------------------- //
+    function toggleSentimentDrawer() {
+        const content = document.getElementById('sentiment-content');
+        const icon = document.getElementById('drawer-icon');
+
+        if (content.classList.contains('drawer-open')) {
+            content.classList.remove('drawer-open');
+            icon.classList.replace('ri-arrow-down-s-line', 'ri-arrow-up-s-line');
+        } else {
+            content.classList.add('drawer-open');
+            icon.classList.replace('ri-arrow-up-s-line', 'ri-arrow-down-s-line');
+            // Haptic feedback khi mở
+            if (window.navigator.vibrate) window.navigator.vibrate([30, 10, 30]);
+        }
+    }
+
+    // Giả lập Dynamic Temperature (Thay đổi mỗi 3 giây)
+    setInterval(() => {
+        const bars = document.querySelectorAll('.temp-bar');
+        bars.forEach(bar => {
+            const randomHeight = Math.floor(Math.random() * (100 - 30 + 1)) + 30;
+            gsap.to(bar, {
+                height: randomHeight + '%',
+                duration: 0.8,
+                ease: "elastic.out(1, 0.3)"
+            });
+        });
+    }, 3000);
+
+    // Hiệu ứng Sparkle cho biển số được AI dự báo (Áp dụng cho Section 2)
+    function applyAIPrediction(plateId) {
+        const targetRow = document.querySelector(`[data-plate="${plateId}"]`);
+        if (targetRow) {
+            const plateContainer = targetRow.querySelector('.asset-plate-container');
+            const star = document.createElement('i');
+            star.className = 'ri-star-fill absolute -top-2 -right-2 text-yellow-400 text-xs animate-spin-slow';
+            plateContainer.style.position = 'relative';
+            plateContainer.appendChild(star);
+        }
+    }
 
     // ----------------------------- section 5 ----------------------------- //
 
