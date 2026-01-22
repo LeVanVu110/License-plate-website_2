@@ -240,6 +240,55 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Data Flow Animation dọc viền thẻ */
+        .tech-card::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border: 1px solid transparent;
+            border-image: linear-gradient(90deg, transparent, #06b6d4, transparent) 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tech-card:hover::before {
+            opacity: 0.5;
+        }
+
+        /* Radar Scanning */
+        .radar-scanner {
+            animation: radar-spin 4s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes radar-spin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Overload Warning State */
+        .overload-active {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
+        }
+
+        .overload-active::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(245, 158, 11, 0.05);
+            backdrop-filter: blur(2px);
+            pointer-events: none;
+            z-index: 5;
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -442,6 +491,99 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="system-integrity" class="relative pb-20 px-6 lg:ml-[260px] group-[.collapsed]:lg:ml-[80px] transition-all duration-500 border-2 border-transparent transition-colors duration-500">
+        <div class="container mx-auto max-w-[1600px]">
+
+            <div class="flex items-center gap-4 mb-8">
+                <h3 class="jetbrains text-[10px] tracking-[5px] text-white/40 uppercase">System Integrity & Sentinel</h3>
+                <div class="h-[1px] flex-1 bg-white/10"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                <div class="tech-card p-6 bg-black/40 border border-white/10 rounded-2xl relative overflow-hidden group">
+                    <div class="data-flow-line absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                    <h4 class="jetbrains text-[10px] text-cyan-400 mb-6 uppercase tracking-widest">Server Vitality</h4>
+
+                    <div class="relative flex justify-center items-center h-48">
+                        <div class="absolute w-40 h-40 rounded-full border-[6px] border-cyan-500/20 border-t-cyan-500 animate-[spin_3s_linear_infinite]"></div>
+                        <div class="absolute w-28 h-28 rounded-full border-[6px] border-emerald-500/20 border-t-emerald-500 animate-[spin_2s_linear_reverse_infinite]"></div>
+                        <div class="absolute w-16 h-16 rounded-full border-[6px] border-blue-500/20 border-t-blue-500 animate-[spin_1s_linear_infinite]"></div>
+
+                        <div class="text-center z-10">
+                            <span class="text-white jetbrains text-xl font-bold">98.2%</span>
+                            <p class="text-[8px] text-white/30 jetbrains">UPTIME</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 mt-6 gap-2 text-center">
+                        <div>
+                            <p class="text-[8px] text-white/30 jetbrains">CPU</p>
+                            <p class="text-[10px] text-cyan-400 jetbrains">42%</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] text-white/30 jetbrains">RAM</p>
+                            <p class="text-[10px] text-emerald-400 jetbrains">5.8GB</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] text-white/30 jetbrains">PING</p>
+                            <p class="text-[10px] text-blue-400 jetbrains">12ms</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-card p-6 bg-black/40 border border-white/10 rounded-2xl relative overflow-hidden xl:col-span-1 md:col-span-2">
+                    <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                    <h4 class="jetbrains text-[10px] text-red-400 mb-6 uppercase tracking-widest">Security Threat Map</h4>
+
+                    <div class="relative h-48 bg-cyan-950/10 rounded-xl overflow-hidden border border-white/5">
+                        <div class="radar-scanner absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0deg,rgba(6,182,212,0.2)_90deg,transparent_91deg)] z-10"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="ri-global-line text-8xl text-white/5"></i>
+                        </div>
+
+                        <div class="absolute top-1/4 left-1/3 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                        <div class="absolute bottom-1/3 right-1/4 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                    </div>
+
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="jetbrains text-[9px] text-white/40 italic">BLOCKED: 192.168.1.104</span>
+                        <button class="text-[9px] text-red-400 underline jetbrains">VIEW LOGS</button>
+                    </div>
+                </div>
+
+                <div class="tech-card p-6 bg-black/40 border border-white/10 rounded-2xl relative overflow-hidden">
+                    <h4 class="jetbrains text-[10px] text-amber-400 mb-6 uppercase tracking-widest">Encrypted Storage</h4>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-[9px] text-white/40 jetbrains uppercase">Database Cluster</span>
+                                <span class="text-[9px] text-white/60 jetbrains">78%</span>
+                            </div>
+                            <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-amber-500 w-[78%] shadow-[0_0_10px_#f59e0b]"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-[9px] text-white/40 jetbrains uppercase">VIP Archives (AES-256)</span>
+                                <span class="text-[9px] text-white/60 jetbrains">32%</span>
+                            </div>
+                            <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-cyan-500 w-[32%] shadow-[0_0_10px_#06b6d4]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="system-purge" class="mt-8 w-full py-3 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] jetbrains font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                        SYSTEM PURGE <i class="ri-fingerprint-line ml-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -797,6 +939,64 @@
     });
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Mô phỏng hiệu ứng Overload (Cảnh báo khi tải cao)
+        function simulateOverload(isActive) {
+            const section = document.getElementById('system-integrity');
+            if (isActive) {
+                section.classList.add('overload-active');
+                gsap.to(section, {
+                    borderColor: "#f59e0b",
+                    duration: 0.5
+                });
+            } else {
+                section.classList.remove('overload-active');
+                gsap.to(section, {
+                    borderColor: "transparent",
+                    duration: 0.5
+                });
+            }
+        }
+
+        // 2. System Purge Logic (FaceID/Fingerprint Confirmation)
+        const purgeBtn = document.getElementById('system-purge');
+        purgeBtn.addEventListener('click', function() {
+            if (confirm("Confirm System Purge via Biometrics?")) {
+                gsap.to(this, {
+                    scale: 0.95,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1
+                });
+                this.innerText = "PURGING CACHE...";
+                this.style.color = "#fff";
+                this.style.backgroundColor = "#ef4444";
+
+                setTimeout(() => {
+                    this.innerText = "SYSTEM PURGE SUCCESS";
+                    this.style.backgroundColor = "#10b981";
+                    if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
+                }, 2000);
+            }
+        });
+
+        // 3. GSAP Data Flow Lines Animation
+        gsap.from(".data-flow-line", {
+            x: "-100%",
+            duration: 3,
+            repeat: -1,
+            ease: "none"
+        });
+
+        // 4. Random Threat Pulse
+        setInterval(() => {
+            const pulses = document.querySelectorAll('.animate-ping');
+            pulses.forEach(p => {
+                p.style.top = Math.random() * 80 + "%";
+                p.style.left = Math.random() * 80 + "%";
+            });
+        }, 5000);
+    });
 
     // ----------------------------- section 5 ----------------------------- //
 

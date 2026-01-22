@@ -87,7 +87,7 @@
         </div>
 
         <nav class="px-4 space-y-2">
-            <a href="#" class="nav-item active group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
+            <a href="Dashboard.php" class="nav-item active group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-radar-line text-xl text-white/50 group-hover/item:text-cyan-400 group-[.active]:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">DASHBOARD</span>
