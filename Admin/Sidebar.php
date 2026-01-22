@@ -35,6 +35,20 @@
             color: white !important;
         }
 
+        .nav-item {
+            text-decoration: none !important;
+            /* Bỏ gạch chân */
+            display: flex;
+            align-items: center;
+            /* Giữ nguyên các thuộc tính cũ của bạn */
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: inherit;
+            /* Giữ màu trắng/cyan của bạn */
+        }
+
         /* Hiệu ứng kính Obsidian */
         #obsidian-sidebar {
             background: linear-gradient(180deg, rgba(2, 6, 23, 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
@@ -73,6 +87,10 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
+<?php
+// 1. Lấy tên file hiện tại (ví dụ: MarketControl.php)
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 
 <body>
     <!-- ----------------------------- sidebar -----------------------------  -->
@@ -86,18 +104,21 @@
             <span class="jetbrains text-white font-bold tracking-[2px] opacity-100 group-[.collapsed]:opacity-0 transition-opacity duration-300">KHO BÁU SỐ</span>
         </div>
 
-        <nav class="px-4 space-y-2">
-            <a href="Dashboard.php" class="nav-item active group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-radar-line text-xl text-white/50 group-hover/item:text-cyan-400 group-[.active]:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">DASHBOARD</span>
-                <div class="active-glow absolute inset-0 bg-cyan-500/5 rounded-xl opacity-0 group-[.active]:opacity-100 blur-md"></div>
+        <nav class="mt-8 px-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
+            <a href="Dashboard.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'Dashboard.php' || $current_page == '') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <i class="ri-dashboard-3-line text-white/50"></i>
+                </div>
+                <span class="nav-label text-white/50">Dashboard</span>
+                <div class="active-indicator"></div>
             </a>
 
-            <a href="MarketControl.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-hammer-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">MARKET CONTROL</span>
+            <a href="MarketControl.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'MarketControl.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <i class="ri-exchange-funds-line text-white/50"></i>
+                </div>
+                <span class="nav-label text-white/50">Market Control</span>
+                <div class="active-indicator"></div>
             </a>
 
             <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
@@ -144,7 +165,7 @@
         <i class="ri-menu-2-line"></i>
     </button>
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
-    
+
     <!-- ----------------------------- section 1 -----------------------------  -->
 
     <!-- ----------------------------- section 2 -----------------------------  -->
@@ -165,6 +186,22 @@
         const toggleBtn = document.querySelector('#sidebar-toggle');
         const overlay = document.querySelector('#sidebar-overlay');
         const navItems = document.querySelectorAll('.nav-item');
+
+        // -------------------------------------------------------------------------
+        // MỚI: Logic tự động Active dựa trên URL (Fix lỗi Dashboard luôn sáng)
+        // -------------------------------------------------------------------------
+        const currentPath = window.location.pathname.split("/").pop() || "index.php";
+
+        navItems.forEach(item => {
+            // Lấy nội dung onclick để biết item này trỏ đến file nào
+            const onClickAttr = item.getAttribute('onclick') || "";
+
+            // Nếu URL hiện tại nằm trong chuỗi onclick, thì active nó
+            if (onClickAttr.includes(currentPath)) {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        });
 
         // 1. Expand/Collapse Logic (Tablet & Manual)
         const toggleSidebar = (isCollapsed) => {
@@ -223,7 +260,7 @@
             });
         });
 
-        // 3. Active State Click
+        // 3. Active State Click (Giữ lại để đổi màu nhanh khi click)
         navItems.forEach(item => {
             item.addEventListener('click', function(e) {
                 navItems.forEach(i => i.classList.remove('active'));

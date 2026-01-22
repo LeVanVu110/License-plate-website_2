@@ -438,6 +438,90 @@
         }
 
         /* ----------------------------- section 5 -----------------------------  */
+        @media (max-width: 1023px) {
+            #forge-container {
+                height: 100vh;
+                width: 100vw;
+                border-radius: 0;
+            }
+
+            #stage-1 {
+                grid-template-cols: 1fr !important;
+            }
+
+            /* Picker style for mobile input */
+            input[type="number"] {
+                font-size: 20px;
+                text-align: center;
+            }
+        }
+
+        .rotate-y-12 {
+            transform: rotateY(12deg) rotateX(5deg);
+        }
+
+        #forge-overlay {
+            position: fixed;
+            width: 200px;
+            /* Kích thước khởi tạo nhỏ */
+            height: 200px;
+            /* background: radial-gradient(square,rgba(6, 182, 212, 0.15) 0%, rgba(0, 8, 20, 0.95) 70%); */
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Hiệu ứng rung nhẹ khi nhập giá sai (Data Validation Glow) */
+        .input-error-shake {
+            border-color: #f43f5e !important;
+            /* Rose-500 */
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+        }
+
+        /* Thẻ biển số 3D xoay trong Forge */
+        #plate-preview-3d {
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        /* Khai báo will-change để GPU chuẩn bị trước */
+        #traffic-surveillance,
+        .will-change-transform {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            /* Kích hoạt 3D acceleration */
+        }
+
+        /* Radar Scan effect cực nhẹ */
+        @keyframes scan-line {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(1000%);
+            }
+        }
+
+        /* Blur mượt mà hơn trên webkit */
+        /* .backdrop-blur-2xl {
+            -webkit-backdrop-filter: blur(40px);
+            backdrop-filter: blur(40px);
+        } */
+
+        #forge-overlay,
+        #forge-container {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            /* Giúp render mượt hơn trên Chrome/Safari */
+        }
+
+        @media (max-width: 640px) {
+            .step-item span {
+                width: 28px;
+                height: 28px;
+                font-size: 10px;
+            }
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -501,14 +585,14 @@
                     <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm"></i>
                     <input type="text" placeholder="AI Intelligence Search..." class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-[11px] text-white w-40 focus:w-64 focus:bg-black/60 focus:border-cyan-500/50 transition-all duration-500 outline-none jetbrains">
                 </div>
-                <button class="hidden lg:flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white text-[10px] font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-cyan-900/20 active:scale-95 jetbrains">
+                <button id="new-auction-btn" onclick="openForge(event)" class="hidden lg:flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white text-[10px] font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-cyan-900/20 active:scale-95 jetbrains">
                     <i class="ri-add-circle-line text-sm"></i> NEW AUCTION
                 </button>
             </div>
         </div>
     </header>
 
-    <button class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-cyan-500 rounded-full shadow-2xl z-[100] flex items-center justify-center text-white text-2xl active:scale-90 transition-transform">
+    <button onclick="openForge(event)" class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-cyan-500 rounded-full shadow-2xl z-[100] flex items-center justify-center text-white text-2xl active:scale-90 transition-transform">
         <i class="ri-add-line"></i>
     </button>
 
@@ -542,13 +626,13 @@
                 <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
                     <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
 
-                    <div class="col-span-3 flex items-center gap-4">
+                    <div class="col-span-3 flex items-center gap-1">
                         <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
                                 <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
                             </div>
                         </div>
-                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
                     </div>
 
                     <div class="col-span-2">
@@ -587,13 +671,13 @@
                 <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
                     <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
 
-                    <div class="col-span-3 flex items-center gap-4">
+                    <div class="col-span-3 flex items-center gap-1">
                         <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
                                 <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
                             </div>
                         </div>
-                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
                     </div>
 
                     <div class="col-span-2">
@@ -632,13 +716,13 @@
                 <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
                     <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
 
-                    <div class="col-span-3 flex items-center gap-4">
+                    <div class="col-span-3 flex items-center gap-1">
                         <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
                                 <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
                             </div>
                         </div>
-                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
                     </div>
 
                     <div class="col-span-2">
@@ -677,13 +761,13 @@
                 <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
                     <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
 
-                    <div class="col-span-3 flex items-center gap-4">
+                    <div class="col-span-3 flex items-center gap-1">
                         <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-3 py-1.5 rounded-[7px] border border-black/20">
+                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
                                 <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
                             </div>
                         </div>
-                        <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i>
+                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
                     </div>
 
                     <div class="col-span-2">
@@ -870,6 +954,127 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <section id="auction-forge" class="fixed inset-0 z-[200] hidden flex items-center justify-center overflow-hidden">
+        <div id="forge-overlay" class="absolute inset-0 bg-[#000814]/90 backdrop-blur-3xl scale-0 rounded-full opacity-0 pointer-events-none transition-all duration-700"></div>
+
+        <div id="forge-container" class="relative w-[95%] max-w-5xl h-[85vh] bg-white/5 border border-white/10 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col opacity-0 translate-y-20 transition-all duration-500 overflow-hidden">
+
+            <div class="px-4 md:px-10 py-6 md:py-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30 shrink-0">
+                        <i class="ri-hammer-fill text-cyan-400 text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-white font-bold text-lg md:text-xl jetbrains tracking-tight">AUCTION FORGE</h2>
+                        <p class="text-[9px] md:text-[10px] text-white/30 space-mono uppercase">V.2.0 STRATEGIC</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 md:gap-8 w-full sm:w-auto justify-between sm:justify-end border-t border-white/5 pt-4 sm:pt-0 sm:border-none">
+                    <div class="step-item active flex items-center gap-2" data-step="1">
+                        <span class="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-400 text-[10px] md:text-xs font-bold shrink-0">1</span>
+                        <span class="text-[9px] md:text-[10px] text-white hidden lg:block jetbrains uppercase tracking-tighter">Asset</span>
+                    </div>
+
+                    <div class="w-6 md:w-10 h-[1px] bg-white/10"></div>
+
+                    <div class="step-item flex items-center gap-2 opacity-30" data-step="2">
+                        <span class="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-white/20 flex items-center justify-center text-white text-[10px] md:text-xs font-bold shrink-0">2</span>
+                        <span class="text-[9px] md:text-[10px] text-white hidden lg:block jetbrains uppercase tracking-tighter">Economy</span>
+                    </div>
+
+                    <div class="w-6 md:w-10 h-[1px] bg-white/10"></div>
+
+                    <div class="step-item flex items-center gap-2 opacity-30" data-step="3">
+                        <span class="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-white/20 flex items-center justify-center text-white text-[10px] md:text-xs font-bold shrink-0">3</span>
+                        <span class="text-[9px] md:text-[10px] text-white hidden lg:block jetbrains uppercase tracking-tighter">Strategy</span>
+                    </div>
+
+                    <button onclick="closeForge()" class="ml-4 w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-white/5 flex items-center justify-center text-white/40 transition-all">
+                        <i class="ri-close-line text-xl md:text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="forge-stages" class="flex-1 overflow-hidden relative">
+
+                <div id="stage-1" class="stage-content absolute inset-0 p-10 grid grid-cols-1 lg:grid-cols-2 gap-12 transition-all duration-500">
+                    <div class="space-y-8">
+                        <div class="space-y-4">
+                            <label class="text-[10px] text-white/40 jetbrains uppercase tracking-widest">Identify Asset</label>
+                            <div class="relative">
+                                <input type="text" placeholder="Nhập biển số (Vd: 30L-999.99)" oninput="validatePlate(this)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white jetbrains focus:border-cyan-500/50 outline-none transition-all">
+                                <i class="ri-search-2-line absolute right-6 top-4 text-white/20"></i>
+                            </div>
+                            <div class="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-center gap-3">
+                                <i class="ri-magic-line text-emerald-400"></i>
+                                <p class="text-[10px] text-emerald-400 inter">Hệ thống phát hiện nhãn <span class="font-bold">"THẦN TÀI (79)"</span> - Tự động gắn tag Hot.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-black/40 rounded-[24px] border border-white/5 flex items-center justify-center flex-col p-8 group">
+                        <div id="plate-preview-3d" class="bg-white px-12 py-6 rounded-xl shadow-2xl transition-all duration-700 transform group-hover:rotate-y-12">
+                            <span class="text-black font-black text-4xl jetbrains tracking-tighter">30L-XXX.XX</span>
+                        </div>
+                        <p class="mt-8 text-[10px] text-white/20 jetbrains uppercase">3D Visual Confirmation</p>
+                    </div>
+                </div>
+
+                <div id="stage-2" class="stage-content absolute inset-0 p-10 translate-x-full opacity-0 transition-all duration-500">
+                    <div class="max-w-2xl mx-auto space-y-8">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <label class="text-[10px] text-white/40 jetbrains tracking-widest uppercase">Giá khởi điểm</label>
+                                <input type="number" oninput="checkAIPrice(this)" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white jetbrains outline-none">
+                                <p class="text-[9px] text-cyan-400/60 inter italic">AI Suggestion: 500.000.000đ</p>
+                            </div>
+                            <div class="space-y-4">
+                                <label class="text-[10px] text-white/40 jetbrains tracking-widest uppercase">Bước giá tối thiểu</label>
+                                <input type="number" value="10000000" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white jetbrains outline-none">
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-2xl border border-white/5">
+                            <label class="text-[10px] text-white/40 jetbrains tracking-widest uppercase block mb-4">Tiền đặt cọc (Deposit)</label>
+                            <input type="range" class="w-full accent-cyan-500">
+                            <div class="flex justify-between mt-2 text-[11px] text-white jetbrains">
+                                <span>40.000.000đ</span>
+                                <span class="text-cyan-400">Fixed: 20% Asset Value</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stage-3" class="stage-content absolute inset-0 p-10 translate-x-full opacity-0 transition-all duration-500">
+                    <div class="max-w-3xl mx-auto space-y-10">
+                        <div class="space-y-4">
+                            <label class="text-[10px] text-white/40 jetbrains uppercase tracking-widest">Thanh lịch trình (Conflict Detector)</label>
+                            <div class="h-12 w-full bg-white/5 rounded-full relative flex items-center px-4 overflow-hidden border border-white/5">
+                                <div class="h-full w-20 bg-amber-500/20 border-x border-amber-500/40 absolute left-20"></div>
+                                <div class="h-full w-32 bg-cyan-500/40 border-x border-cyan-500 absolute left-60"></div>
+                                <span class="absolute inset-0 flex items-center justify-center text-[9px] text-white/20 jetbrains uppercase">Timeline Visualization</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-6 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl">
+                            <div>
+                                <p class="text-white text-sm font-bold">Auto-Extension Strategy</p>
+                                <p class="text-[10px] text-cyan-400/60">Extend 5 mins if bid occurs in last 30s</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-white/10 rounded-full peer peer-checked:bg-cyan-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 border-t border-white/5 flex justify-between bg-black/20">
+                <button id="prevBtn" onclick="moveStep(-1)" class="px-8 py-3 rounded-xl border border-white/10 text-white/40 text-xs jetbrains invisible transition-all">BACK</button>
+                <button id="nextBtn" onclick="moveStep(1)" class="px-10 py-3 rounded-xl bg-cyan-500 text-black font-bold text-xs jetbrains hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all uppercase tracking-widest">Continue</button>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -1134,6 +1339,115 @@
     }
 
     // ----------------------------- section 5 ----------------------------- //
+    let currentForgeStep = 1;
+
+    function openForge(event) {
+        const forge = document.getElementById('auction-forge');
+        const overlay = document.getElementById('forge-overlay');
+        const container = document.getElementById('forge-container');
+
+        const rect = event.currentTarget.getBoundingClientRect();
+        const startX = rect.left + rect.width / 2;
+        const startY = rect.top + rect.height / 2;
+
+        forge.classList.remove('hidden');
+
+        // Reset và chuẩn bị
+        gsap.set(overlay, {
+            xPercent: -50,
+            yPercent: -50,
+            left: startX,
+            top: startY,
+            scale: 0,
+            opacity: 0,
+            borderRadius: "50%" // Bắt đầu từ hình tròn
+        });
+
+        // Sử dụng timeline để kiểm soát thứ tự
+        const tl = gsap.timeline();
+
+        tl.to(overlay, {
+                scale: 12, // Giảm bớt tỷ lệ nếu cần
+                opacity: 1,
+                duration: 0.6, // Giảm thời gian xuống cho cảm giác nhanh nhẹn
+                ease: "power2.out"
+            })
+            .to(container, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: "back.out(1.2)" // Hiệu ứng nảy nhẹ sang trọng
+            }, "-=0.3"); // Chạy sớm hơn một chút khi overlay chưa xong hẳn
+    }
+
+    function moveStep(direction) {
+        const prevStep = currentForgeStep;
+        currentForgeStep += direction;
+
+        // Update Indicators
+        document.querySelectorAll('.step-item').forEach(item => {
+            const step = parseInt(item.dataset.step);
+            item.classList.toggle('active', step === currentForgeStep);
+            item.style.opacity = step <= currentForgeStep ? "1" : "0.3";
+        });
+
+        // Animate Stages
+        gsap.to(`#stage-${prevStep}`, {
+            x: direction > 0 ? -100 : 100,
+            opacity: 0,
+            duration: 0.4
+        });
+        gsap.fromTo(`#stage-${currentForgeStep}`, {
+            x: direction > 0 ? 100 : -100,
+            opacity: 0
+        }, {
+            x: 0,
+            opacity: 1,
+            duration: 0.4,
+            delay: 0.2
+        });
+
+        // Update Buttons
+        document.getElementById('prevBtn').style.visibility = currentForgeStep === 1 ? 'hidden' : 'visible';
+        document.getElementById('nextBtn').innerText = currentForgeStep === 3 ? 'PUBLISH AUCTION' : 'CONTINUE';
+    }
+
+    function checkAIPrice(input) {
+        const val = parseInt(input.value);
+        // Giả lập AI: Biển XXX.XX phải > 500tr
+        if (val < 500000000) {
+            input.classList.add('border-rose-500/50', 'bg-rose-500/5');
+            gsap.to(input, {
+                x: 5,
+                repeat: 3,
+                yoyo: true,
+                duration: 0.1
+            });
+        } else {
+            input.classList.remove('border-rose-500/50', 'bg-rose-500/5');
+            input.classList.add('border-cyan-500/50', 'bg-cyan-500/5');
+        }
+    }
+
+    function closeForge() {
+        gsap.to('#forge-container', {
+            opacity: 0,
+            y: 50,
+            duration: 0.4
+        });
+        gsap.to('#forge-overlay', {
+            scale: 0,
+            opacity: 0,
+            duration: 0.6,
+            delay: 0.2,
+            onComplete: () => {
+                document.getElementById('auction-forge').classList.add('hidden');
+            }
+        });
+    }
+    // ----------------------------- section 5: OPTIMIZED RADAR ----------------------------- //
+
 
     // ----------------------------- section 6 ----------------------------- //
 </script>
