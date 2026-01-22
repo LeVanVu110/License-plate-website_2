@@ -181,6 +181,67 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        .inter-light {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+        }
+
+        /* Hiệu ứng Shine vệt sáng chạy xéo */
+        .shine-effect {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0) 45%,
+                    rgba(255, 255, 255, 0.4) 50%,
+                    rgba(255, 255, 255, 0) 55%,
+                    rgba(255, 255, 255, 0) 100%);
+            background-size: 250% 250%;
+            animation: shine-swipe 4s infinite linear;
+        }
+
+        @keyframes shine-swipe {
+            0% {
+                background-position: 200% 200%;
+            }
+
+            100% {
+                background-position: -200% -200%;
+            }
+        }
+
+        /* Tối ưu Mobile */
+        @media (max-width: 768px) {
+            .timeline-axis {
+                left: 20px !important;
+            }
+
+            .timeline-row {
+                padding-left: 50px;
+                margin-bottom: 2rem;
+            }
+
+            .timeline-node {
+                left: 20px !important;
+                display: block !important;
+            }
+
+            /* Mobile ribbon indicator */
+            .auction-card-chrono::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+            }
+
+            .auction-card-chrono.triumph::before {
+                background: #C5A059;
+            }
+
+            .auction-card-chrono.memory::before {
+                background: #333;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -323,6 +384,85 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="auction-chronology" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
+        <div class="container mx-auto max-w-6xl relative px-6">
+
+            <div class="text-center mb-20">
+                <h2 class="text-[10px] tracking-[5px] text-cyan-400 uppercase mb-4">The Timeless Axis</h2>
+                <h3 class="serif text-5xl text-white font-light">Hành Trình <span class="italic text-white/60">Di Sản</span></h3>
+            </div>
+
+            <div class="relative">
+                <div class="timeline-axis absolute left-4 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent transform md:-translate-x-1/2"></div>
+
+                <div class="space-y-24">
+
+                    <div class="timeline-row flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="timeline-card-wrapper w-full md:w-[45%] order-2 md:order-1">
+                            <div class="auction-card-chrono triumph group relative p-6 bg-gradient-to-br from-white/10 to-transparent border border-white/20 rounded-2xl overflow-hidden shadow-2xl">
+                                <div class="shine-effect absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"></div>
+                                <div class="relative z-10">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="inter-light text-[10px] text-white/50 tracking-widest uppercase">12 OCT 2025</span>
+                                        <i class="ri-medal-fill text-[#C5A059] text-xl"></i>
+                                    </div>
+                                    <h4 class="space-mono text-3xl text-white font-bold mb-2">51K-888.88</h4>
+                                    <div class="flex justify-between items-center mt-6">
+                                        <span class="text-[10px] text-cyan-400 tracking-tighter">FINAL BID:</span>
+                                        <span class="space-mono text-white text-lg font-bold">4,250,000,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-node absolute left-4 md:left-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.8)] transform -translate-x-1/2 z-10 hidden md:block"></div>
+                        <div class="w-full md:w-[45%] order-1 md:order-2"></div>
+                    </div>
+
+                    <div class="timeline-row flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="w-full md:w-[45%] order-1"></div>
+                        <div class="timeline-node absolute left-4 md:left-1/2 w-3 h-3 bg-white/20 rounded-full transform -translate-x-1/2 z-10 hidden md:block"></div>
+                        <div class="timeline-card-wrapper w-full md:w-[45%] order-2">
+                            <div class="auction-card-chrono memory group relative p-6 bg-white/5 border border-white/5 rounded-2xl opacity-60 hover:opacity-100 transition-all duration-500">
+                                <div class="relative z-10">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="inter-light text-[10px] text-white/30 tracking-widest uppercase">28 SEP 2025</span>
+                                        <span class="text-[10px] text-white/20 italic opacity-0 group-hover:opacity-100 transition-opacity">Gần chạm tới di sản</span>
+                                    </div>
+                                    <h4 class="space-mono text-3xl text-white/60 group-hover:text-white font-bold mb-2">30L-123.45</h4>
+                                    <div class="flex justify-between items-center mt-6">
+                                        <span class="text-[10px] text-white/20 tracking-tighter">MISSED AT:</span>
+                                        <span class="space-mono text-white/40 group-hover:text-white text-lg">950,000,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-row flex flex-col md:flex-row items-center justify-between w-full">
+                        <div class="timeline-card-wrapper w-full md:w-[45%] order-2 md:order-1">
+                            <div class="auction-card-chrono triumph group relative p-6 bg-gradient-to-br from-[#C5A059]/10 to-transparent border border-[#C5A059]/30 rounded-2xl overflow-hidden">
+                                <div class="shine-effect absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"></div>
+                                <div class="relative z-10">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="inter-light text-[10px] text-[#C5A059] tracking-widest uppercase">15 AUG 2025</span>
+                                        <i class="ri-vip-diamond-fill text-[#C5A059] text-xl"></i>
+                                    </div>
+                                    <h4 class="space-mono text-3xl text-white font-bold mb-2">99A-999.99</h4>
+                                    <div class="flex justify-between items-center mt-6">
+                                        <span class="text-[10px] text-[#C5A059] tracking-tighter uppercase">Exquisite Asset:</span>
+                                        <span class="space-mono text-white text-lg">12,000,000,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-node absolute left-4 md:left-1/2 w-3 h-3 bg-cyan-400 rounded-full transform -translate-x-1/2 z-10 hidden md:block"></div>
+                        <div class="w-full md:w-[45%] order-1 md:order-2"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -490,6 +630,67 @@
     });
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = gsap.utils.toArray('.timeline-row');
+
+        rows.forEach((row) => {
+            const card = row.querySelector('.timeline-card-wrapper');
+            const node = row.querySelector('.timeline-node');
+            const isLeft = card.parentElement.querySelector(':nth-child(3)') === card; // Logic hướng
+
+            // Animation cho từng thẻ khi cuộn đến
+            gsap.from(card, {
+                x: isLeft ? 100 : -100, // Bay từ ngoài vào trung tâm
+                opacity: 0,
+                duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: row,
+                    start: "top 85%",
+                    end: "top 50%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // Animation cho điểm nút rực sáng
+            if (node) {
+                gsap.from(node, {
+                    scale: 0,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 0 0px #fff",
+                    scrollTrigger: {
+                        trigger: row,
+                        start: "top 80%",
+                        onEnter: () => gsap.to(node, {
+                            scale: 1.5,
+                            backgroundColor: "#22d3ee",
+                            boxShadow: "0 0 20px #22d3ee",
+                            duration: 0.5
+                        })
+                    }
+                });
+            }
+        });
+
+        // Desktop Hover Effect: Zoom trục thời gian
+        if (window.innerWidth > 1024) {
+            document.querySelectorAll('.auction-card-chrono').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, {
+                        scale: 1.05,
+                        duration: 0.4,
+                        ease: "back.out(1.7)"
+                    });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, {
+                        scale: 1,
+                        duration: 0.4
+                    });
+                });
+            });
+        }
+    });
 
     // ----------------------------- section 4 ----------------------------- //
 
