@@ -326,18 +326,40 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                 <i class="ri-steering-2-line "></i> Auto-Vault Allocation
             </h3>
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++): ?>
-                    <div class="treasure-card p-8 rounded-2xl relative group overflow-hidden">
-                        <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">VƯỢNG TÀI</div>
+                <?php for ($i = 0; $i < 6; $i++):
+                    // 1. Giả định dữ liệu thực tế (Thay bằng biến từ Database của bạn)
+                    $plate_prefix = "30K";
+                    $plate_main = "999.99"; // Giả sử đây là biến $query của bạn
+                    $full_plate = $plate_prefix . "-" . $plate_main;
+
+                    $price_raw = 2450000000;
+                    $location = "Hà Nội";
+
+                    // 2. Tạo Link chuyển dữ liệu qua trang chi tiết
+                    // Bạn có thể đổi tên file thành chitiet_bienso_xeoto.php nếu cần tách riêng
+                    $detail_url = "chitiet_bienso_oto.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price_raw) . "&address=" . urlencode($location);
+                ?>
+                    <a href="<?php echo $detail_url; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.03]">
+                        <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                            VƯỢNG TÀI
+                        </div>
+
                         <div class="flex justify-between items-start mb-8">
                             <span class="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Tứ Quý</span>
                             <i class="ri-bookmark-line text-white/20"></i>
                         </div>
-                        <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">30K-<?php echo $query; ?></h2>
+
+                        <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">
+                            <?php echo $plate_prefix; ?>-<?php echo $plate_main; ?>
+                        </h2>
+
                         <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">2.450.000.000 <small class="text-[10px] text-white/40">VND</small></span>
+                            <span class="text-white/80 space-mono text-lg italic">
+                                <?php echo number_format($price_raw, 0, ',', '.'); ?>
+                                <small class="text-[10px] text-white/40">VND</small>
+                            </span>
                         </div>
-                    </div>
+                    </a>
                 <?php endfor; ?>
             </div>
         </section>
@@ -347,19 +369,37 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                 <i class="ri-motorbike-line"></i> Moto-Vault Allocation
             </h3>
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++): ?>
-                    <div class="treasure-card p-8 rounded-2xl relative group overflow-hidden">
+                <?php for ($i = 0; $i < 6; $i++):
+                    // Giả định dữ liệu (Bạn hãy thay thế bằng biến từ DB của bạn)
+                    $plate_base = "29G1";
+                    $plate_num = "888.88"; // Ví dụ lấy từ $query của bạn
+                    $full_plate = $plate_base . "-" . $plate_num;
+                    $price = "450000000";
+                    $address = "Hà Nội";
+
+                    // Tạo link với tham số URL (Sử dụng urlencode để tránh lỗi ký tự đặc biệt)
+                    $detail_link = "chitiet_bienso_xemay.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price) . "&address=" . urlencode($address);
+                ?>
+                    <a href="<?php echo $detail_link; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-transform hover:scale-[1.02]">
                         <div class="absolute -right-0 -top-0 text-cyan-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity"
                             style="top: 15px; right: 25px;">ĐẠI CÁT</div>
+
                         <div class="flex justify-between items-start mb-8">
                             <span class="bg-cyan-500/10 text-cyan-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Lộc Phát</span>
                             <i class="ri-bookmark-line text-white/20"></i>
                         </div>
-                        <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">29-G1<br><?php echo $query; ?></h2>
+
+                        <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">
+                            <?php echo $plate_base; ?><br><?php echo $plate_num; ?>
+                        </h2>
+
                         <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">450.000.000 <small class="text-[10px] text-white/40">VND</small></span>
+                            <span class="text-white/80 space-mono text-lg italic">
+                                <?php echo number_format($price, 0, ',', '.'); ?>
+                                <small class="text-[10px] text-white/40">VND</small>
+                            </span>
                         </div>
-                    </div>
+                    </a>
                 <?php endfor; ?>
             </div>
         </section>
