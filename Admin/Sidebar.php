@@ -94,7 +94,7 @@
                 <div class="active-glow absolute inset-0 bg-cyan-500/5 rounded-xl opacity-0 group-[.active]:opacity-100 blur-md"></div>
             </a>
 
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
+            <a href="MarketControl.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-hammer-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">MARKET CONTROL</span>
