@@ -160,7 +160,7 @@
                                 LỊCH SỬ ĐẤU GIÁ <i class="ri-history-line"></i>
                             </a>
                             <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
-                            <a href="#" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-red-500 hover:scale-105 transition-all">
+                            <a href="Admin/login.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-red-500 hover:scale-105 transition-all">
                                 ĐĂNG XUẤT <i class="ri-logout-box-r-line"></i>
                             </a>
                         </div>
