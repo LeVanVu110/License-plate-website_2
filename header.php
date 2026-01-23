@@ -111,9 +111,11 @@
 require_once "config.php";
 require_once "Models/db.php";
 require_once "Models/Plate.php";
+require_once 'Models/News.php';
 
 $plateModel = new Plate();
 $data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
+
 
 ?>
 

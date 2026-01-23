@@ -356,56 +356,67 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
+<?php
+
+$newsModel = new News();
+$data = $newsModel->get();
+
+$featured = $data['featured'];
+$list = $data['list'];
+?>
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
+    <?php
+    // Nếu không có bài viết nào, có thể ẩn section hoặc hiện mặc định
+    if ($featured):
+    ?>
+        ?>
+        <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
 
-        <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>
+            <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>
 
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
-                <div class="lg:w-1/2 order-2 lg:order-1">
-                    <div class="relative pl-8 border-l border-cyan-500/30 overflow-hidden" id="headline-container">
-                        <h1 id="hero-headline" class="text-4xl md:text-7xl font-serif text-[#E0F7FA] leading-[1.1] mb-8 opacity-0 -translate-x-full">
-                            GIẢI MÃ: BIỂN SỐ TỈ ĐÔ <br>
-                            <span class="text-cyan-400">888.88</span> <br>
-                            ĐỊNH DANH VẬN MỆNH THẾ NÀO?
-                        </h1>
+                    <div class="lg:w-1/2 order-2 lg:order-1">
+                        <div class="relative pl-8 border-l border-cyan-500/30 overflow-hidden" id="headline-container">
+                            <h1 id="hero-headline" class="text-4xl md:text-7xl font-serif text-[#E0F7FA] leading-[1.1] mb-8 opacity-0 -translate-x-full">
+                                <?= mb_strtoupper($featured['title'], 'UTF-8') ?>
+                            </h1>
 
-                        <p id="hero-lead" class="text-lg md:text-xl text-cyan-200/70 font-sans leading-relaxed mb-10 opacity-0">
-                            Từ một dãy số vô hồn trở thành di sản tài chính triệu đô. Khám phá bí ẩn phong thủy và lực đẩy thị trường phía sau những con số quyền lực nhất Việt Nam.
-                        </p>
+                            <p id="hero-lead" class="text-lg md:text-xl text-cyan-200/70 font-sans leading-relaxed mb-10 opacity-0">
+                                <?= $featured['summary'] ?>
+                            </p>
 
-                        <a href="chitiet_tintuc.php?name=GIẢI MÃ: BIỂN SỐ TỈ ĐÔ 888.88 ĐỊNH DANH VẬN MỆNH THẾ NÀO&image=https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
-                            id="btn-read-now"
-                            class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
-                            Đọc Ngay
-                        </a>
+                            <a href="chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&image=<?= $featured['thumbnail'] ?>&name=<?= mb_strtoupper($featured['title'], 'UTF-8') ?>&id=<?= $featured['id'] ?>"
+                                class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
+                                Đọc Ngay
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <div class="lg:w-1/2 order-1 lg:order-2 relative" id="hero-image-wrapper">
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
-                        <div id="sapphire-filter" class="absolute inset-0 bg-blue-900/40 backdrop-blur-sm z-10 transition-all duration-1000"></div>
+                    <div class="lg:w-1/2 order-1 lg:order-2 relative" id="hero-image-wrapper">
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
+                            <div id="sapphire-filter" class="absolute inset-0 bg-blue-900/40 backdrop-blur-sm z-10 transition-all duration-1000"></div>
 
-                        <img id="hero-img" src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
-                            alt="Luxury Car & Plate"
-                            class="w-full h-[300px] md:h-[600px] object-cover scale-110 opacity-0">
+                            <img id="hero-img" src="<?= $featured['thumbnail'] ?>"
+                                alt="<?= $featured['title'] ?>"
+                                class="w-full h-[300px] md:h-[600px] object-cover scale-110 opacity-0">
 
-                        <div class="absolute -inset-2 bg-cyan-500/20 blur-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="absolute -inset-2 bg-cyan-500/20 blur-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-cyan-500/50 animate-bounce">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path>
-            </svg>
-        </div>
-    </section>
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-cyan-500/50 animate-bounce">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="intelligence-grid" class="relative min-h-screen py-24 bg-[#000B18]">
