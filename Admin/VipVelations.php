@@ -291,6 +291,171 @@
             display: flex !important;
         }
 
+        /* css dưới section 2  */
+        /* Glass-to-Steel Effect */
+        .vip-input:focus {
+            background: linear-gradient(145deg, #111, #222);
+            border-bottom-color: #D4AF37;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Thanh trượt Slider Gold */
+        input[type=range] {
+            height: 4px;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #D4AF37;
+            cursor: pointer;
+            box-shadow: 0 0 10px #D4AF37;
+        }
+
+        /* --- HIỆU ỨNG RIÊNG CHO DIAMOND --- */
+        .member-card-wrapper[data-rank="diamond"] .member-card::before {
+            background: linear-gradient(45deg, transparent, rgba(8, 145, 178, 0.3), transparent);
+            animation: shine-diamond 4s infinite;
+        }
+
+        /* --- ĐỊNH NGHĨA 2 CHUYỂN ĐỘNG KHÁC NHAU --- */
+        @keyframes shine-diamond {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            20%,
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* Hiệu ứng viền vàng chạy khi hover dành riêng cho Gold */
+        .member-card-wrapper[data-rank="gold"]:hover .member-card {
+            border-color: #D4AF37 !important;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2) !important;
+        }
+
+        .member-card-wrapper[data-rank="gold"]:hover .member-card::before {
+            animation-duration: 1.5s;
+            /* Khi hover thì ánh sáng quét nhanh hơn như một phản hồi */
+        }
+
+        .member-card-wrapper[data-rank="diamond"]:hover .member-card {
+            border-color: #22d3ee !important;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important;
+        }
+
+        /* Hiệu ứng chữ vàng phát sáng nhẹ */
+        .member-card-wrapper[data-rank="gold"] h3 {
+            transition: color 0.3s;
+        }
+
+        .member-card-wrapper[data-rank="gold"]:hover h3 {
+            color: #F1C40F;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+        }
+
+        /* Hiệu ứng quét sáng riêng cho hạng Gold */
+        /* Hiệu ứng quét sáng của Gold (Vàng Champagne) */
+        @keyframes shine-gold {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            25%,
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* --- Cấu hình chung cho lớp giả tạo ánh sáng --- */
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            transform: rotate(45deg);
+            pointer-events: none;
+            z-index: 1;
+            /* Nằm dưới z-10 của nội dung */
+        }
+
+        /* --- HIỆU ỨNG CHO HẠNG GOLD (VÀNG CHAMPAGNE) --- */
+        .member-card-wrapper[data-rank="gold"] .member-card::before {
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.4), rgba(241, 196, 15, 0.6), transparent);
+            animation: shine-gold 5s infinite;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #editor-container {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .input-field-group {
+                margin-bottom: 1.5rem;
+            }
+
+            /* 1. Cho phép cuộn ngang thanh bộ lọc trên Mobile */
+            #member-filters {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 8px;
+                -webkit-overflow-scrolling: touch;
+                gap: 0.5rem;
+                scrollbar-width: none;
+                /* Ẩn scrollbar cho Firefox */
+            }
+
+            #member-filters::-webkit-scrollbar {
+                display: none;
+                /* Ẩn scrollbar cho Chrome/Safari */
+            }
+
+            /* 2. Cấu trúc lại lưới (Grid) hiển thị thẻ */
+            .members-grid {
+                display: grid;
+                grid-template-columns: 1fr !important;
+                /* Mobile hiện 1 cột duy nhất */
+                gap: 1.5rem !important;
+            }
+
+            /* 3. Tối ưu lại padding cho container */
+            .section-2-container {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            /* 4. Điều chỉnh kích thước văn bản tiêu đề Section 2 */
+            .section-2-header h2 {
+                font-size: 1.5rem !important;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+
+            /* Tablet: Hiện 2 cột */
+            .members-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (min-width: 1025px) {
+
+            /* Desktop: Hiện 3 cột (hoặc 4 tùy bạn chỉnh) */
+            .members-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
 
 
 
@@ -618,9 +783,16 @@
     <section id="elite-grid" class="pt-32 pb-20 px-4 md:px-8 transition-all duration-500 ml-0 md:left-20 lg:ml-24" style="margin-left: 17%;">
 
         <div class="flex flex-wrap items-center justify-between mb-10 gap-4 relative z-20">
-            <div class="flex gap-2">
-                <button class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#F1C40F] hover:border-[#F1C40F]/50 transition-all">ALL MEMBERS</button>
-                <button class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400">DIAMOND CLUB</button>
+            <div class="flex gap-2" id="member-filters">
+                <button onclick="filterMembers('all', this)" class="filter-btn active px-4 py-2 bg-[#F1C40F]/20 border border-[#F1C40F]/50 rounded-full text-[10px] font-bold text-[#F1C40F] transition-all">
+                    ALL MEMBERS
+                </button>
+                <button onclick="filterMembers('gold', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-all">
+                    GOLD MEMBERS
+                </button>
+                <button onclick="filterMembers('diamond', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
+                    DIAMOND CLUB
+                </button>
             </div>
             <div id="compare-mode-indicator" class="hidden items-center gap-3 bg-[#0891B2]/20 border border-[#0891B2]/50 px-4 py-2 rounded-full">
                 <span class="text-[10px] text-cyan-400 font-bold animate-pulse">COMPARE MODE ACTIVE</span>
@@ -630,83 +802,162 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="member-masonry">
 
-            <div class="member-card-wrapper" data-rank="diamond">
-                <div class="member-card diamond-card relative overflow-hidden group p-6 rounded-[1.5rem] border border-white/10 bg-[#0a0a0a] transition-all duration-500 cursor-pointer" data-tilt data-tilt-max="10" data-tilt-glare data-tilt-max-glare="0.3">
+            <div class="member-card-wrapper cursor-pointer" data-rank="diamond" onclick="openVipEditor(this)">
+                <div class="member-card group relative bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-5 hover:border-cyan-400 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]">
 
-                    <div class="online-flow"></div>
-
-                    <div class="flex justify-between items-start mb-8 relative z-10">
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                <img src="https://i.pravatar.cc/150?u=david" class="w-12 h-12 rounded-full border-2 border-[#0891B2] grayscale group-hover:grayscale-0 transition-all">
-                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-[#0891B2] rounded-full border-2 border-black"></div>
-                            </div>
-                            <div>
-                                <h3 class="text-white font-bold text-sm tracking-wide ghost-info">Mr. D****</h3>
-                                <span class="text-[9px] text-white/40 font-mono tracking-widest uppercase">ID: 8888-99</span>
-                            </div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
+                            <span class="text-[8px] text-cyan-400 font-bold uppercase tracking-[2px]">Diamond Club</span>
                         </div>
-                        <div class="rank-badge diamond-badge">DIAMOND</div>
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
                     </div>
 
-                    <div class="mb-8 relative z-10">
-                        <p class="text-[9px] text-white/30 uppercase tracking-[2px] mb-3">Wealth Pulse (30D)</p>
-                        <div class="h-12 w-full flex items-end gap-1">
-                            <div class="flex-1 bg-cyan-500/20 h-[40%] rounded-t-sm"></div>
-                            <div class="flex-1 bg-cyan-500/40 h-[60%] rounded-t-sm"></div>
-                            <div class="flex-1 bg-cyan-500/20 h-[30%] rounded-t-sm"></div>
-                            <div class="flex-1 bg-cyan-500/80 h-[90%] rounded-t-sm animate-pulse"></div>
-                            <div class="flex-1 bg-[#0891B2] h-[100%] rounded-t-sm"></div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full border-2 border-cyan-500/50 overflow-hidden shadow-inner">
+                            <img src="https://i.pravatar.cc/150?u=diamond1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="VIP Avatar">
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 relative z-10">
                         <div>
-                            <span class="text-[8px] text-white/30 block uppercase">Super Plates</span>
-                            <span class="text-sm font-bold text-white ghost-info">12</span>
+                            <h3 class="text-white font-medium text-sm tracking-wide">Mr. Hoang Nguyen</h3>
+                            <p class="text-white/40 text-[10px] font-mono mt-1">ID: #888899</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
+                        <div>
+                            <p class="text-[8px] text-white/30 uppercase tracking-widest">Bidding Limit</p>
+                            <p class="text-xs text-cyan-400 font-bold mt-1">25.0B VND</p>
                         </div>
                         <div class="text-right">
-                            <span class="text-[8px] text-white/30 block uppercase">Bidding Limit</span>
-                            <span class="text-sm font-bold text-[#F1C40F] ghost-info">$5.0M</span>
+                            <p class="text-[8px] text-white/30 uppercase tracking-widest">Assets</p>
+                            <p class="text-xs text-white font-bold mt-1">12 Plates</p>
                         </div>
                     </div>
 
-                    <div class="absolute bottom-0 left-0 h-1 bg-emerald-500 transition-all duration-500" style="width: 95%;"></div>
-
-                    <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')]"></div>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
+                        style="background-image: radial-gradient(#0891B2 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
                 </div>
             </div>
+            <div class="member-card-wrapper cursor-pointer" data-rank="gold" onclick="openVipEditor(this)">
+                <div class="member-card group relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#D4AF37]/20 rounded-3xl p-5">
 
-            <div class="member-card-wrapper" data-rank="gold">
-                <div class="member-card gold-card relative overflow-hidden group p-6 rounded-[1.5rem] border border-white/10 bg-[#1a120b] transition-all duration-500 cursor-pointer" data-tilt data-tilt-max="10">
-                    <div class="flex justify-between items-start mb-8 relative z-10">
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
+                                <span class="text-[8px] text-[#D4AF37] font-bold uppercase tracking-[2px]">Gold Member</span>
+                            </div>
+                            <div class="w-2 h-2 bg-amber-500 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+                        </div>
+
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full border-2 border-[#F1C40F]/30 bg-white/5 flex items-center justify-center text-white/60">Ms. H</div>
+                            <div class="w-16 h-16 rounded-full border-2 border-[#D4AF37]/30 overflow-hidden bg-[#111]">
+                                <img src="https://i.pravatar.cc/150?u=gold2" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                            </div>
                             <div>
-                                <h3 class="text-white font-bold text-sm tracking-wide ghost-info">Ms. H****</h3>
-                                <span class="text-[9px] text-white/40 font-mono tracking-widest uppercase">ID: 7721-04</span>
+                                <h3 class="text-white font-medium text-sm">Ms. Linh Dan</h3>
+                                <p class="text-white/40 text-[10px] font-mono">ID: #777888</p>
                             </div>
                         </div>
-                        <div class="rank-badge gold-badge">GOLD</div>
-                    </div>
-                    <div class="mb-8 relative z-10">
-                        <p class="text-[9px] text-white/30 uppercase tracking-[2px] mb-3">Wealth Pulse</p>
-                        <div class="h-12 w-full flex items-end gap-1 opacity-50">
-                            <div class="flex-1 bg-yellow-500/50 h-[20%]"></div>
-                            <div class="flex-1 bg-yellow-500/50 h-[40%]"></div>
-                            <div class="flex-1 bg-yellow-500/50 h-[35%]"></div>
+
+                        <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
+                            <div>
+                                <p class="text-[8px] text-white/30 uppercase">Bidding Limit</p>
+                                <p class="text-xs text-[#D4AF37] font-bold mt-1">5.2B VND</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[8px] text-white/30 uppercase">Assets</p>
+                                <p class="text-xs text-white font-bold mt-1">4 Plates</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 relative z-10">
-                        <div><span class="text-[8px] text-white/30 block uppercase">Super Plates</span><span class="text-sm font-bold text-white ghost-info">04</span></div>
-                        <div class="text-right"><span class="text-[8px] text-white/30 block uppercase">Bidding Limit</span><span class="text-sm font-bold text-[#F1C40F] ghost-info">$1.2M</span></div>
-                    </div>
-                    <div class="absolute bottom-0 left-0 h-1 bg-rose-500 w-[40%]"></div>
+
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
                 </div>
             </div>
+
 
         </div>
     </section>
+    <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-4 md:p-10">
+        <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
+        <div id="editor-container" class="relative w-full max-w-7xl h-full max-h-[90vh] bg-[#0a0a0a] rounded-[2.5rem] border border-white/10 overflow-hidden opacity-0 scale-50">
+
+            <div class="p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
+                <div class="flex items-center gap-4">
+                    <div id="editor-rank-badge" class="px-3 py-1 rounded-full text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
+                    <h2 class="text-white/40 font-mono text-[10px] tracking-widest uppercase">Profile Intelligence / <span id="editor-client-id" class="text-white">ID: 8888</span></h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleEditMode()" id="edit-mode-btn" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-[10px] uppercase font-bold hover:text-[#D4AF37] transition-all">
+                        <i class="ri-pencil-line"></i> Enter Edit Mode
+                    </button>
+                    <button onclick="closeVipEditor()" class="p-2 text-white/20 hover:text-white transition-colors"><i class="ri-close-circle-line text-2xl"></i></button>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row h-[calc(100%-80px)]">
+                <div class="w-full md:w-1/4 p-8 border-r border-white/5 flex flex-col items-center gap-6">
+                    <div class="relative group cursor-pointer">
+                        <div class="w-48 h-48 rounded-full border-4 border-[#D4AF37]/30 overflow-hidden relative">
+                            <img id="editor-avatar" src="" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                                <i class="ri-camera-switch-line text-3xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 top-0 bottom-0 w-1 bg-white/5 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-t from-red-500 via-yellow-500 to-green-500 w-full h-[85%]"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h3 id="editor-name" class="text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
+                        <p class="text-[10px] text-white/30 uppercase mt-1">Loyalty Score: 850/1000</p>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div class="space-y-8">
+                        <h4 class="text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
+                        <div class="space-y-4">
+                            <div class="input-field-group">
+                                <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
+                                <input type="text" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                            </div>
+                            <div class="input-field-group">
+                                <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
+                                <input type="text" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        <h4 class="text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-white/5 rounded-2xl border border-white/5">
+                                <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit (Credit)</label>
+                                <input type="range" class="w-full accent-[#D4AF37]" min="0" max="10000000000" step="100000000">
+                                <div class="flex justify-between mt-2 font-mono text-xs text-cyan-400">
+                                    <span>0</span>
+                                    <span id="limit-val">5,000,000,000</span>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                                <p class="text-[9px] text-rose-500 uppercase font-bold mb-2">Change Log</p>
+                                <p class="text-[10px] text-white/40 italic">Admin Sapphire changed limit: +2B (2h ago)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-0 left-0 right-0 p-6 bg-black border-t border-white/10 flex justify-between items-center">
+                <button class="text-rose-900/40 hover:text-rose-500 text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
+                <div class="flex gap-4">
+                    <button onclick="closeVipEditor()" class="px-6 py-3 text-white/40 text-[10px] font-bold uppercase">Discard</button>
+                    <button onclick="saveAndEncrypt()" class="px-8 py-3 bg-[#D4AF37] text-black rounded-lg text-[10px] font-black uppercase tracking-[2px] shadow-[0_0_20px_rgba(212,175,55,0.3)]">Save & Encrypt</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
     <section id="kyc-vault" class="min-h-screen pt-20 pb-10 px-4 md:px-8 transition-all duration-500 ml-0 md:ml-20 lg:ml-24" style="margin-left: 17%;">
@@ -1237,6 +1488,156 @@
     function exitCompareMode() {
         document.querySelectorAll('.comparing').forEach(el => el.classList.remove('comparing'));
         document.getElementById('compare-mode-indicator').classList.add('hidden');
+    }
+
+    function filterMembers(rank, btn) {
+        // 1. Reset tất cả các nút về trạng thái bình thường
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('active', 'bg-[#F1C40F]/20', 'border-[#F1C40F]/50', 'text-[#F1C40F]', 'bg-cyan-400/20', 'border-cyan-400/50', 'text-cyan-400', 'bg-[#D4AF37]/20', 'border-[#D4AF37]/50', 'text-[#D4AF37]');
+            b.classList.add('bg-white/5', 'border-white/10', 'text-white/60');
+        });
+
+        // 2. Kích hoạt màu Active tương ứng cho từng hạng
+        btn.classList.remove('bg-white/5', 'border-white/10', 'text-white/60');
+        if (rank === 'all') {
+            btn.classList.add('bg-[#F1C40F]/20', 'border-[#F1C40F]/50', 'text-[#F1C40F]');
+        } else if (rank === 'gold') {
+            btn.classList.add('bg-[#D4AF37]/20', 'border-[#D4AF37]/50', 'text-[#D4AF37]');
+        } else if (rank === 'diamond') {
+            btn.classList.add('bg-cyan-400/20', 'border-cyan-400/50', 'text-cyan-400');
+        }
+
+        // 3. Hiệu ứng lọc thẻ bằng GSAP
+        const cards = document.querySelectorAll('.member-card-wrapper');
+        cards.forEach(card => {
+            const cardRank = card.getAttribute('data-rank');
+            if (rank === 'all' || cardRank === rank) {
+                card.style.display = 'block';
+                gsap.to(card, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            } else {
+                gsap.to(card, {
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 0.3,
+                    onComplete: () => card.style.display = 'none'
+                });
+            }
+        });
+    }
+    // scrip dưới section 2 
+    let isEditMode = false;
+
+    function openVipEditor(cardElement) {
+        const overlay = document.getElementById('vip-editor-overlay');
+        const container = document.getElementById('editor-container');
+        const bg = document.getElementById('editor-bg');
+        const rank = cardElement.getAttribute('data-rank');
+        const badge = document.getElementById('editor-rank-badge');
+        // Đổi màu badge trong Editor tùy theo hạng của thẻ vừa bấm
+        if (rank === 'gold') {
+            badge.className = "px-3 py-1 rounded-full text-[9px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
+            badge.innerText = "GOLD MEMBER";
+        } else {
+            badge.className = "px-3 py-1 rounded-full text-[9px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
+            badge.innerText = "DIAMOND CLUB";
+        }
+
+        // Reset Edit Mode
+        isEditMode = false;
+        document.getElementById('edit-mode-btn').innerHTML = `<i class="ri-pencil-line"></i> Enter Edit Mode`;
+        document.querySelectorAll('.vip-input').forEach(input => input.readOnly = true);
+
+        // Lấy vị trí thẻ gốc để tạo hiệu ứng phóng to từ tâm
+        const rect = cardElement.getBoundingClientRect();
+
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        // GSAP Animation
+        const tl = gsap.timeline();
+
+        tl.to(bg, {
+                opacity: 1,
+                duration: 0.4
+            })
+            .fromTo(container, {
+                x: rect.left - (window.innerWidth / 2 - rect.width / 2),
+                y: rect.top - (window.innerHeight / 2 - rect.height / 2),
+                scale: 0.2,
+                opacity: 0,
+                borderRadius: "50px"
+            }, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                duration: 0.6,
+                ease: "expo.out",
+                borderRadius: "40px"
+            });
+
+        // Haptic feedback
+        if (window.navigator.vibrate) window.navigator.vibrate([10, 30, 10]);
+    }
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const btn = document.getElementById('edit-mode-btn');
+        const inputs = document.querySelectorAll('.vip-input');
+        const container = document.getElementById('editor-container');
+
+        if (isEditMode) {
+            btn.innerHTML = `<i class="ri-save-line text-emerald-400"></i> <span class="text-emerald-400">Viewing (Edit Active)</span>`;
+            container.classList.add('border-[#D4AF37]');
+            inputs.forEach(input => {
+                input.readOnly = false;
+                input.classList.add('bg-white/5', 'px-2');
+            });
+            // Hiệu ứng Neon Gold viền
+            gsap.to(container, {
+                boxShadow: "0 0 50px rgba(212, 175, 55, 0.2)",
+                duration: 0.5
+            });
+        } else {
+            closeVipEditor(); // Hoặc xử lý lưu
+        }
+    }
+
+    function closeVipEditor() {
+        const container = document.getElementById('editor-container');
+        const bg = document.getElementById('editor-bg');
+
+        gsap.to(container, {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.4,
+            ease: "power2.in"
+        });
+        gsap.to(bg, {
+            opacity: 0,
+            duration: 0.4,
+            onComplete: () => {
+                document.getElementById('vip-editor-overlay').classList.add('hidden');
+            }
+        });
+    }
+
+    function saveAndEncrypt() {
+        // Rung "Double Click" (Phần mô tả 4)
+        if (window.navigator.vibrate) window.navigator.vibrate([50, 100, 50]);
+
+        // Hiệu ứng mã hóa giả lập
+        const btn = event.currentTarget;
+        btn.innerText = "ENCRYPTING...";
+        setTimeout(() => {
+            alert("VIP Profile Secured & Re-encrypted on Server.");
+            closeVipEditor();
+        }, 1500);
     }
 
     // ----------------------------- section 3 ----------------------------- //
