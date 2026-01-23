@@ -235,18 +235,180 @@
         #reject-modal.show {
             display: flex !important;
         }
-        /* Responsive cho Mobile */
-        @media (max-width: 768px) {
-            #kyc-vault{
-                margin-left: 0% !important;
-            }
-        }
+
 
 
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Paper Mode */
+        .paper-active #evidence-pane {
+            background: #f4f1ea !important;
+            transition: all 0.5s ease;
+        }
+
+        .paper-active #evidence-pane * {
+            color: #2d2d2d !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .paper-active .evidence-card {
+            filter: sepia(0.3) contrast(1.1);
+        }
+
+        /* Stamp Effect */
+        .stamp-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(5);
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Laser Line Animation */
+        @keyframes laserMove {
+            0% {
+                top: 0;
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Ghost Comparison */
+        #selfie-card {
+            z-index: 30;
+            transition: opacity 0.3s;
+        }
+
+        #selfie-card:active {
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1280px) {
+            #kyc-vault {
+                height: auto;
+            }
+
+            #evidence-pane {
+                min-height: 500px;
+            }
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 768px) {
+            #kyc-vault {
+                margin-left: 0% !important;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Keyword Pills */
+        .keyword-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .keyword-pill:hover {
+            background: rgba(8, 145, 178, 0.2);
+            border-color: #0891B2;
+            transform: translateY(-2px);
+        }
+
+        /* Heartbeat Animation */
+        .heart-beat {
+            animation: heartBeat 1.2s infinite;
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(1);
+            }
+
+            15% {
+                transform: scale(1.3);
+            }
+
+            30% {
+                transform: scale(1);
+            }
+
+            45% {
+                transform: scale(1.15);
+            }
+
+            60% {
+                transform: scale(1);
+            }
+        }
+
+        /* Custom Scrollbar for Queue */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Neural Lines Effect (Simulation) */
+        .neural-glow {
+            box-shadow: 0 0 30px rgba(8, 145, 178, 0.6) !important;
+            border-color: #0891B2 !important;
+            transition: all 0.5s;
+        }
+
+        /* Ghost Notification Style */
+        .ghost-notif {
+            background: rgba(10, 17, 36, 0.9);
+            backdrop-blur: 10px;
+            border: 1px solid rgba(8, 145, 178, 0.3);
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .time-pill.active {
+            background-color: rgba(6, 182, 212, 0.2);
+            /* bg-cyan-500/20 */
+            color: #22d3ee;
+            /* text-cyan-400 */
+        }
+
+        .time-pill:not(.active) {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.3);
+            /* text-white/30 */
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 768px) {
+            #vip-pulse {
+                margin-left: 0% !important;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -556,69 +718,120 @@
         </div>
     </section>
 
-    <style>
-        /* Paper Mode */
-        .paper-active #evidence-pane {
-            background: #f4f1ea !important;
-            transition: all 0.5s ease;
-        }
-
-        .paper-active #evidence-pane * {
-            color: #2d2d2d !important;
-            border-color: rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .paper-active .evidence-card {
-            filter: sepia(0.3) contrast(1.1);
-        }
-
-        /* Stamp Effect */
-        .stamp-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(5);
-            opacity: 0;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        /* Laser Line Animation */
-        @keyframes laserMove {
-            0% {
-                top: 0;
-                opacity: 1;
-            }
-
-            100% {
-                top: 100%;
-                opacity: 0;
-            }
-        }
-
-        /* Ghost Comparison */
-        #selfie-card {
-            z-index: 30;
-            transition: opacity 0.3s;
-        }
-
-        #selfie-card:active {
-            opacity: 0.5;
-        }
-
-        /* Responsive */
-        @media (max-width: 1280px) {
-            #kyc-vault {
-                height: auto;
-            }
-
-            #evidence-pane {
-                min-height: 500px;
-            }
-        }
-    </style>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="vip-pulse" class="pt-10 pb-20 px-4 md:px-8 transition-all duration-500 ml-0 md:ml-20 lg:ml-24 bg-[#050B18]" style="margin-left: 17%;">
+
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-[#0891B2] font-mono text-[10px] tracking-[5px] uppercase mb-1">Intelligence System</h2>
+                <h1 class="text-xl text-white font-light tracking-widest uppercase">Relationship <span class="font-bold text-cyan-500">Matrix</span></h1>
+            </div>
+            <div class="flex items-center gap-4 bg-white/5 p-2 rounded-full border border-white/10" id="timeframe-switch">
+                <div onclick="updateTimeframe(this, '7')"
+                    class="time-pill active px-4 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-[9px] font-bold cursor-pointer transition-all duration-300">
+                    7 DAYS DWELL
+                </div>
+                <div onclick="updateTimeframe(this, '30')"
+                    class="time-pill px-4 py-1 rounded-full text-white/30 text-[9px] font-bold cursor-pointer hover:text-white transition-all duration-300">
+                    30 DAYS SCAN
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <div class="bg-[#0A1124] border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#0891B2 0.5px, transparent 0.5px); background-size: 15px 15px;"></div>
+                <h3 class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <i class="ri-fire-line text-orange-500"></i> Interest Heatmap
+                </h3>
+
+                <div class="flex flex-wrap gap-3 relative z-10">
+                    <div class="keyword-pill" onclick="triggerNeural('Sảnh Tiến')">
+                        <span class="text-[11px] text-white">Sảnh Tiến</span>
+                        <span class="text-[9px] text-cyan-500 font-bold">92%</span>
+                    </div>
+                    <div class="keyword-pill" onclick="triggerNeural('Lộc Phát 68')">
+                        <span class="text-[11px] text-white">Lộc Phát 68</span>
+                        <span class="text-[9px] text-cyan-500 font-bold">85%</span>
+                    </div>
+                    <div class="keyword-pill" onclick="triggerNeural('Ngũ Quý 9')">
+                        <span class="text-[11px] text-white">Ngũ Quý 9</span>
+                        <span class="text-[9px] text-rose-500 font-bold">HOT</span>
+                    </div>
+                    <div class="keyword-pill" onclick="triggerNeural('Tam Hoa 8')">
+                        <span class="text-[11px] text-white">Tam Hoa 8</span>
+                        <span class="text-[9px] text-cyan-500 font-bold">42%</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] text-white/30 uppercase">Avg. Gaze Time</span>
+                        <span class="text-xs text-cyan-400 font-mono">18.4s / Plate</span>
+                    </div>
+                    <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                        <div class="bg-cyan-500 h-full w-[75%] shadow-[0_0_10px_#0891B2]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#0A1124] border border-white/5 rounded-2xl p-6 flex flex-col">
+                <h3 class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <i class="ri-pulse-line text-cyan-400"></i> Engagement Flow
+                </h3>
+                <div class="flex-1 min-h-[150px] relative">
+                    <canvas id="engagementChart"></canvas>
+                </div>
+                <div class="flex justify-around mt-4">
+                    <div class="text-center">
+                        <p class="text-[8px] text-white/30 uppercase">Peak Time</p>
+                        <p class="text-xs text-white font-bold">21:00 - 23:00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[8px] text-white/30 uppercase">Retention</p>
+                        <p class="text-xs text-emerald-400 font-bold">88.4%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#0A1124] border border-white/5 rounded-2xl p-6 flex flex-col">
+                <h3 class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-6 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="ri-customer-service-2-line text-emerald-400"></i> Concierge Queue</span>
+                    <span class="text-cyan-500 text-[8px] animate-pulse">LIVE</span>
+                </h3>
+
+                <div class="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="bg-white/5 border-l-2 border-[#F1C40F] p-3 rounded-r-lg group hover:bg-white/10 transition-all cursor-pointer">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] font-bold text-[#F1C40F]">DIAMOND • Mr. T**</span>
+                            <span class="text-[8px] text-white/20">2m ago</span>
+                        </div>
+                        <p class="text-[11px] text-white/80 italic">"Tìm giúp biển số ngày sinh vợ 20/10..."</p>
+                    </div>
+
+                    <div class="bg-white/5 border-l-2 border-slate-400 p-3 rounded-r-lg group hover:bg-white/10 transition-all cursor-pointer">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] font-bold text-slate-300">PLATINUM • Ms. K**</span>
+                            <span class="text-[8px] text-white/20">15m ago</span>
+                        </div>
+                        <p class="text-[11px] text-white/80 italic">"Tư vấn thủ tục chuyển nhượng nhanh"</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 p-2 bg-cyan-500/5 rounded-lg border border-cyan-500/10">
+                        <div class="heart-beat">
+                            <i class="ri-heart-pulse-fill text-cyan-500"></i>
+                        </div>
+                        <span class="text-[9px] text-cyan-400 font-mono tracking-tighter uppercase">High Engagement Mode Detected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ghost-notif-container" class="fixed bottom-6 right-6 z-[300] space-y-3 pointer-events-none"></div>
+    </section>
+
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -991,6 +1204,174 @@
     }
 
     // ----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Khởi tạo biểu đồ Engagement Flow (Chart.js)
+        const ctx = document.getElementById('engagementChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['12pm', '3pm', '6pm', '9pm', '12am', '3am'],
+                datasets: [{
+                    label: 'VIP Online',
+                    data: [12, 19, 15, 45, 30, 8],
+                    borderColor: '#0891B2',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: (context) => {
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                        gradient.addColorStop(0, 'rgba(8, 145, 178, 0.4)');
+                        gradient.addColorStop(1, 'rgba(8, 145, 178, 0)');
+                        return gradient;
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        display: false
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.2)',
+                            font: {
+                                size: 8
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Hiệu ứng Neural Connection (Phản biện 2)
+        window.triggerNeural = function(keyword) {
+            // Giả lập tìm các thẻ ở Section 2 có cùng sở thích
+            const cards = document.querySelectorAll('.member-card');
+
+            // Haptic Feedback
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+
+            // Phát sáng thẻ ngẫu nhiên để mô phỏng sự kết nối
+            cards.forEach((card, index) => {
+                if (index % 2 === 0) {
+                    card.classList.add('neural-glow');
+                    setTimeout(() => card.classList.remove('neural-glow'), 2000);
+                }
+            });
+
+            showGhostNotif(`AI: Matching VIPs interested in "${keyword}"...`);
+        };
+
+        // 3. Hiệu ứng Ghost Notification
+        function showGhostNotif(message) {
+            const container = document.getElementById('ghost-notif-container');
+            const notif = document.createElement('div');
+            notif.className = 'ghost-notif';
+            notif.innerHTML = `
+            <div class="w-2 h-2 bg-cyan-500 rounded-full animate-ping"></div>
+            <span>${message}</span>
+        `;
+
+            container.appendChild(notif);
+
+            // GSAP hiệu ứng trượt vào
+            gsap.fromTo(notif, {
+                x: 100,
+                opacity: 0
+            }, {
+                x: 0,
+                opacity: 1,
+                duration: 0.5,
+                ease: "back.out(1.7)"
+            });
+
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                gsap.to(notif, {
+                    x: 50,
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => notif.remove()
+                });
+            }, 3000);
+        }
+
+        // Giả lập tin nhắn Concierge mới sau 5 giây
+        setTimeout(() => {
+            showGhostNotif("New Concierge Request from Diamond Member");
+        }, 5000);
+    });
+    // Biến lưu trữ instance của biểu đồ để cập nhật
+    let engagementChart;
+
+    // Dữ liệu mẫu cho các khoảng thời gian
+    const timeframeData = {
+        '7': {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            values: [12, 45, 28, 60, 42, 85, 50],
+            peak: "21:00 - 23:00",
+            retention: "88.4%"
+        },
+        '30': {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            values: [150, 230, 180, 310],
+            peak: "Weekend Nights",
+            retention: "92.1%"
+        }
+    };
+
+    function updateTimeframe(element, days) {
+        // 1. Chuyển đổi trạng thái Active trên UI
+        document.querySelectorAll('.time-pill').forEach(pill => pill.classList.remove('active'));
+        element.classList.add('active');
+
+        // 2. Lấy dữ liệu mới
+        const data = timeframeData[days];
+
+        // 3. Cập nhật Biểu đồ (Engagement Flow) với hiệu ứng GSAP
+        if (engagementChart) {
+            engagementChart.data.labels = data.labels;
+            engagementChart.data.datasets[0].data = data.values;
+
+            // Hiệu ứng update mượt mà của Chart.js
+            engagementChart.update('active');
+        }
+
+        // 4. Cập nhật các con số thống kê bên dưới biểu đồ
+        const statsContainer = element.closest('#vip-pulse').querySelectorAll('.text-xs.text-white.font-bold, .text-xs.text-emerald-400.font-bold');
+
+        // Giả lập hiệu ứng nhảy số
+        gsap.from(statsContainer, {
+            innerText: 0,
+            duration: 0.5,
+            snap: {
+                innerText: 0.1
+            },
+            stagger: 0.1
+        });
+
+        statsContainer[0].innerText = data.peak;
+        statsContainer[1].innerText = data.retention;
+
+        // 5. Haptic feedback
+        if (window.navigator.vibrate) window.navigator.vibrate(5);
+
+        console.log(`Switching Matrix Intelligence to ${days} days...`);
+    }
+
+    // Lưu ý: Trong phần khởi tạo Chart.js cũ của bạn, hãy gán nó vào biến engagementChart
+    // Ví dụ: engagementChart = new Chart(ctx, { ... });
 
     // ----------------------------- section 5 ----------------------------- //
 
