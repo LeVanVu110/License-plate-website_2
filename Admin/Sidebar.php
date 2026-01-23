@@ -51,7 +51,7 @@
 
         /* Hiệu ứng kính Obsidian */
         #obsidian-sidebar {
-            background: linear-gradient(180deg, rgba(16, 28, 79 , 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(16, 28, 79, 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
             /* box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5); */
         }
 
@@ -188,6 +188,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <a href="Notifications.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-notification-3-line text-amber-400"></i>
                                 <span class="uppercase tracking-widest font-bold">Thông báo</span>
+                            </a>
+                            <a href="Infrastructure.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                <i class="ri-node-tree text-purple-400"></i>
+                                <span class="uppercase tracking-widest font-bold font-mono">Infrastructure</span>
                             </a>
                         </div>
                     </div>

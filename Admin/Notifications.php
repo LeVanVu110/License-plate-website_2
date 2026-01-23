@@ -258,7 +258,7 @@
         </section>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
-        <section id="fiscal-policy" class="py-20 px-4 md:px-10 bg-[#90cbff text-slate-900 border-t border-slate-100">
+        <section id="fiscal-policy" class="py-20 px-4 md:px-10 bg-[#90cbff] text-slate-900 border-t border-slate-100">
             <div class="max-w-7xl mx-auto">
 
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-6">
