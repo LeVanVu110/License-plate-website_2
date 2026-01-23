@@ -599,6 +599,127 @@
         </section>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
+        <section id="revenue-intelligence" class="py-10 px-4 md:px-10 mb-20">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                <div>
+                    <h3 class="text-2xl font-light text-white tracking-tight flex items-center gap-3">
+                        <i class="ri-line-chart-line text-blue-500"></i>
+                        Intelligence Matrix
+                    </h3>
+                    <p class="text-[10px] text-white/30 uppercase tracking-[4px] mt-2">Strategic Profit & Velocity Analytics</p>
+                </div>
+
+                <div class="flex bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+                    <button onclick="updateMainChart('24h')" class="px-4 py-1.5 rounded-lg text-[9px] font-black text-white/40 hover:text-white transition-all uppercase">24h</button>
+                    <button onclick="updateMainChart('7d')" class="px-4 py-1.5 rounded-lg text-[9px] font-black text-white bg-white/10 shadow-xl uppercase">7 Days</button>
+                    <button onclick="updateMainChart('30d')" class="px-4 py-1.5 rounded-lg text-[9px] font-black text-white/40 hover:text-white transition-all uppercase">30 Days</button>
+                    <button onclick="updateMainChart('year')" class="px-4 py-1.5 rounded-lg text-[9px] font-black text-white/40 hover:text-white transition-all uppercase">Year</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <div class="lg:col-span-2 xl:col-span-3 bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8 relative overflow-hidden group">
+                    <div class="flex justify-between items-start mb-10 relative z-10">
+                        <div>
+                            <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest">Net Revenue Growth</p>
+                            <h4 class="text-3xl font-['Space_Mono'] text-white mt-1">128.450B <span class="text-xs text-emerald-400 font-sans">+12.5%</span></h4>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" checked class="hidden" onchange="toggleVerifiedOnly(this)">
+                                <span class="w-8 h-4 bg-emerald-500/20 border border-emerald-500/50 rounded-full relative transition-all">
+                                    <span class="absolute left-1 top-1 w-2 h-2 bg-emerald-500 rounded-full dot-toggle"></span>
+                                </span>
+                                <span class="text-[9px] text-white/60 font-bold uppercase">Verified Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="h-[350px] w-full relative">
+                        <canvas id="mainRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8 flex flex-col items-center">
+                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-8 self-start">Revenue Source Split</p>
+                    <div class="relative w-full aspect-square max-w-[220px]">
+                        <canvas id="revenueSplitChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="text-[10px] text-white/20 uppercase">Total</span>
+                            <span class="text-xl font-['Space_Mono'] text-white">100%</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 w-full space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-white/40 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Auction Fee</span>
+                            <span class="text-xs text-white font-mono">60%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-white/40 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Escrow</span>
+                            <span class="text-xs text-white font-mono">30%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-white/40 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500"></span> VIP Services</span>
+                            <span class="text-xs text-white font-mono">10%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-8">
+                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-6">Top Profit Sectors</p>
+                    <div class="space-y-6">
+                        <div class="group cursor-pointer">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-xs text-white/80 font-bold">Biển Ngũ Quý</span>
+                                <span class="text-xs text-emerald-400 font-mono">45.2B</span>
+                            </div>
+                            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 w-[85%] group-hover:w-[90%] transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                        <div class="group cursor-pointer">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-xs text-white/80 font-bold">Biển Sảnh Tiến</span>
+                                <span class="text-xs text-emerald-400 font-mono">22.8B</span>
+                            </div>
+                            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 w-[60%] group-hover:w-[65%] transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-white/5 space-y-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[9px] text-white/30 uppercase tracking-tighter">Burn Rate Index</span>
+                                <span class="text-[10px] text-rose-400 font-mono">0.12x</span>
+                            </div>
+                            <p class="text-[8px] text-white/10 uppercase">Efficiency: High</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[9px] text-white/30 uppercase tracking-tighter">EBITDA Margin</span>
+                                <span class="text-[10px] text-emerald-400 font-mono">24.5%</span>
+                            </div>
+                            <p class="text-[8px] text-white/10 uppercase">Benchmark: Outperform</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            /* CSS for Toggle Switch */
+            input:checked+span .dot-toggle {
+                transform: translateX(16px);
+                background-color: #10B981;
+            }
+
+            input:checked+span {
+                background-color: rgba(16, 185, 129, 0.3);
+            }
+        </style>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -801,6 +922,198 @@
     }
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Khởi tạo Main Revenue Chart
+        const mainCtx = document.getElementById('mainRevenueChart').getContext('2d');
+        const revenueGradient = mainCtx.createLinearGradient(0, 0, 0, 400);
+        revenueGradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+        revenueGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+        const mainRevenueChart = new Chart(mainCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Verified Revenue',
+                    data: [65, 59, 80, 81, 56, 95, 128],
+                    borderColor: '#3b82f6',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: revenueGradient,
+                    pointBackgroundColor: '#3b82f6',
+                    pointHoverRadius: 8,
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 10,
+                            family: 'Inter'
+                        },
+                        bodyFont: {
+                            size: 12,
+                            family: 'Space Mono'
+                        },
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `Revenue: ${context.raw}B VNĐ`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        display: false
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.2)',
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Khởi tạo Revenue Split Chart (Donut)
+        const splitCtx = document.getElementById('revenueSplitChart').getContext('2d');
+        const revenueSplitChart = new Chart(splitCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Auction', 'Escrow', 'VIP'],
+                datasets: [{
+                    data: [60, 30, 10],
+                    backgroundColor: ['#3b82f6', '#10b981', '#a855f7'],
+                    borderWidth: 0,
+                    hoverOffset: 20 // Hiệu ứng Segment Isolation
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 3. GSAP Animation: Data Draw
+        gsap.from("#revenue-intelligence .bg-white\/\\[0\.02\\]", {
+            scrollTrigger: {
+                trigger: "#revenue-intelligence",
+                start: "top 80%"
+            },
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power4.out"
+        });
+
+        // Anomaly Detection: Giả lập tô đỏ vùng sụt giảm (Tháng 5 sụt giảm > 20%)
+        // Bạn có thể xử lý logic này dựa trên dữ liệu thật
+    });
+
+    // Hàm Toggle Verified Revenue
+    function toggleVerifiedOnly(cb) {
+        // Logic ẩn/hiện đường dữ liệu ảo
+        console.log("Verified Only Mode:", cb.checked);
+        // Reload hoặc update chart tại đây
+    }
+    // Giả lập kho dữ liệu cho các mốc thời gian
+    const chartDataStore = {
+        '24h': {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+            values: [12, 18, 45, 30, 85, 92, 110],
+            total: "8.250B"
+        },
+        '7d': {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            values: [65, 59, 80, 81, 56, 95, 128],
+            total: "128.450B"
+        },
+        '30d': {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            values: [450, 620, 580, 890],
+            total: "2.540T"
+        },
+        'year': {
+            labels: ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'],
+            values: [2100, 3500, 4200, 3800, 5600, 7200],
+            total: "26.800T"
+        }
+    };
+
+    function updateMainChart(timeframe) {
+        // 1. Lấy tham chiếu đến Chart instance (đã khởi tạo ở DOMContentLoaded)
+        // Lưu ý: Bạn cần khai báo biến mainRevenueChart ở phạm vi ngoài để hàm này truy cập được
+        const chart = Chart.getChart("mainRevenueChart");
+        const data = chartDataStore[timeframe];
+
+        if (!chart || !data) return;
+
+        // 2. Hiệu ứng UI cho các nút bấm
+        const buttons = event.target.parentElement.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.classList.remove('bg-white/10', 'text-white', 'shadow-xl');
+            btn.classList.add('text-white/40');
+        });
+        event.target.classList.add('bg-white/10', 'text-white', 'shadow-xl');
+        event.target.classList.remove('text-white/40');
+
+        // 3. Cập nhật con số tổng (Revenue Display)
+        const revenueHeader = document.querySelector('#revenue-intelligence h4');
+        gsap.to(revenueHeader, {
+            opacity: 0,
+            y: -10,
+            duration: 0.2,
+            onComplete: () => {
+                revenueHeader.firstChild.textContent = data.total + " ";
+                gsap.to(revenueHeader, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.3
+                });
+            }
+        });
+
+        // 4. Cập nhật dữ liệu biểu đồ với hiệu ứng mượt
+        chart.data.labels = data.labels;
+        chart.data.datasets[0].data = data.values;
+
+        // Cấu hình animation riêng cho lúc update
+        chart.update({
+            duration: 800,
+            easing: 'easeOutQuart'
+        });
+
+        // 5. Haptic Feedback (Rung nhẹ)
+        if (window.navigator.vibrate) window.navigator.vibrate(5);
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
