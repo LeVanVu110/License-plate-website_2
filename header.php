@@ -107,6 +107,15 @@
         }
     </style>
 </head>
+<?php
+require_once "config.php";
+require_once "Models/db.php";
+require_once "Models/Plate.php";
+
+$plateModel = new Plate();
+$data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
+
+?>
 
 <body>
 
