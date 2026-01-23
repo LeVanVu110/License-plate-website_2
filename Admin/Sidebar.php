@@ -51,8 +51,8 @@
 
         /* Hiệu ứng kính Obsidian */
         #obsidian-sidebar {
-            background: linear-gradient(180deg, rgba(2, 6, 23, 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
-            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, rgba(16, 28, 79, 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
+            /* box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5); */
         }
 
         /* Tối ưu Mobile */
@@ -146,18 +146,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="nav-label text-white/50">Financial Ledger</span>
                 <div class="active-indicator"></div>
             </a>
+            <a href="Security.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'Security.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+
+                </div>
+                <span class="nav-label text-white/50">Financial Ledger</span>
+                <div class="active-indicator"></div>
+            </a>
+
+
 
             <!-- <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">FINANCIAL LEDGER</span>
-            </a> -->
-
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">SECURITY CENTER</span>
-            </a>
+            </a> -->
         </nav>
 
         <div class="absolute bottom-0 left-0 w-full p-4 border-t border-white/5 bg-black/20">
@@ -168,9 +172,34 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <p class="text-[8px] text-white/40 jetbrains uppercase">Super Admin</p>
                 </div>
             </div>
-            <div class="flex gap-2 group-[.collapsed]:flex-col group-[.collapsed]:items-center">
-                <button class="flex-1 p-2 hover:bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors"><i class="ri-settings-4-line"></i></button>
-                <button class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors"><i class="ri-logout-box-r-line"></i></button>
+            <div class="flex gap-2 group-[.collapsed]:flex-col group-[.collapsed]:items-center relative">
+
+                <div class="relative group/settings flex-1 w-full">
+                    <button class="w-full p-2 hover:bg-white/5 rounded-lg text-white/40 group-hover/settings:text-white transition-colors flex justify-center items-center" title="Settings">
+                        <i class="ri-settings-4-line"></i>
+                    </button>
+
+                    <div class="absolute bottom-full left-0 mb-2 w-48 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/settings:opacity-100 group-hover/settings:visible transition-all duration-300 z-[100] overflow-hidden">
+                        <div class="p-1 flex flex-col">
+                            <a href="Settings.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                <i class="ri-equalizer-line text-cyan-400"></i>
+                                <span class="uppercase tracking-widest font-bold">Cài đặt chung</span>
+                            </a>
+                            <a href="Notifications.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                <i class="ri-notification-3-line text-amber-400"></i>
+                                <span class="uppercase tracking-widest font-bold">Thông báo</span>
+                            </a>
+                            <a href="Infrastructure.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                <i class="ri-node-tree text-purple-400"></i>
+                                <span class="uppercase tracking-widest font-bold font-mono">Infrastructure</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/logout" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center w-full" title="Logout">
+                    <i class="ri-logout-box-r-line"></i>
+                </a>
             </div>
         </div>
     </aside>
