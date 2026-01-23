@@ -218,6 +218,15 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* CSS for Toggle Switch */
+        input:checked+span .dot-toggle {
+            transform: translateX(16px);
+            background-color: #10B981;
+        }
+
+        input:checked+span {
+            background-color: rgba(16, 185, 129, 0.3);
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -709,18 +718,6 @@
             </div>
         </section>
 
-        <style>
-            /* CSS for Toggle Switch */
-            input:checked+span .dot-toggle {
-                transform: translateX(16px);
-                background-color: #10B981;
-            }
-
-            input:checked+span {
-                background-color: rgba(16, 185, 129, 0.3);
-            }
-        </style>
-
         <!-- ----------------------------- section 4 -----------------------------  -->
 
         <!-- ----------------------------- section 5 -----------------------------  -->
@@ -1113,7 +1110,16 @@
 
         // 5. Haptic Feedback (Rung nhẹ)
         if (window.navigator.vibrate) window.navigator.vibrate(5);
+        const values = data.values;
+        if (values[values.length - 1] < values[values.length - 2]) {
+            chart.data.datasets[0].borderColor = '#f43f5e'; // Màu đỏ Crimson
+            chart.data.datasets[0].backgroundColor = 'rgba(244, 63, 94, 0.1)';
+        } else {
+            chart.data.datasets[0].borderColor = '#3b82f6'; // Màu xanh Blue
+        }
+        chart.update();
     }
+
 
     // ----------------------------- section 4 ----------------------------- //
 
