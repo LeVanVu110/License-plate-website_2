@@ -229,6 +229,32 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Industrial Metal Texture */
+        .payout-btn {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.2) 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .payout-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Safety Buffer Animation */
+        @keyframes electric-flow {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .electric-bar {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+            animation: electric-flow 2s infinite linear;
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -719,6 +745,214 @@
         </section>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
+        <section id="payout-console" class="py-10 px-4 md:px-10 mb-20 font-['Inter']">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h3 class="text-2xl font-light text-white tracking-tight flex items-center gap-3">
+                        <i class="ri-shield-flash-line text-blue-400"></i>
+                        Payout Vault
+                    </h3>
+                    <p class="text-[10px] text-white/30 uppercase tracking-[4px] mt-2">Industrial Grade Security Console</p>
+                </div>
+                <div class="hidden md:flex items-center gap-4 p-2 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span class="text-[10px] text-emerald-500 font-black uppercase">Liquid Shield Active</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+                <div class="xl:col-span-2 space-y-4">
+                    <div class="flex justify-between items-center mb-4 px-2">
+                        <span class="text-[10px] text-white/40 uppercase font-bold">Pending Queue (14)</span>
+                        <button onclick="bulkPayoutInitiate()" class="text-[10px] text-blue-400 font-bold hover:underline uppercase">Approve All Priority</button>
+                    </div>
+                    <div class="payout-card group relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-5 hover:border-emerald-500/50 transition-all duration-500 is-priority" data-amount="1000000000">
+                        <div class="absolute -top-2 -right-2 px-2 py-0.5 bg-emerald-500 text-black text-[8px] font-black rounded uppercase z-20 shadow-lg">
+                            Priority
+                        </div>
+
+                        <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-black border border-emerald-500/30 flex items-center justify-center text-xl text-emerald-500 group-hover:scale-110 transition-transform">
+                                    <i class="ri-shield-user-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white tracking-tight">VIP Diamond Refund</h4>
+                                    <p class="text-[10px] text-emerald-500/50 font-mono mt-1 italic">High Liquidity Priority</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-8">
+                                <div class="text-right">
+                                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Auction #1002 - 30K-999.99</p>
+                                    <p class="text-lg font-['Space_Mono'] font-bold text-emerald-400">1,000,000,000 ₫</p>
+                                </div>
+                                <button onclick="initiateAuth(this)" class="payout-btn px-6 py-2 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-[10px] font-black text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all">
+                                    EXECUTE
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payout-card group relative bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-2xl p-5 hover:border-blue-500/50 transition-all duration-500 cursor-grab active:cursor-grabbing" data-amount="250000000">
+                        <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-xl text-white/20 group-hover:text-blue-400 transition-colors">
+                                    <i class="ri-bank-line"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Lê Quang Minh</h4>
+                                    <p class="text-[10px] text-white/30 font-mono mt-1">VCB • **** 8892 <span class="ml-2 text-emerald-500/50">[Verified Name]</span></p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-8">
+                                <div class="text-right">
+                                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Refund: Auction #992</p>
+                                    <p class="text-lg font-['Space_Mono'] font-bold text-white">250,000,000 ₫</p>
+                                </div>
+                                <button onclick="initiateAuth(this)" class="payout-btn px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white hover:bg-blue-600 hover:border-blue-400 transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                                    EXECUTE
+                                </button>
+                            </div>
+                        </div>
+                        <div class="auth-overlay hidden absolute inset-0 bg-black/90 backdrop-blur-xl rounded-2xl z-20 flex items-center justify-center border border-blue-500/50">
+                            <div class="text-center">
+                                <div class="lock-icon mb-4 text-3xl text-blue-500"><i class="ri-lock-password-line"></i></div>
+                                <p class="text-[10px] text-white/60 uppercase mb-4">MFA Required: Touch ID or OTP</p>
+                                <input type="password" placeholder="••••" class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-center text-white tracking-[1em] focus:outline-none focus:border-blue-500 w-32">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="payout-card group relative bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-2xl p-5 hover:border-purple-500/50 transition-all duration-500 cursor-grab active:cursor-grabbing" data-amount="520000000">
+                        <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-xl text-white/20 group-hover:text-purple-400 transition-colors">
+                                    <i class="ri-bit-coin-line"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Trần Hoàng Nam</h4>
+                                    <p class="text-[10px] text-white/30 font-mono mt-1 truncate max-w-[150px]">0x71C...8e42 <span class="ml-2 text-purple-500/50">[TRC20 Network]</span></p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-8">
+                                <div class="text-right">
+                                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Withdrawal: USDT Vault</p>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <span class="text-[10px] text-white/20 font-mono">≈ 21,340 USDT</span>
+                                        <p class="text-lg font-['Space_Mono'] font-bold text-white">520,000,000 ₫</p>
+                                    </div>
+                                </div>
+                                <button onclick="initiateAuth(this)" class="payout-btn px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white hover:bg-purple-600 hover:border-purple-400 transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                                    EXECUTE
+                                </button>
+                            </div>
+                        </div>
+                        <div class="auth-overlay hidden absolute inset-0 bg-black/90 backdrop-blur-xl rounded-2xl z-20 flex items-center justify-center border border-purple-500/50">
+                            <div class="text-center">
+                                <div class="lock-icon mb-4 text-3xl text-purple-500"><i class="ri-shield-user-line"></i></div>
+                                <p class="text-[10px] text-white/60 uppercase mb-4">Biometric Verification Required</p>
+                                <div class="flex justify-center gap-2">
+                                    <div class="w-8 h-8 rounded border border-white/20 flex items-center justify-center animate-pulse"><i class="ri-fingerprint-line text-white"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payout-card group relative bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-2xl p-5 hover:border-emerald-500/50 transition-all duration-500 cursor-grab active:cursor-grabbing" data-amount="50000000">
+                        <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-black border border-white/10 flex items-center justify-center text-xl text-white/20 group-hover:text-emerald-400 transition-colors">
+                                    <i class="ri-vip-diamond-line"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Phạm Thị Thu Thảo</h4>
+                                    <p class="text-[10px] text-white/30 font-mono mt-1">Sapphire Wallet • ID: #VIP-889</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-8">
+                                <div class="text-right">
+                                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-tighter">Refund: Concierge Service</p>
+                                    <p class="text-lg font-['Space_Mono'] font-bold text-white">50,000,000 ₫</p>
+                                </div>
+                                <button onclick="initiateAuth(this)" class="payout-btn px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white hover:bg-emerald-600 hover:border-emerald-400 transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                                    EXECUTE
+                                </button>
+                            </div>
+                        </div>
+                        <div class="auth-overlay hidden absolute inset-0 bg-black/90 backdrop-blur-xl rounded-2xl z-20 flex items-center justify-center border border-emerald-500/50">
+                            <div class="text-center">
+                                <div class="lock-icon mb-4 text-3xl text-emerald-500"><i class="ri-key-2-line"></i></div>
+                                <p class="text-[10px] text-white/60 uppercase mb-4">Internal System PIN</p>
+                                <input type="password" maxlength="4" placeholder="••••" class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-center text-white tracking-[1em] focus:outline-none focus:border-emerald-500 w-32">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-black/40 border border-white/5 rounded-[2.5rem] p-8 h-fit sticky top-10">
+                    <h4 class="text-[10px] text-white/40 uppercase font-black tracking-[3px] mb-8">Settlement Summary</h4>
+
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-end pb-4 border-b border-white/5">
+                            <div>
+                                <p class="text-[10px] text-white/20 uppercase mb-1">Total To Disburse</p>
+                                <p class="text-2xl font-['Space_Mono'] text-white">1.820.000.000 ₫</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-emerald-500 font-bold">MATCHED</p>
+                                <p class="text-[8px] text-white/20">Ledger vs Bank API</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-white/40"><i class="ri-bank-fill mr-2"></i> Bank Transfer</span>
+                                <span class="text-white font-mono">1.250B</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-white/40"><i class="ri-bit-coin-fill mr-2"></i> Crypto (USDT)</span>
+                                <span class="text-white font-mono">520M</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-white/40"><i class="ri-wallet-3-fill mr-2"></i> Sapphire Wallet</span>
+                                <span class="text-white font-mono">50M</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] text-blue-400 font-bold uppercase">Gas Optimizer</span>
+                                <span class="text-[9px] text-white/40">Gwei: 12 (Low)</span>
+                            </div>
+                            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 w-[20%]"></div>
+                            </div>
+                        </div>
+
+                        <button id="batch-settle-btn" onclick="initiateBatchSettlement()" class="w-full py-4 bg-gradient-to-b from-blue-500 to-blue-700 text-white text-xs font-black rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition-transform active:scale-95 uppercase tracking-widest relative overflow-hidden group">
+                            <span class="relative z-10">Confirm Batch Settlement</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] transition-transform"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:hidden fixed bottom-6 left-6 right-6 z-50">
+                <div id="slide-to-pay" class="relative h-16 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Slide to Confirm All</span>
+                    </div>
+                    <div id="slide-handle" class="absolute left-1 top-1 bottom-1 w-14 bg-white rounded-full flex items-center justify-center text-black cursor-pointer shadow-xl">
+                        <i class="ri-arrow-right-line"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -1122,6 +1356,269 @@
 
 
     // ----------------------------- section 4 ----------------------------- //
+    // 1. Mechanical Lock & MFA Interaction
+    function initiateAuth(btn) {
+        const card = btn.closest('.payout-card');
+        const overlay = card.querySelector('.auth-overlay');
+
+        overlay.classList.remove('hidden');
+
+        // GSAP Mechanical rotation effect
+        gsap.from(overlay.querySelector('.lock-icon'), {
+            rotate: -180,
+            scale: 0.5,
+            duration: 0.6,
+            ease: "back.out(1.7)"
+        });
+
+        // Giả lập sau khi nhập OTP đúng
+        const input = overlay.querySelector('input');
+        input.addEventListener('keyup', (e) => {
+            if (input.value.length === 4) {
+                executePayout(card);
+            }
+        });
+    }
+
+    // 2. The Money Flow (Lệnh thành công)
+    function executePayout(card) {
+        const overlay = card.querySelector('.auth-overlay');
+        overlay.innerHTML = '<div class="text-emerald-500 font-black tracking-widest text-xs animate-pulse">AUTHORIZING...</div>';
+
+        setTimeout(() => {
+            // Haptic feedback thành công
+            if (window.navigator.vibrate) window.navigator.vibrate([100, 30, 100]);
+
+            // GSAP "Tan chảy" thành luồng sáng
+            const tl = gsap.timeline();
+            tl.to(card, {
+                x: 100,
+                opacity: 0,
+                filter: "blur(20px)",
+                duration: 0.8,
+                ease: "power4.in",
+                onComplete: () => {
+                    card.remove();
+                    checkLiquidShield();
+                }
+            });
+        }, 1500);
+    }
+
+    // 3. Mobile Slide to Pay Logic (Draggable)
+    if (document.getElementById('slide-handle')) {
+        Draggable.create("#slide-handle", {
+            type: "x",
+            bounds: "#slide-to-pay",
+            onDragEnd: function() {
+                if (this.x > 200) {
+                    gsap.to(this.target, {
+                        x: 260,
+                        duration: 0.2
+                    });
+                    alert("Bulk Payout Sequence Initiated!");
+                    // Thực hiện logic chi tiền hàng loạt ở đây
+                } else {
+                    gsap.to(this.target, {
+                        x: 0,
+                        duration: 0.3,
+                        ease: "bounce.out"
+                    });
+                }
+            }
+        });
+    }
+
+    function checkLiquidShield() {
+        // Logic kiểm soát sai lệch 1 đồng
+        console.log("Smart Reconciliation: 100% Match with Bank Ledger");
+    }
+
+    function bulkPayoutInitiate() {
+        // 1. Tạo Overlay Safety Buffer
+        const overlay = document.createElement('div');
+        overlay.className = "fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6";
+        overlay.id = "bulk-safety-buffer";
+        overlay.innerHTML = `
+        <div class="max-w-md w-full bg-[#0a0a0a] border border-blue-500/30 p-10 rounded-[2.5rem] text-center relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-white/5">
+                <div id="electric-progress" class="h-full bg-blue-500 shadow-[0_0_15px_#3b82f6]"></div>
+            </div>
+
+            <i class="ri-flashlight-line text-4xl text-blue-500 mb-6 block animate-pulse"></i>
+            <h3 class="text-white font-bold text-lg mb-2 uppercase tracking-tighter">Bulk Priority Execution</h3>
+            <p class="text-white/40 text-[10px] mb-8 tracking-widest leading-relaxed">
+                Hệ thống đang chuẩn bị giải ngân tất cả lệnh ưu tiên.<br>Bạn có 3 giây để thu hồi lệnh này.
+            </p>
+            
+            <button onclick="cancelBulk()" class="px-8 py-3 border border-rose-500/50 text-rose-500 text-[10px] font-black rounded-xl hover:bg-rose-500 hover:text-white transition-all">
+                ABORT MISSION (ESC)
+            </button>
+        </div>
+    `;
+        document.body.appendChild(overlay);
+
+        // 2. Chạy thanh tiến trình GSAP
+        const progressTween = gsap.fromTo("#electric-progress", {
+            width: "0%"
+        }, {
+            width: "100%",
+            duration: 3,
+            ease: "none",
+            onComplete: () => {
+                executeFinalBulk();
+            }
+        });
+
+        // Lưu biến để có thể cancel
+        window.currentBulkProgress = progressTween;
+    }
+
+    function cancelBulk() {
+        if (window.currentBulkProgress) {
+            window.currentBulkProgress.kill(); // Dừng thanh tiến trình
+            const overlay = document.getElementById('bulk-safety-buffer');
+            gsap.to(overlay, {
+                opacity: 0,
+                scale: 0.9,
+                duration: 0.3,
+                onComplete: () => overlay.remove()
+            });
+        }
+    }
+
+    function executeFinalBulk() {
+        const priorityCards = document.querySelectorAll('.is-priority');
+
+        // Hiệu ứng các thẻ đồng loạt tan biến
+        gsap.to(priorityCards, {
+            x: 200,
+            opacity: 0,
+            filter: "blur(20px)",
+            stagger: 0.1,
+            duration: 0.8,
+            onComplete: () => {
+                priorityCards.forEach(c => c.remove());
+                document.getElementById('bulk-safety-buffer').remove();
+                alert("Tất cả lệnh ưu tiên đã được đẩy vào hệ thống ngân hàng!");
+            }
+        });
+    }
+
+    function initiateBatchSettlement() {
+        // 1. Tạo màn hình xác thực cấp cao
+        const modal = document.createElement('div');
+        modal.id = "batch-modal";
+        modal.className = "fixed inset-0 z-[200] bg-[#000814]/95 backdrop-blur-2xl flex items-center justify-center p-4";
+        modal.innerHTML = `
+        <div class="max-w-md w-full bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 p-8 rounded-[3rem] shadow-2xl relative">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-500/10 border border-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ri-shield-keyhole-line text-4xl text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white uppercase tracking-tighter">High-Value Authorization</h3>
+                <p class="text-[10px] text-white/40 mt-2 uppercase tracking-[2px]">Quy tắc 4 mắt (Four-Eyes Principle)</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4 group cursor-pointer hover:border-blue-500/50 transition-all">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <i class="ri- Ugar-fingerprint-line text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-white/40 uppercase font-bold">Admin 01 (You)</p>
+                        <p class="text-xs text-emerald-400 font-bold uppercase">Identity Verified</p>
+                    </div>
+                    <i class="ri-checkbox-circle-fill ml-auto text-emerald-500 text-xl"></i>
+                </div>
+
+                <div id="second-admin-step" class="p-4 bg-white/5 border border-dashed border-white/20 rounded-2xl flex items-center gap-4 opacity-50">
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/20">
+                        <i class="ri-user-follow-line text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-white/40 uppercase font-bold">Super Admin 02</p>
+                        <p id="admin-status-text" class="text-xs text-white/20 font-bold uppercase italic">Awaiting Remote Approval...</p>
+                    </div>
+                    <div class="ml-auto animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                </div>
+            </div>
+
+            <button onclick="closeBatchModal()" class="mt-8 w-full py-3 text-[10px] text-white/20 hover:text-white uppercase font-black transition-colors">
+                Cancel Settlement
+            </button>
+        </div>
+    `;
+        document.body.appendChild(modal);
+
+        // GSAP hiệu ứng hiện modal
+        gsap.from("#batch-modal > div", {
+            scale: 0.9,
+            opacity: 0,
+            duration: 0.5,
+            ease: "back.out(1.7)"
+        });
+
+        // 2. Giả lập Admin thứ 2 phê duyệt sau 3 giây (Real-time Socket giả lập)
+        setTimeout(() => {
+            const step2 = document.getElementById('second-admin-step');
+            const statusText = document.getElementById('admin-status-text');
+
+            step2.classList.remove('opacity-50', 'border-dashed');
+            step2.classList.add('border-blue-500/50', 'bg-blue-500/5');
+            step2.querySelector('.animate-spin').className = "ri-checkbox-circle-fill ml-auto text-blue-500 text-xl";
+            statusText.innerText = "Authorized by Boss_Admin_02";
+            statusText.className = "text-xs text-blue-400 font-bold uppercase";
+
+            // Tự động kích hoạt luồng tiền
+            setTimeout(finalDisbursement, 1500);
+        }, 3000);
+    }
+
+    function finalDisbursement() {
+        const modalContent = document.querySelector("#batch-modal > div");
+
+        // Hiệu ứng "The Money Flow" cực mạnh
+        modalContent.innerHTML = `
+        <div class="text-center py-10">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 border-4 border-emerald-500/20 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent animate-spin"></div>
+                <i class="ri-send-plane-fill text-4xl text-emerald-500 absolute inset-0 flex items-center justify-center"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white uppercase tracking-widest">Disbursing Funds</h3>
+            <p class="text-[10px] text-white/40 mt-2 font-mono uppercase">Bank API Connection: Secured</p>
+            <div id="disburse-progress" class="mt-6 text-2xl font-['Space_Mono'] text-emerald-400 font-bold">0%</div>
+        </div>
+    `;
+
+        let progress = {
+            val: 0
+        };
+        gsap.to(progress, {
+            val: 100,
+            duration: 4,
+            onUpdate: () => {
+                document.getElementById('disburse-progress').innerText = Math.floor(progress.val) + "%";
+            },
+            onComplete: () => {
+                // Hiệu ứng kết thúc
+                if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
+                alert("Tất cả các khoản thanh toán đã được chuyển thành công vào tài khoản bên ngoài.");
+                closeBatchModal();
+                location.reload(); // Reset state
+            }
+        });
+    }
+
+    function closeBatchModal() {
+        const modal = document.getElementById('batch-modal');
+        gsap.to(modal, {
+            opacity: 0,
+            duration: 0.3,
+            onComplete: () => modal.remove()
+        });
+    }
 
     // ----------------------------- section 5 ----------------------------- //
 
