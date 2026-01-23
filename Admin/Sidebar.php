@@ -97,7 +97,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <aside id="obsidian-sidebar" class="fixed left-0 top-0 h-screen z-50 bg-[#020617]/80 backdrop-blur-2xl border-r border-white/5 transition-all duration-500 w-[260px] group">
 
-        <div class="p-6 mb-8 flex items-center gap-4">
+        <div class="p-6 mb-8 flex items-center gap-4" style="margin-top: 50px;">
             <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.5)]">
                 <i class="ri-gemstone-fill text-white text-xl"></i>
             </div>
@@ -120,24 +120,38 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="nav-label text-white/50">Market Control</span>
                 <div class="active-indicator"></div>
             </a>
-
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-safe-2-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">VAULT MANAGER</span>
+            <a href="VaultManager.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'VaultManager.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-safe-2-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+                </div>
+                <span class="nav-label text-white/50">Vault Manager</span>
+                <div class="active-indicator"></div>
+            </a>
+            <a href="VipVelations.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'VipVelations.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-user-star-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+                </div>
+                <span class="nav-label text-white/50">Vip Velations</span>
+                <div class="active-indicator"></div>
             </a>
 
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-user-star-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">VIP RELATIONS</span>
+            <a href="Financial.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'Financial.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+
+                </div>
+                <span class="nav-label text-white/50">Financial Ledger</span>
+                <div class="active-indicator"></div>
             </a>
 
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
+            <!-- <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">FINANCIAL LEDGER</span>
-            </a>
+            </a> -->
 
             <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
