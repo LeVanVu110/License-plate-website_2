@@ -209,6 +209,44 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        /* Heartbeat Animation */
+        .heartbeat {
+            animation: heart-pulse 2.5s infinite;
+        }
+
+        @keyframes heart-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Static Noise (Offline Node) */
+        .static-noise {
+            background-image: url('https://media.giphy.com/media/oEI9uWUPr9WUM/giphy.gif');
+            background-size: cover;
+            opacity: 0.6;
+        }
+
+        /* Shadow Glow */
+        .shadow-glow {
+            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8));
+        }
+
+        /* Glass Break Transition */
+        .glass-broken {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: scale(1.2) rotate(5deg);
+            filter: blur(10px);
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -449,6 +487,134 @@
         </section>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
+        <section id="encryption-vault" class="py-20 px-4 md:px-10 bg-[#00050a] relative overflow-hidden">
+            <canvas id="quantum-particles" class="absolute inset-0 pointer-events-none opacity-40"></canvas>
+
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-black text-white tracking-[0.2em] uppercase italic">The Digital Bunker</h2>
+                    <div class="h-1 w-32 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-2"></div>
+                    <p class="text-blue-400 font-mono text-[10px] mt-4 tracking-[0.5em] uppercase">Security Level: Omega-9 (Classified)</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 mb-8">
+                            <i class="ri-shield-keyhole-line text-3xl text-blue-500"></i>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-200 uppercase tracking-wider">Cryptographic Shield</h3>
+                                <p class="text-[9px] text-slate-500 font-mono uppercase">Encryption Standard: AES-256-GCM / Quantum Resistant</p>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4">
+                            <div class="vault-layer group p-4 bg-slate-900/40 border border-slate-800 rounded-2xl flex items-center justify-between cursor-pointer hover:border-blue-500/50 transition-all" onclick="showHash('CUSTOMER_DB_ENCRYPTED_X882')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20">
+                                        <i class="ri-user-settings-line text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-200">Customer Metadata</h4>
+                                        <p class="text-[9px] text-slate-500 font-mono">Last Rotation: 2h ago</p>
+                                    </div>
+                                </div>
+                                <i class="ri-lock-2-line text-emerald-500 text-xl shadow-glow"></i>
+                            </div>
+
+                            <div class="vault-layer group p-4 bg-slate-900/40 border border-slate-800 rounded-2xl flex items-center justify-between cursor-pointer hover:border-blue-500/50 transition-all" onclick="showHash('TRANSACTION_LEDGER_0x9921')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/20">
+                                        <i class="ri-exchange-funds-line text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-200">Transaction Ledger</h4>
+                                        <p class="text-[9px] text-slate-500 font-mono">Blockchain Anchored</p>
+                                    </div>
+                                </div>
+                                <i class="ri-lock-password-line text-emerald-500 text-xl"></i>
+                            </div>
+
+                            <div class="vault-layer group p-4 bg-rose-500/5 border border-rose-500/20 rounded-2xl flex items-center justify-between cursor-pointer hover:border-rose-500/40 transition-all" onclick="showHash('OFFLINE_PLATE_VAULT_0000')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                                        <i class="ri-snowflake-line text-rose-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-rose-200 uppercase">Cold Storage Vault</h4>
+                                        <p class="text-[9px] text-rose-500 font-mono">AIR-GAPPED (Disconnected)</p>
+                                    </div>
+                                </div>
+                                <div class="px-2 py-1 bg-rose-500/20 rounded text-[8px] text-rose-300 font-black">OFFLINE</div>
+                            </div>
+                        </div>
+
+                        <div id="hash-display" class="h-8 font-mono text-[10px] text-blue-400/50 truncate pt-4"></div>
+                    </div>
+
+                    <div class="bg-slate-900/20 border border-slate-800 p-8 rounded-[3rem] backdrop-blur-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 text-[8px] font-mono text-slate-600 uppercase">Recovery Point Objective: 5m</div>
+
+                        <h3 class="text-lg font-bold text-white mb-8 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                            Geo-Backup Network
+                        </h3>
+
+                        <div class="relative h-64 flex items-center justify-center mb-12">
+                            <div class="w-20 h-20 rounded-full bg-blue-600/20 border-2 border-blue-500 flex items-center justify-center z-10 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                                <i class="ri-server-line text-2xl text-blue-400"></i>
+                            </div>
+
+                            <svg class="absolute inset-0 w-full h-full">
+                                <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#1e293b" stroke-width="1" />
+                                <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#1e293b" stroke-width="1" />
+                                <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#1e293b" stroke-width="1" />
+                            </svg>
+
+                            <div class="node absolute top-10 left-10 flex flex-col items-center">
+                                <div class="w-8 h-8 rounded-lg bg-slate-800 border border-emerald-500/50 flex items-center justify-center heartbeat">
+                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                </div>
+                                <span class="text-[8px] text-slate-400 mt-1 uppercase">Singapore</span>
+                            </div>
+
+                            <div class="node absolute top-10 right-10 flex flex-col items-center">
+                                <div class="w-8 h-8 rounded-lg bg-slate-800 border border-emerald-500/50 flex items-center justify-center heartbeat">
+                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                </div>
+                                <span class="text-[8px] text-slate-400 mt-1 uppercase">Tokyo</span>
+                            </div>
+
+                            <div class="node absolute bottom-10 right-10 flex flex-col items-center">
+                                <div class="w-8 h-8 rounded-lg bg-slate-900 border border-rose-500/50 flex items-center justify-center static-noise">
+                                    <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                                </div>
+                                <span class="text-[8px] text-rose-500 mt-1 uppercase">London (Offline)</span>
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <div id="glass-cover" class="absolute inset-0 bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl z-20 flex items-center justify-center cursor-not-allowed group-hover:bg-white/10 transition-all">
+                                <div class="flex flex-col items-center text-center">
+                                    <i class="ri-git-repository-private-line text-white/40 text-2xl mb-2"></i>
+                                    <span class="text-[8px] text-white/60 font-black uppercase tracking-[3px]">Under Glass Protection</span>
+                                </div>
+                            </div>
+
+                            <button id="recovery-btn" class="w-full py-6 bg-rose-950 border border-rose-500/50 rounded-2xl text-rose-500 font-black text-xs tracking-[5px] uppercase relative overflow-hidden active:scale-95 transition-transform">
+                                Initiate Recovery
+                            </button>
+
+                            <div id="glass-cracks" class="absolute inset-0 z-30 pointer-events-none hidden">
+                                <img src="../vokinh.png" class="w-full h-full object-cover opacity-60">
+                            </div>
+                        </div>
+
+                        <button onclick="breakGlass()" class="mt-4 w-full text-[10px] text-slate-500 underline uppercase tracking-widest hover:text-white transition-colors">Emergency Protocol: Lift Glass</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -900,6 +1066,99 @@
     }
 
     // ----------------------------- section 4 ----------------------------- //
+    // 1. Quantum Particles Effect
+    const canvas = document.getElementById('quantum-particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function initParticles() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5
+            });
+        }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#3b82f6';
+        particles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y > canvas.height) p.y = 0;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        requestAnimationFrame(animateParticles);
+    }
+
+    // 2. Hiệu ứng mã băm
+    function showHash(prefix) {
+        const display = document.getElementById('hash-display');
+        const hash = btoa(Math.random().toString()).substring(0, 32);
+        display.innerText = `${prefix} :: ${hash}...`;
+
+        // Hiệu ứng GSAP cho văn bản
+        gsap.fromTo(display, {
+            opacity: 0,
+            x: -20
+        }, {
+            opacity: 1,
+            x: 0,
+            duration: 0.5
+        });
+    }
+
+    // 3. Phá vỡ lớp kính (Emergency Protocol)
+    // 3. Phá vỡ lớp kính (Emergency Protocol)
+    function breakGlass() {
+        const glass = document.getElementById('glass-cover');
+        const cracks = document.getElementById('glass-cracks');
+        const btn = document.getElementById('recovery-btn');
+        const mainContent = document.getElementById('main-content'); // Lấy thẻ main thay vì body
+
+        // Hiện vết nứt trước
+        cracks.classList.remove('hidden');
+
+        // SỬA TẠI ĐÂY: Rung thẻ #main-content thay vì "body"
+        gsap.to(mainContent, {
+            x: 10,
+            duration: 0.05,
+            repeat: 10,
+            yoyo: true,
+            onComplete: () => {
+                // Đảm bảo sau khi rung xong, thuộc tính transform được xóa bỏ hoàn toàn
+                // để tránh lỗi layout tiềm ẩn cho các phần tử con khác
+                gsap.set(mainContent, {
+                    clearProps: "x"
+                });
+            }
+        });
+
+        setTimeout(() => {
+            glass.classList.add('glass-broken');
+            btn.classList.replace('bg-rose-950', 'bg-rose-600');
+            btn.classList.add('text-white', 'shadow-[0_0_30px_#e11d48]');
+            btn.innerText = "OVERRIDE ACTIVE: CONFIRM RECOVERY";
+
+            // Yêu cầu mật khẩu giả lập
+            const pass = prompt("WARNING: RED BUTTON PROTOCOL DETECTED.\nEnter Super-Admin Authorization Key:");
+            if (pass) {
+                alert("Authorization Successful. Snapshot Restoration in progress...");
+            }
+        }, 600);
+    }
+
+    initParticles();
+    animateParticles();
 
     // ----------------------------- section 5 ----------------------------- //
 
