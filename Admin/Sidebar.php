@@ -51,8 +51,8 @@
 
         /* Hiệu ứng kính Obsidian */
         #obsidian-sidebar {
-            background: linear-gradient(180deg, rgba(2, 6, 23, 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
-            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, rgba(16, 28, 79 , 0.95) 0%, rgba(0, 8, 20, 0.98) 100%);
+            /* box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5); */
         }
 
         /* Tối ưu Mobile */
