@@ -130,7 +130,7 @@
         @media (max-width: 768px) {
             #add-vip-btn {
                 position: fixed;
-                bottom: 5px;
+                bottom: 10px;
                 right: 0px;
                 z-index: 999;
                 width: 45px;
@@ -152,7 +152,7 @@
             #portal-content {
                 height: 100vh;
                 border-radius: 0;
-                margin-top: 270%;
+                margin-top: 250%;
             }
         }
 
@@ -968,20 +968,28 @@
         <!-- ----------------------------- section 3 -----------------------------  -->
         <section id="kyc-vault" class="min-h-screen pt-20 pb-10 px-4 md:px-8 transition-all duration-500 ml-0 md:ml-20 lg:ml-24">
 
-            <div class="mb-8 flex justify-between items-end border-b border-cyan-500/20 pb-4">
-                <div>
-                    <h2 class="text-[#0891B2] font-mono text-xs tracking-[4px] uppercase mb-2">// Forensic Audit Mode</h2>
-                    <div class="flex items-center gap-4">
-                        <h1 class="text-2xl text-white font-bold tracking-tight">Verification Vault</h1>
-                        <span class="bg-rose-500/20 text-rose-500 text-[10px] px-3 py-1 rounded-full border border-rose-500/30 animate-pulse">
+            <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-cyan-500/20 pb-6 md:pb-4 gap-6 md:gap-0">
+                <div class="w-full md:w-auto">
+                    <h2 class="text-[#0891B2] font-mono text-[9px] md:text-xs tracking-[2px] md:tracking-[4px] uppercase mb-2">
+                        // Forensic Audit Mode
+                    </h2>
+
+                    <div class="flex flex-wrap items-center gap-3 md:gap-4">
+                        <h1 class="text-xl md:text-2xl text-white font-bold tracking-tight">
+                            Verification Vault
+                        </h1>
+
+                        <span class="bg-rose-500/20 text-rose-500 text-[8px] md:text-[10px] px-2 md:px-3 py-1 rounded-full border border-rose-500/30 animate-pulse flex items-center gap-1 shrink-0">
                             <i class="ri-error-warning-line"></i> 3 URGENT QUEUE
                         </span>
                     </div>
                 </div>
-                <div class="flex gap-4">
-                    <div id="paper-mode-toggle" onclick="togglePaperMode()" class="cursor-pointer group flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg hover:bg-white/10 transition-all">
+
+                <div class="flex w-full md:w-auto justify-end">
+                    <div id="paper-mode-toggle" onclick="togglePaperMode()"
+                        class="cursor-pointer group flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 md:px-4 md:py-2 rounded-lg hover:bg-white/10 transition-all w-full md:w-auto justify-center md:justify-start">
                         <i class="ri-eye-line text-cyan-400"></i>
-                        <span class="text-[10px] text-white/60 font-bold uppercase tracking-widest">Paper Mode</span>
+                        <span class="text-[9px] md:text-[10px] text-white/60 font-bold uppercase tracking-widest">Paper Mode</span>
                     </div>
                 </div>
             </div>
@@ -1546,10 +1554,10 @@
         const badge = document.getElementById('editor-rank-badge');
         // Đổi màu badge trong Editor tùy theo hạng của thẻ vừa bấm
         if (rank === 'gold') {
-            badge.className = "px-3 py-1 rounded-full text-[8px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
             badge.innerText = "GOLD MEMBER";
         } else {
-            badge.className = "px-3 py-1 rounded-full text-[8px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
             badge.innerText = "DIAMOND CLUB";
         }
 
