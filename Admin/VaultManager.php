@@ -265,10 +265,53 @@
                 #document-vault {
                     margin-left: 17%;
                     /* Độ rộng mặc định của sidebar thu gọn */
+                    /* width: 120% !important; */
                 }
             }
+             @media (max-width: 1024px) {
+                 #document-vault {
+                    /* margin-left: 17%; */
+                    /* Độ rộng mặc định của sidebar thu gọn */
+                    width: 120% !important;
+                }
+             }
 
             /* ----------------------------- section 3 -----------------------------  */
+            /* Section 3 Custom Styles */
+            #logistics-vault::-webkit-scrollbar {
+                display: none;
+            }
+
+            .timeline-step-active::before {
+                content: '';
+                position: absolute;
+                left: -10px;
+                top: 0;
+                width: 50px;
+                height: 50px;
+                background: var(--neon-cyan);
+                opacity: 0.1;
+                filter: blur(20px);
+                border-radius: 50%;
+            }
+
+            @media (max-width: 768px) {
+                .xl\:flex-row {
+                    flex-direction: column !important;
+                }
+                #logistics-vault{
+                    margin-left: 17% !important;
+                    width: 100%;
+                }
+            }
+            @media (max-width: 1024px) {
+                 #logistics-vault {
+                    margin-left: 0% !important;
+                    /* Độ rộng mặc định của sidebar thu gọn */
+                    width: 120% !important;
+
+                }
+             }
 
             /* ----------------------------- section 4 -----------------------------  */
 
@@ -607,6 +650,126 @@
 
 
         <!-- ----------------------------- section 3 -----------------------------  -->
+        <section id="logistics-vault" class="min-h-screen bg-[#000814] p-4 md:p-8 lg:p-12 relative overflow-hidden border-t border-white/5" style="margin-left: 17%;" >
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 border-b border-white/10 pb-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="w-8 h-[1px] bg-cyan-500"></span>
+                        <span class="text-cyan-500 text-[10px] font-bold tracking-[4px] uppercase">Asset Path Protocol</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-light tracking-tight text-white">
+                        Logistics <span class="text-cyan-400 font-bold">&</span> Transfer Chain
+                    </h2>
+                </div>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <div class="bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl flex items-center gap-3 group cursor-pointer hover:bg-red-500 transition-all">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                        <span class="text-[10px] font-bold text-red-500 group-hover:text-white uppercase tracking-widest">Emergency SOS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col xl:flex-row gap-8">
+
+                <div class="w-full xl:w-3/5 relative">
+                    <div class="relative h-[400px] md:h-[600px] bg-[#001220] rounded-[2.5rem] border border-white/10 overflow-hidden group shadow-2xl">
+                        <div class="absolute inset-0 opacity-30 grayscale invert pointer-events-none"
+                            style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+
+                        <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-cyan-500 rounded-full blur-[2px] shadow-[0_0_15px_#00f2ff]">
+                            <span class="absolute -top-6 -left-4 text-[9px] mono text-cyan-400 uppercase">Northern_Hub</span>
+                        </div>
+                        <div class="absolute bottom-1/3 right-1/4 w-4 h-4 bg-blue-600 rounded-full blur-[2px] shadow-[0_0_15px_#1e40af]">
+                            <span class="absolute -bottom-6 -left-4 text-[9px] mono text-blue-400 uppercase">Southern_Hub</span>
+                        </div>
+
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                            <path id="transport-path" d="M 250 150 Q 400 300 650 450" fill="none" stroke="rgba(0, 242, 255, 0.2)" stroke-width="2" stroke-dasharray="8 4" />
+                            <circle id="transport-pulse" r="5" fill="#00f2ff" style="filter: drop-shadow(0 0 8px #00f2ff)">
+                                <animateMotion dur="4s" repeatCount="indefinite" path="M 250 150 Q 400 300 650 450" />
+                            </circle>
+                        </svg>
+
+                        <div class="absolute top-6 left-6 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                            <p class="text-[10px] text-white/40 uppercase mono">Current Transport</p>
+                            <h4 class="text-white font-bold text-sm">SECURE_VAN: #TX-992</h4>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-emerald-400 text-[10px] mono">GPS: 10.7626, 106.6601</span>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-6 left-6 flex gap-3">
+                            <button id="dispatch-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-cyan-500/20">
+                                <i class="ri-rocket-2-line mr-2"></i> Dispatch Signal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full xl:w-2/5 space-y-6">
+                    <div class="bg-[#050505] rounded-[2.5rem] p-8 border border-white/5 h-full relative overflow-y-auto">
+                        <h5 class="text-[10px] font-bold text-blue-400 uppercase tracking-[4px] mb-10 flex items-center gap-2">
+                            <i class="ri-history-line"></i> Chain of Custody
+                        </h5>
+
+                        <div class="relative space-y-12">
+                            <div class="absolute left-[15px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-cyan-500/50 via-white/10 to-transparent"></div>
+
+                            <div class="relative pl-12 group">
+                                <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center border-4 border-[#050505] z-10">
+                                    <i class="ri-check-line text-black text-sm font-bold"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">COMPLETED</span>
+                                    <h4 class="text-white text-sm font-bold mt-1">Vault Departure</h4>
+                                    <p class="text-white/40 text-xs mt-1">Agent: <strong>Quoc_Le_01</strong> • <span class="italic">Digital Sig: 0x92...F1</span></p>
+                                </div>
+                            </div>
+
+                            <div class="relative pl-12 group timeline-step-active">
+                                <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center border-4 border-[#050505] z-10 shadow-[0_0_15px_#00f2ff] animate-pulse">
+                                    <i class="ri-truck-line text-black text-sm"></i>
+                                </div>
+                                <div class="bg-white/5 p-4 rounded-2xl border border-cyan-500/30">
+                                    <span class="text-[9px] mono text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded">IN TRANSIT</span>
+                                    <h4 class="text-white text-sm font-bold mt-1">In Transit - Station Alpha</h4>
+                                    <p class="text-white/40 text-xs mt-1">ETA: 14:30 (12 mins remaining)</p>
+                                    <div class="mt-3 hidden group-hover:block transition-all duration-500">
+                                        <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=400" class="w-full h-24 object-cover rounded-lg border border-white/10">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative pl-12 group opacity-30">
+                                <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border-4 border-[#050505] z-10">
+                                    <i class="ri-user-received-2-line text-white/40 text-sm"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] mono text-white/40">PENDING</span>
+                                    <h4 class="text-white text-sm font-bold mt-1">Customer Handover</h4>
+                                    <div class="mt-4 flex gap-2">
+                                        <input type="text" placeholder="Enter OTP" class="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs w-24 focus:border-cyan-500 outline-none">
+                                        <button class="bg-white/10 px-4 py-2 rounded-lg text-[9px] font-bold uppercase hover:bg-white/20 transition-all">Verify</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 pt-8 border-t border-white/5">
+                            <p class="text-[10px] text-white/20 uppercase tracking-[3px] mb-4 mono">Proof of Delivery (AI Scan)</p>
+                            <div class="relative rounded-2xl overflow-hidden group">
+                                <div class="absolute inset-0 bg-blue-500/20 mix-blend-overlay group-hover:opacity-0 transition-all"></div>
+                                <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600" class="w-full h-32 object-cover blur-[2px] group-hover:blur-0 transition-all duration-700">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="bg-black/80 px-4 py-1 rounded-full text-[9px] font-bold border border-white/10">AI OBFUSCATED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -853,6 +1016,73 @@
             element.appendChild(highlight);
         }
         // ----------------------------- section 3 ----------------------------- //
+        // 1. Hiệu ứng "The Flowing Pulse" - Chuyển sang màu Amber khi dừng lại
+        const pulseCircle = document.getElementById('transport-pulse');
+        const pathLine = document.getElementById('transport-path');
+
+        function triggerWarning() {
+            gsap.to(pulseCircle, {
+                fill: '#f59e0b',
+                duration: 0.5
+            });
+            gsap.to(pathLine, {
+                stroke: 'rgba(245, 158, 11, 0.4)',
+                duration: 0.5
+            });
+            console.log("ALERT: Transport delay detected!");
+        }
+
+        // 2. Dispatch Signal & Mechanical Sound Effect
+        document.getElementById('dispatch-btn').addEventListener('click', function() {
+            const btn = this;
+            // Giả lập âm thanh cơ khí
+            const audio = new Audio('https://www.soundjay.com/mechanical/mechanical-clonk-1.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+
+            gsap.to(btn, {
+                scale: 1.05,
+                backgroundColor: '#10b981',
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                onComplete: () => {
+                    btn.innerHTML = '<i class="ri-checkbox-circle-line mr-2"></i> IN TRANSIT';
+                }
+            });
+        });
+
+        // 3. Handover OTP Logic Mockup
+        function verifyOTP(input) {
+            if (input.value === "1234") {
+                gsap.to(input.parentElement.parentElement, {
+                    opacity: 1,
+                    duration: 0.5
+                });
+                alert("Handover Verified via Blockchain.");
+            }
+        }
+
+        // 4. GPS Auto-fetch (Dành cho Mobile View)
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    console.log(`LAT: ${position.coords.latitude}, LNG: ${position.coords.longitude}`);
+                });
+            }
+        }
+
+        // Scroll Trigger cho Section 3
+        gsap.from("#logistics-vault .animate-on-scroll", {
+            scrollTrigger: {
+                trigger: "#logistics-vault",
+                start: "top 80%",
+            },
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2
+        });
 
         // ----------------------------- section 4 ----------------------------- //
 
