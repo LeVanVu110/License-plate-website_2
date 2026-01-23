@@ -309,14 +309,57 @@
                         <button class="bg-white/5 p-3 rounded-xl hover:bg-white/10 transition-all"><i class="ri-mic-line"></i></button>
                     </div>
                     <div class="flex gap-3 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                        <button class="px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30 whitespace-nowrap">KHO BẮC</button>
-                        <button class="px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO TRUNG</button>
-                        <button class="px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO NAM</button>
+                        <button onclick="filterVault('all', this)" class="filter-btn px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30 whitespace-nowrap active-filter">TẤT CẢ</button>
+                        <button onclick="filterVault('bac', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO BẮC</button>
+                        <button onclick="filterVault('trung', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO TRUNG</button>
+                        <button onclick="filterVault('nam', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO NAM</button>
                     </div>
                 </div>
 
                 <div class="inventory-grid" id="inventory-container">
-                    <div class="vault-card-container">
+                    <div class="vault-card-container" data-type="bac">
+                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                            <div class="laser-scan"></div>
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="space-mono text-[10px] text-white/40 tracking-tighter">ASSET_ID: #888-88</span>
+                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase breathe-cyan bg-cyan-500/20 text-cyan-400">In Vault</span>
+                            </div>
+                            <div class="relative py-8 flex justify-center items-center">
+                                <div class="absolute inset-0 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
+                                <div class="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
+                                    <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white transition-all shadow-glow">888.88</h3>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
+                                <div class="flex flex-col">
+                                    <span class="text-white/20 uppercase">Security Tier</span>
+                                    <span class="text-cyan-400 font-bold">ALPHA-9</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-white/20 uppercase">Last Sync</span>
+                                    <span class="text-white/60 block">23/01/2026</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vault-card-container" data-type="bac">
+                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                            <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="space-mono text-[10px] text-white/40">ASSET_ID: #555-55</span>
+                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase bg-red-500/20 text-red-500 border border-red-500/30">Mismatch</span>
+                            </div>
+                            <div class="relative py-8 flex justify-center items-center">
+                                <div class="absolute inset-0 bg-red-500/5 blur-3xl rounded-full"></div>
+                                <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white">555.55</h3>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
+                                <div class="flex flex-col"><span class="text-white/20 uppercase">Tier</span><span class="text-red-500 font-bold">OMEGA</span></div>
+                                <div class="text-right"><span class="text-white/20 uppercase">Status</span><span class="text-white/60 block">Locked</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vault-card-container" data-type="trung">
                         <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
                             <div class="laser-scan"></div>
                             <div class="flex justify-between items-start mb-6">
@@ -342,7 +385,49 @@
                         </div>
                     </div>
 
-                    <div class="vault-card-container">
+                    <div class="vault-card-container" data-type="trung">
+                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                            <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="space-mono text-[10px] text-white/40">ASSET_ID: #555-55</span>
+                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase bg-red-500/20 text-red-500 border border-red-500/30">Mismatch</span>
+                            </div>
+                            <div class="relative py-8 flex justify-center items-center">
+                                <div class="absolute inset-0 bg-red-500/5 blur-3xl rounded-full"></div>
+                                <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white">555.55</h3>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
+                                <div class="flex flex-col"><span class="text-white/20 uppercase">Tier</span><span class="text-red-500 font-bold">OMEGA</span></div>
+                                <div class="text-right"><span class="text-white/20 uppercase">Status</span><span class="text-white/60 block">Locked</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vault-card-container" data-type="nam">
+                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                            <div class="laser-scan"></div>
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="space-mono text-[10px] text-white/40 tracking-tighter">ASSET_ID: #888-88</span>
+                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase breathe-cyan bg-cyan-500/20 text-cyan-400">In Vault</span>
+                            </div>
+                            <div class="relative py-8 flex justify-center items-center">
+                                <div class="absolute inset-0 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
+                                <div class="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
+                                    <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white transition-all shadow-glow">888.88</h3>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
+                                <div class="flex flex-col">
+                                    <span class="text-white/20 uppercase">Security Tier</span>
+                                    <span class="text-cyan-400 font-bold">ALPHA-9</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-white/20 uppercase">Last Sync</span>
+                                    <span class="text-white/60 block">23/01/2026</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vault-card-container" data-type="nam">
                         <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
                             <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
                             <div class="flex justify-between items-start mb-6">
@@ -446,7 +531,6 @@
                 </div>
 
                 <div id="metadata-panel" class="w-full xl:w-2/5 space-y-8">
-
                     <div class="relative h-[300px] mb-12" id="stack-container">
                         <p class="text-[10px] text-white/20 uppercase tracking-[3px] mb-4 mono">Folder Stack (Scroll to flip)</p>
 
@@ -533,6 +617,46 @@
     </body>
     <script>
         // ----------------------------- section 1 ----------------------------- //
+        function filterVault(vaultType, btn) {
+            const cards = document.querySelectorAll('.vault-card-container');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // 1. Cập nhật UI cho nút bấm
+            buttons.forEach(b => {
+                b.classList.remove('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/30');
+                b.classList.add('bg-white/5', 'text-white/40', 'border-white/10');
+            });
+            btn.classList.add('bg-cyan-500/20', 'text-cyan-400', 'border-cyan-500/30');
+            btn.classList.remove('bg-white/5', 'text-white/40', 'border-white/10');
+
+            // 2. Logic lọc thẻ với hiệu ứng GSAP
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+
+                if (vaultType === 'all' || cardType === vaultType) {
+                    // Hiện thẻ
+                    card.style.display = 'block';
+                    gsap.to(card, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.4,
+                        ease: "power2.out",
+                        clearProps: "all" // Đảm bảo không lỗi layout grid
+                    });
+                } else {
+                    // Ẩn thẻ
+                    gsap.to(card, {
+                        opacity: 0,
+                        scale: 0.8,
+                        duration: 0.3,
+                        ease: "power2.in",
+                        onComplete: () => {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        }
         // Hiệu ứng Depth Perception (Tilt Shift)
         function handleTilt(e, card) {
             const rect = card.getBoundingClientRect();
