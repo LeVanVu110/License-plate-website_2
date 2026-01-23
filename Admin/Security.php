@@ -674,6 +674,9 @@
             triggerAttack(ctx, canvas, rx, ry);
             if (isAutoBlacklistEnabled) processBlacklist(ip, rx, ry);
         }
+        if (stream.children.length > 6) { // Giới hạn khoảng 20 dòng log là đẹp nhất
+            stream.lastElementChild.remove();
+        }
     }
 
     function triggerAttack(ctx, canvas, x, y) {
