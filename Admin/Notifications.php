@@ -30,6 +30,10 @@
         }
 
         /* ----------------------------- section 1 -----------------------------  */
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         /* Hiệu ứng 3D lật thiết bị */
         .flip-device {
             transform: rotateY(180deg);
@@ -132,9 +136,11 @@
                         <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/60">
                             <div class="flex justify-between items-center mb-8">
                                 <h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Automation Scenarios</h3>
-                                <div class="flex bg-slate-100 p-1 rounded-lg">
-                                    <button class="px-3 py-1 text-[10px] font-bold bg-white shadow-sm rounded-md">VN</button>
-                                    <button class="px-3 py-1 text-[10px] font-bold text-slate-400">EN</button>
+                                <div class="flex bg-slate-100 p-1 rounded-xl relative w-fit">
+                                    <div id="lang-indicator" class="absolute top-1 left-1 bottom-1 w-[32px] bg-white shadow-sm rounded-lg transition-all duration-300 ease-out"></div>
+
+                                    <button onclick="switchLang('vn', this)" class="relative z-10 px-3 py-1 text-[10px] font-bold transition-colors duration-300 text-slate-900">VN</button>
+                                    <button onclick="switchLang('en', this)" class="relative z-10 px-3 py-1 text-[10px] font-bold transition-colors duration-300 text-slate-400">EN</button>
                                 </div>
                             </div>
 
@@ -150,14 +156,14 @@
                                         </div>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked class="sr-only peer" onchange="hapticFeedback()">
+                                        <input type="checkbox" checked class="sr-only peer" onchange="toggleScenario(this, 'Auction Win')">
                                         <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all shadow-inner"></div>
                                     </label>
                                 </div>
 
-                                <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+                                <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100 group">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 transition-all duration-300">
                                             <i class="ri-alarm-warning-line"></i>
                                         </div>
                                         <div>
@@ -166,8 +172,8 @@
                                         </div>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer">
-                                        <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all shadow-inner"></div>
+                                        <input type="checkbox" class="sr-only peer" onchange="toggleOutbid(this)">
+                                        <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-orange-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all shadow-inner"></div>
                                     </label>
                                 </div>
                             </div>
@@ -211,7 +217,11 @@
                         </div>
 
                         <div class="flex gap-4">
-                            <button class="flex-1 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-[2px] text-slate-500 hover:bg-slate-50 transition-all">Save Draft</button>
+                            <button id="save-draft-btn" onclick="saveDraftAnim()" class="flex-1 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-[2px] text-slate-500 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 overflow-hidden relative">
+                                <span class="save-text">Save Draft</span>
+                                <i class="ri-loader-4-line animate-spin hidden"></i>
+                                <i class="ri-check-line text-emerald-500 hidden"></i>
+                            </button>
                             <button id="publish-btn" onclick="sendTestAnim()" class="flex-[2] py-4 bg-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[2px] text-white shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all relative overflow-hidden">
                                 <span class="btn-text">Publish Changes</span>
                                 <i class="ri-send-plane-fill absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 airplane-icon"></i>
@@ -509,6 +519,194 @@
 
     function hapticFeedback() {
         if (window.navigator.vibrate) window.navigator.vibrate(15);
+    }
+
+    function switchLang(lang, btn) {
+        const indicator = document.getElementById('lang-indicator');
+        const buttons = btn.parentElement.querySelectorAll('button');
+        const textArea = document.getElementById('editor-textarea');
+
+        // 1. Hiệu ứng trượt và đổi màu chữ
+        indicator.style.left = btn.offsetLeft + 'px';
+        indicator.style.width = btn.offsetWidth + 'px';
+
+        buttons.forEach(b => b.classList.add('text-slate-400'));
+        btn.classList.remove('text-slate-400');
+        btn.classList.add('text-slate-900');
+
+        // 2. Thay đổi nội dung mẫu trong Textarea & Preview tùy theo ngôn ngữ
+        if (lang === 'en') {
+            textArea.value = "Congratulations {{Customer_Name}}! You won the auction for plate {{Plate_Number}}.";
+        } else {
+            textArea.value = "Chúc mừng {{Customer_Name}}! Bạn đã thắng đấu giá biển số {{Plate_Number}}.";
+        }
+
+        // Cập nhật lại màn hình điện thoại
+        updatePreview(textArea.value);
+
+        // Haptic feedback nhẹ
+        if (window.navigator.vibrate) window.navigator.vibrate(5);
+    }
+
+    function toggleScenario(checkbox, scenarioName) {
+        // 1. Rung phản hồi (Haptic Feedback)
+        if (window.navigator.vibrate) {
+            window.navigator.vibrate(checkbox.checked ? [10, 30, 10] : 10);
+        }
+
+        // 2. Hiệu ứng làm mờ/sáng Icon của scenario đó
+        const parentRow = checkbox.closest('.flex.items-center.justify-between');
+        const iconBox = parentRow.querySelector('.rounded-full');
+
+        if (checkbox.checked) {
+            gsap.to(iconBox, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.3
+            });
+            console.log(`${scenarioName} Enabled`);
+        } else {
+            gsap.to(iconBox, {
+                opacity: 0.4,
+                scale: 0.9,
+                duration: 0.3
+            });
+            console.log(`${scenarioName} Disabled`);
+        }
+
+        // 3. (Tùy chọn) Hiện một Toast thông báo nhỏ ở góc màn hình
+        showToast(`${scenarioName} is now ${checkbox.checked ? 'ON' : 'OFF'}`);
+    }
+
+    // Hàm hỗ trợ hiện thông báo nhanh
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.className = "fixed bottom-10 right-10 bg-slate-900 text-white text-[10px] px-4 py-2 rounded-lg z-[200] font-bold tracking-widest pointer-events-none opacity-0";
+        toast.innerText = msg.toUpperCase();
+        document.body.appendChild(toast);
+
+        gsap.to(toast, {
+            opacity: 1,
+            y: -20,
+            duration: 0.3
+        });
+        gsap.to(toast, {
+            opacity: 0,
+            y: -40,
+            delay: 2,
+            duration: 0.3,
+            onComplete: () => toast.remove()
+        });
+    }
+
+    function toggleOutbid(checkbox) {
+        const parentRow = checkbox.closest('.flex.items-center.justify-between');
+        const iconBox = parentRow.querySelector('.rounded-full');
+        const liveText = document.getElementById('live-text');
+
+        if (checkbox.checked) {
+            // 1. Hiệu ứng bật
+            gsap.to(iconBox, {
+                backgroundColor: '#fff7ed',
+                color: '#ea580c',
+                opacity: 1,
+                scale: 1,
+                duration: 0.3
+            });
+            if (window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+
+            // 2. Giả lập hiển thị lên điện thoại preview
+            const originalText = liveText.innerHTML;
+            gsap.to(liveText, {
+                opacity: 0,
+                x: -20,
+                duration: 0.2,
+                onComplete: () => {
+                    liveText.innerHTML = `<span class="text-orange-600 font-bold"><i class="ri-error-warning-fill"></i> CẢNH BÁO:</span> Có người vừa trả giá cao hơn bạn cho biển số 30K-888.88!`;
+                    gsap.to(liveText, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.3
+                    });
+                }
+            });
+
+            // Tự động quay lại text cũ sau 3 giây
+            setTimeout(() => {
+                gsap.to(liveText, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => {
+                        liveText.innerHTML = originalText;
+                        gsap.to(liveText, {
+                            opacity: 1,
+                            duration: 0.5
+                        });
+                    }
+                });
+            }, 3000);
+
+        } else {
+            // 3. Hiệu ứng tắt
+            gsap.to(iconBox, {
+                backgroundColor: '#f1f5f9',
+                color: '#94a3b8',
+                opacity: 0.5,
+                scale: 0.9,
+                duration: 0.3
+            });
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+
+
+    }
+
+    function saveDraftAnim() {
+        const btn = document.getElementById('save-draft-btn');
+        const text = btn.querySelector('.save-text');
+        const loader = btn.querySelector('.ri-loader-4-line');
+        const check = btn.querySelector('.ri-check-line');
+
+        // 1. Trạng thái bắt đầu lưu: Vô hiệu hóa nút và hiện loader
+        btn.classList.add('pointer-events-none', 'bg-slate-50');
+        text.innerText = "Saving...";
+        loader.classList.remove('hidden');
+
+        // Haptic feedback nhẹ khi bắt đầu
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+        // Thêm vào trong hàm saveDraftAnim() đoạn này để nút nhỏ lại rồi to ra khi click
+        gsap.to(btn, {
+            scale: 0.95,
+            duration: 0.1,
+            yoyo: true,
+            repeat: 1
+        });
+
+        // 2. Giả lập thời gian phản hồi từ Server
+        setTimeout(() => {
+            // Ẩn loader, hiện icon Check
+            loader.classList.add('hidden');
+            check.classList.remove('hidden');
+            text.innerText = "Draft Saved";
+            text.classList.replace('text-slate-500', 'text-emerald-600');
+
+            // Hiệu ứng hoàn thành mạnh hơn
+            if (window.navigator.vibrate) window.navigator.vibrate([20, 10, 20]);
+
+            // 3. Khôi phục trạng thái ban đầu sau 2 giây
+            setTimeout(() => {
+                gsap.to(btn, {
+                    opacity: 1,
+                    onComplete: () => {
+                        text.innerText = "Save Draft";
+                        text.classList.replace('text-emerald-600', 'text-slate-500');
+                        check.classList.add('hidden');
+                        btn.classList.remove('pointer-events-none', 'bg-slate-50');
+                    }
+                });
+            }, 2000);
+
+        }, 1200);
     }
 
     // ----------------------------- section 2 ----------------------------- //
