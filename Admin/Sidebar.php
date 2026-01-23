@@ -146,18 +146,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="nav-label text-white/50">Financial Ledger</span>
                 <div class="active-indicator"></div>
             </a>
+            <a href="Security.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'Security.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+
+                </div>
+                <span class="nav-label text-white/50">Financial Ledger</span>
+                <div class="active-indicator"></div>
+            </a>
+
+
 
             <!-- <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">FINANCIAL LEDGER</span>
-            </a> -->
-
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">SECURITY CENTER</span>
-            </a>
+            </a> -->
         </nav>
 
         <div class="absolute bottom-0 left-0 w-full p-4 border-t border-white/5 bg-black/20">
