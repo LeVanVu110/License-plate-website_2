@@ -203,6 +203,45 @@
             }
         }
 
+        /* Hiệu ứng rung khung khi Reject */
+        .shake-error {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        #reject-modal.show {
+            display: flex !important;
+        }
+        /* Responsive cho Mobile */
+        @media (max-width: 768px) {
+            #kyc-vault{
+                margin-left: 0% !important;
+            }
+        }
+
 
 
         /* ----------------------------- section 3 -----------------------------  */
@@ -374,8 +413,210 @@
         </div>
     </section>
 
-
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="kyc-vault" class="min-h-screen pt-20 pb-10 px-4 md:px-8 transition-all duration-500 ml-0 md:ml-20 lg:ml-24" style="margin-left: 17%;">
+
+        <div class="mb-8 flex justify-between items-end border-b border-cyan-500/20 pb-4">
+            <div>
+                <h2 class="text-[#0891B2] font-mono text-xs tracking-[4px] uppercase mb-2">// Forensic Audit Mode</h2>
+                <div class="flex items-center gap-4">
+                    <h1 class="text-2xl text-white font-bold tracking-tight">Verification Vault</h1>
+                    <span class="bg-rose-500/20 text-rose-500 text-[10px] px-3 py-1 rounded-full border border-rose-500/30 animate-pulse">
+                        <i class="ri-error-warning-line"></i> 3 URGENT QUEUE
+                    </span>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <div id="paper-mode-toggle" onclick="togglePaperMode()" class="cursor-pointer group flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg hover:bg-white/10 transition-all">
+                    <i class="ri-eye-line text-cyan-400"></i>
+                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-widest">Paper Mode</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col xl:flex-row gap-6 h-auto xl:h-[750px]">
+
+            <div class="flex-1 bg-black/40 border border-white/5 rounded-2xl relative overflow-hidden flex flex-col" id="evidence-pane">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#0891B2 0.5px, transparent 0.5px); background-size: 20px 20px;"></div>
+
+                <div class="flex bg-white/5 border-b border-white/10 relative z-10" id="kyc-tabs">
+                    <button class="tab-btn active px-6 py-4 text-[10px] font-bold text-cyan-400 border-b-2 border-cyan-400 uppercase tracking-widest transition-all" data-tab="id">Identity (ID)</button>
+                    <button class="tab-btn px-6 py-4 text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest transition-all" data-tab="finance">Financials</button>
+                    <button class="tab-btn px-6 py-4 text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest transition-all" data-tab="bio">Biometrics</button>
+                </div>
+
+                <div class="flex-1 p-8 relative overflow-hidden flex items-center justify-center gap-8" id="document-viewer">
+                    <div id="content-id" class="tab-content flex items-center justify-center gap-8 w-full">
+                        <div class="evidence-card w-1/2 aspect-[1.6/1] bg-[#111] rounded-lg border border-white/20 relative overflow-hidden shadow-2xl">
+                            <img src="https://img.freepik.com/premium-vector/id-card-template-with-flat-design_23-2147953335.jpg" class="w-full h-full object-cover grayscale opacity-70">
+                        </div>
+                        <div id="selfie-card" class="evidence-card w-1/3 aspect-square bg-[#111] rounded-full border-4 border-[#0891B2]/30 relative shadow-2xl overflow-hidden cursor-move">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400" class="w-full h-full object-cover grayscale">
+                        </div>
+                    </div>
+
+                    <div id="content-finance" class="tab-content hidden flex-col items-center gap-4 w-full">
+                        <div class="w-full max-w-lg p-6 bg-white/5 border border-cyan-500/20 rounded-xl font-mono text-[10px]">
+                            <p class="text-cyan-400 mb-4">// ANNUAL TAX STATEMENT - 2025</p>
+                            <div class="space-y-2 text-white/60">
+                                <div class="flex justify-between border-b border-white/5 pb-1"><span>Net Worth:</span><span class="text-white">$145,000,000</span></div>
+                                <div class="flex justify-between border-b border-white/5 pb-1"><span>Liquidity:</span><span class="text-white">High</span></div>
+                                <div class="flex justify-between"><span>Audit Status:</span><span class="text-emerald-400">PASSED</span></div>
+                            </div>
+                        </div>
+                        <img src="https://placehold.co/600x200/0a0a0a/0891B2?text=BANK_STATEMENT_SCAN" class="rounded border border-white/10 opacity-50">
+                    </div>
+
+                    <div id="content-bio" class="tab-content hidden w-full text-center">
+                        <div class="inline-block p-10 border-2 border-dashed border-cyan-500/30 rounded-full animate-pulse">
+                            <i class="ri-fingerprint-line text-6xl text-cyan-400"></i>
+                        </div>
+                        <p class="text-cyan-400 font-mono text-[10px] mt-4 uppercase">Scanning Biometric Data...</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-black/80 border-t border-white/10 grid grid-cols-4 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] text-white/30 uppercase">Captured on</span>
+                        <span class="text-[10px] text-white font-mono">iPhone 15 Pro - GPS: 10.7626, 106.6602</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] text-white/30 uppercase">Edit History</span>
+                        <span class="text-[10px] text-emerald-400 font-mono">No tampering detected</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] text-white/30 uppercase">AI Score</span>
+                        <span class="text-[10px] text-white font-mono">98.4% Match</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full xl:w-[400px] flex flex-col gap-6" id="decision-pane">
+                <div class="bg-black/40 border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 text-[8px] font-mono text-white/10">OCR_V2.0</div>
+
+                    <h3 class="text-white font-bold text-sm mb-6 flex items-center gap-2">
+                        <i class="ri-cpu-line text-cyan-400"></i> AI Extraction (OCR)
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div class="bg-white/5 p-3 rounded-lg border border-white/5">
+                            <label class="text-[8px] text-white/30 uppercase block mb-1">Full Name</label>
+                            <div class="flex justify-between">
+                                <span class="text-xs text-white font-bold">NGUYEN HOANG PHI LONG</span>
+                                <i class="ri-checkbox-circle-fill text-emerald-500"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-lg border border-white/5">
+                            <label class="text-[8px] text-white/30 uppercase block mb-1">Document Number</label>
+                            <span class="text-xs text-white font-bold tracking-[2px]">07909200****</span>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-lg border border-white/5">
+                            <label class="text-[8px] text-white/30 uppercase block mb-1">Proposed Limit</label>
+                            <span class="text-xs text-[#F1C40F] font-bold font-mono">$2,500,000.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <p class="text-[9px] text-white/30 uppercase mb-3">Risk Assessment</p>
+                        <div class="flex items-center gap-2 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-md mb-2">
+                            <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                            <span class="text-[10px] text-emerald-500">Global Blacklist Clear</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-white/5 border border-white/10 rounded-md">
+                            <div class="w-1.5 h-1.5 bg-[#F1C40F] rounded-full"></div>
+                            <span class="text-[10px] text-white/60">Large Cash Deposit Detected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 mt-auto">
+                    <button onclick="stampApprove()" id="btn-approve" class="group relative overflow-hidden bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold text-xs uppercase tracking-[3px] transition-all flex items-center justify-center gap-2">
+                        <i class="ri-shield-check-line"></i> Approve Identity
+                        <div id="particle-container" class="absolute inset-0 pointer-events-none"></div>
+                    </button>
+                    <button onclick="openRejectModal()" class="bg-white/5 border border-white/10 hover:bg-rose-900/20 hover:border-rose-500 text-white/40 hover:text-rose-500 py-4 rounded-xl font-bold text-[10px] uppercase tracking-[3px] transition-all flex items-center justify-center gap-2">
+                        <i class="ri-close-circle-line"></i> Reject Profile
+                    </button>
+
+                    <div id="reject-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+                        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeRejectModal()"></div>
+                        <div class="relative bg-[#1a1a1a] border border-rose-500/30 p-6 rounded-2xl w-full max-w-sm shadow-[0_0_50px_rgba(244,63,94,0.2)]">
+                            <h3 class="text-white font-bold text-sm mb-4 uppercase tracking-widest text-rose-500">Reason for Rejection</h3>
+                            <div class="space-y-2">
+                                <button onclick="confirmReject('Low Quality Image')" class="w-full text-left p-3 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white/60 hover:bg-rose-500/20 hover:text-white transition-all">IMAGE RESOLUTION TOO LOW</button>
+                                <button onclick="confirmReject('Document Expired')" class="w-full text-left p-3 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white/60 hover:bg-rose-500/20 hover:text-white transition-all">DOCUMENT EXPIRED</button>
+                                <button onclick="confirmReject('Fraudulent Activity')" class="w-full text-left p-3 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white/60 hover:bg-rose-500/20 hover:text-white transition-all">FRAUDULENT DATA DETECTED</button>
+                            </div>
+                            <button onclick="closeRejectModal()" class="mt-6 w-full py-2 text-[9px] text-white/20 uppercase tracking-widest hover:text-white">Cancel Action</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* Paper Mode */
+        .paper-active #evidence-pane {
+            background: #f4f1ea !important;
+            transition: all 0.5s ease;
+        }
+
+        .paper-active #evidence-pane * {
+            color: #2d2d2d !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .paper-active .evidence-card {
+            filter: sepia(0.3) contrast(1.1);
+        }
+
+        /* Stamp Effect */
+        .stamp-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(5);
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Laser Line Animation */
+        @keyframes laserMove {
+            0% {
+                top: 0;
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Ghost Comparison */
+        #selfie-card {
+            z-index: 30;
+            transition: opacity 0.3s;
+        }
+
+        #selfie-card:active {
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1280px) {
+            #kyc-vault {
+                height: auto;
+            }
+
+            #evidence-pane {
+                min-height: 500px;
+            }
+        }
+    </style>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -558,6 +799,196 @@
     }
 
     // ----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Hiệu ứng Biometric Scan khi vào section
+        const laserLine = document.getElementById('laser-line');
+
+        ScrollTrigger.create({
+            trigger: "#kyc-vault",
+            start: "top center",
+            onEnter: () => {
+                gsap.fromTo(laserLine, {
+                    top: 0,
+                    opacity: 1
+                }, {
+                    top: "100%",
+                    opacity: 0,
+                    duration: 2,
+                    ease: "power1.inOut",
+                    repeat: 2
+                });
+            }
+        });
+
+        // 2. Kéo thả so sánh (Simple Draggable)
+        const selfie = document.getElementById('selfie-card');
+        let isDragging = false;
+        let offset = [0, 0];
+
+        selfie.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offset = [selfie.offsetLeft - e.clientX, selfie.offsetTop - e.clientY];
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                selfie.style.left = (e.clientX + offset[0]) + 'px';
+                selfie.style.top = (e.clientY + offset[1]) + 'px';
+                selfie.style.position = 'absolute';
+            }
+        });
+
+        document.addEventListener('mouseup', () => isDragging = false);
+    });
+
+    // 3. Paper Mode (Bảo vệ mắt Admin)
+    function togglePaperMode() {
+        document.body.classList.toggle('paper-active');
+    }
+
+    // 4. Stamp of Authority (Duyệt hồ sơ)
+    function stampApprove() {
+        const btn = document.getElementById('btn-approve');
+        const idPane = document.getElementById('evidence-pane');
+
+        // Tạo con dấu ảo
+        const stamp = document.createElement('div');
+        stamp.className = 'stamp-overlay';
+        stamp.innerHTML = `
+        <div class="border-8 border-emerald-500 text-emerald-500 p-8 rounded-full font-black text-6xl uppercase transform -rotate-12">
+            APPROVED
+            <div class="text-[10px] text-center font-mono">HASH: 0x8891...B2</div>
+        </div>
+    `;
+        idPane.appendChild(stamp);
+
+        // Hiệu ứng GSAP đóng dấu
+        gsap.to(stamp, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.3,
+            ease: "back.out(1.7)",
+            onComplete: () => {
+                // Rung nhẹ màn hình (Haptic)
+                if (window.navigator.vibrate) window.navigator.vibrate([50, 30, 50]);
+
+                // Âm thanh trầm đục (Giả lập bằng log)
+                console.log("Authority Stamp Sound: THUD!");
+
+                // Xóa sau 2 giây
+                setTimeout(() => {
+                    gsap.to(stamp, {
+                        opacity: 0,
+                        duration: 1,
+                        onComplete: () => stamp.remove()
+                    });
+                }, 2000);
+            }
+        });
+
+        // Chuyển nút sang trạng thái thành công
+        btn.innerHTML = '<i class="ri-check-line"></i> PROFILE VERIFIED';
+        btn.classList.add('bg-emerald-900');
+    }
+    // Tự động sửa lỗi ảnh cho toàn bộ trang
+    document.querySelectorAll('img').forEach(img => {
+        img.onerror = function() {
+            this.src = "https://placehold.co/600x400/0a0a0a/0891B2?text=ENCRYPTED+DATA";
+        };
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+
+                // 1. Cập nhật UI Nút (Active state)
+                tabs.forEach(t => {
+                    t.classList.remove('text-cyan-400', 'border-b-2', 'border-cyan-400');
+                    t.classList.add('text-white/40');
+                });
+                tab.classList.add('text-cyan-400', 'border-b-2', 'border-cyan-400');
+                tab.classList.remove('text-white/40');
+
+                // 2. Hiệu ứng chuyển nội dung bằng GSAP
+                gsap.to(contents, {
+                    opacity: 0,
+                    y: 10,
+                    duration: 0.2,
+                    display: 'none',
+                    onComplete: () => {
+                        const activeContent = document.getElementById(`content-${target}`);
+                        activeContent.style.display = 'flex';
+                        if (target === 'bio') activeContent.style.display = 'block';
+
+                        gsap.fromTo(activeContent, {
+                            opacity: 0,
+                            y: -10
+                        }, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.4,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+
+                // Haptic feedback khi bấm tab
+                if (window.navigator.vibrate) window.navigator.vibrate(5);
+            });
+        });
+    });
+    const rejectModal = document.getElementById('reject-modal');
+    const kycVault = document.getElementById('kyc-vault');
+
+    function openRejectModal() {
+        rejectModal.classList.add('show');
+        // Hiệu ứng GSAP mở modal
+        gsap.fromTo("#reject-modal div.relative", {
+            scale: 0.8,
+            opacity: 0
+        }, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3,
+            ease: "back.out(1.7)"
+        });
+    }
+
+    function closeRejectModal() {
+        gsap.to("#reject-modal div.relative", {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.2,
+            onComplete: () => rejectModal.classList.remove('show')
+        });
+    }
+
+    function confirmReject(reason) {
+        console.log(`Hồ sơ bị từ chối vì: ${reason}`);
+
+        // 1. Đóng modal
+        closeRejectModal();
+
+        // 2. Rung mạnh thiết bị (Haptic cho hồ sơ nghi vấn)
+        if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
+
+        // 3. Hiệu ứng rung khung KYC
+        kycVault.classList.add('shake-error');
+        setTimeout(() => kycVault.classList.remove('shake-error'), 500);
+
+        // 4. Hiệu ứng "Ghost Out" - Làm mờ hồ sơ đã bị loại
+        gsap.to("#evidence-pane", {
+            filter: "sepia(1) saturate(2) hue-rotate(-50deg) blur(2px)",
+            opacity: 0.5,
+            duration: 1
+        });
+
+        // Thông báo cho Admin
+        alert(`REJECTED: ${reason}. Notification sent to VIP.`);
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
