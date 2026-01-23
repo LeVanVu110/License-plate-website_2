@@ -97,7 +97,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <aside id="obsidian-sidebar" class="fixed left-0 top-0 h-screen z-50 bg-[#020617]/80 backdrop-blur-2xl border-r border-white/5 transition-all duration-500 w-[260px] group">
 
-        <div class="p-6 mb-8 flex items-center gap-4">
+        <div class="p-6 mb-8 flex items-center gap-4" style="margin-top: 50px;">
             <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.5)]">
                 <i class="ri-gemstone-fill text-white text-xl"></i>
             </div>
