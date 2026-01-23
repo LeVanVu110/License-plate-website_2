@@ -268,13 +268,14 @@
                     /* width: 120% !important; */
                 }
             }
-             @media (max-width: 1024px) {
-                 #document-vault {
+
+            @media (max-width: 1024px) {
+                #document-vault {
                     /* margin-left: 17%; */
                     /* Độ rộng mặc định của sidebar thu gọn */
                     width: 120% !important;
                 }
-             }
+            }
 
             /* ----------------------------- section 3 -----------------------------  */
             /* Section 3 Custom Styles */
@@ -299,21 +300,49 @@
                 .xl\:flex-row {
                     flex-direction: column !important;
                 }
-                #logistics-vault{
+
+                #logistics-vault {
                     margin-left: 17% !important;
                     width: 100%;
                 }
             }
+
             @media (max-width: 1024px) {
-                 #logistics-vault {
+                #logistics-vault {
                     margin-left: 0% !important;
                     /* Độ rộng mặc định của sidebar thu gọn */
                     width: 120% !important;
 
                 }
-             }
+            }
 
             /* ----------------------------- section 4 -----------------------------  */
+            /* Animation for Emergency Pulse */
+            .emergency-alert {
+                border-color: #fb923c !important;
+                background: rgba(251, 146, 60, 0.05) !important;
+                animation: pulse-orange 1.5s infinite;
+            }
+
+            @keyframes pulse-orange {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 20px rgba(251, 146, 60, 0);
+                }
+
+                100% {
+                    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+                }
+            }
+            @media (max-width: 1024px) {
+                #sentinel-audit{
+                    margin-left: 0% !important;
+                    width: 120% !important
+                }
+            }
 
             /* ----------------------------- section 5 -----------------------------  */
 
@@ -650,7 +679,7 @@
 
 
         <!-- ----------------------------- section 3 -----------------------------  -->
-        <section id="logistics-vault" class="min-h-screen bg-[#000814] p-4 md:p-8 lg:p-12 relative overflow-hidden border-t border-white/5" style="margin-left: 17%;" >
+        <section id="logistics-vault" class="min-h-screen bg-[#000814] p-4 md:p-8 lg:p-12 relative overflow-hidden border-t border-white/5" style="margin-left: 17%;">
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 border-b border-white/10 pb-8">
                 <div class="animate-on-scroll">
@@ -772,6 +801,166 @@
         </section>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
+        <section id="sentinel-audit" class="min-h-screen bg-[#000814] text-white p-4 md:p-8 border-t border-cyan-900/30 relative overflow-hidden transition-all duration-300 ml-0 md:ml-20 lg:ml-24" style="margin-left: 17%;">
+
+            <div class="absolute inset-0 opacity-5 pointer-events-none"
+                style="background-image: radial-gradient(#00f2ff 0.5px, transparent 0.5px); background-size: 30px 30px;"></div>
+
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 relative z-10 animate-on-scroll">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="ri-shield-keyhole-line text-cyan-400"></i>
+                        <span class="text-cyan-400 text-[10px] font-bold tracking-[5px] uppercase">Protocol: Sentinel Audit</span>
+                    </div>
+                    <h2 class="text-3xl font-light tracking-tighter">The <span class="text-white font-bold">Integrity Dashboard</span></h2>
+                </div>
+
+                <div class="mt-6 lg:mt-0 flex items-center gap-6 bg-white/5 border border-white/10 p-4 rounded-3xl backdrop-blur-xl">
+                    <div class="relative w-20 h-20">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="16" fill="none" class="stroke-white/10" stroke-width="2"></circle>
+                            <circle cx="18" cy="18" r="16" fill="none" class="stroke-cyan-500" stroke-width="2"
+                                stroke-dasharray="100" stroke-dashoffset="15" stroke-linecap="round"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-xl font-bold text-white leading-none">94</span>
+                            <span class="text-[8px] text-cyan-400 font-bold uppercase">Safe</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-white/40 uppercase tracking-widest">Vault Trust Score</p>
+                        <p class="text-xs text-emerald-400 font-mono">STATUS: HIGH INTEGRITY</p>
+                        <div class="flex gap-1 mt-1">
+                            <span class="w-8 h-1 bg-emerald-500 rounded-full"></span>
+                            <span class="w-8 h-1 bg-emerald-500 rounded-full"></span>
+                            <span class="w-8 h-1 bg-emerald-500 rounded-full"></span>
+                            <span class="w-8 h-1 bg-white/10 rounded-full"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+
+                <div class="bg-black/40 border border-white/5 p-6 rounded-[2rem] hover:border-cyan-500/30 transition-all group">
+                    <h4 class="text-[11px] font-bold text-white/60 mb-6 uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 bg-cyan-500 rounded-full"></span> Digital-Physical Sync
+                    </h4>
+                    <div class="space-y-4 font-mono">
+                        <div class="text-[10px]">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-white/40">VAULT_NORTH</span>
+                                <span class="text-cyan-400">SYNCED</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-cyan-500 w-[92%]"></div>
+                            </div>
+                        </div>
+                        <div class="text-[10px]">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-white/40">VAULT_CENTRAL</span>
+                                <span class="text-rose-500">DEVIATION_DETECTION</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-rose-500 w-[65%] animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div class="text-[10px]">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-white/40">VAULT_SOUTH</span>
+                                <span class="text-cyan-400">SYNCED</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-cyan-500 w-[100%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="startDeepScan()" class="w-full mt-6 py-3 border border-cyan-500/20 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-black transition-all">
+                        Full System Audit
+                    </button>
+                </div>
+
+                <div class="bg-black/40 border border-white/5 p-6 rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden">
+                    <div id="blockchain-seal-target" class="text-center">
+                        <div class="text-[60px] text-white/5 mb-2"><i class="ri-lock-password-line"></i></div>
+                        <h4 class="text-2xl font-bold text-white mb-1">88.5%</h4>
+                        <p class="text-[10px] text-white/40 uppercase tracking-widest">Blockchain Verified</p>
+                        <div class="mt-4 flex -space-x-2">
+                            <img src="https://i.pravatar.cc/100?u=1" class="w-8 h-8 rounded-full border-2 border-black">
+                            <img src="https://i.pravatar.cc/100?u=2" class="w-8 h-8 rounded-full border-2 border-black">
+                            <img src="https://i.pravatar.cc/100?u=3" class="w-8 h-8 rounded-full border-2 border-black">
+                            <div class="w-8 h-8 rounded-full bg-white/5 border-2 border-black flex items-center justify-center text-[8px] font-bold">+12</div>
+                        </div>
+                    </div>
+                    <div id="wax-seal" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 scale-150">
+                        <div class="w-32 h-32 bg-rose-900/80 rounded-full border-4 border-rose-600 flex items-center justify-center shadow-[0_0_50px_rgba(225,29,72,0.5)]">
+                            <i class="ri-shield-check-fill text-rose-200 text-5xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 border border-white/5 p-6 rounded-[2rem]">
+                    <h4 class="text-[11px] font-bold text-white/60 mb-6 uppercase tracking-widest">Environmental Sensors</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="env-card p-3 bg-white/5 rounded-2xl border border-white/10 transition-all">
+                            <span class="text-[10px] text-white/40 block mb-1">Temperature</span>
+                            <span class="text-xl font-mono">22.4°C</span>
+                        </div>
+                        <div id="humidity-sensor" class="env-card p-3 bg-white/5 rounded-2xl border border-white/10 transition-all">
+                            <span class="text-[10px] text-white/40 block mb-1">Humidity</span>
+                            <span class="text-xl font-mono">45%</span>
+                        </div>
+                        <div class="env-card p-3 bg-white/5 rounded-2xl border border-white/10 transition-all">
+                            <span class="text-[10px] text-white/40 block mb-1">Pressure</span>
+                            <span class="text-xl font-mono">1012 hPa</span>
+                        </div>
+                        <div class="env-card p-3 bg-white/5 rounded-2xl border border-white/10 transition-all">
+                            <span class="text-[10px] text-white/40 block mb-1">Light O2</span>
+                            <span class="text-xl font-mono text-emerald-400">OPTIMAL</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/10">
+                        <p class="text-[9px] text-cyan-400 font-mono leading-tight uppercase italic">
+                            AI Smoothing: Active <br> Filtering sensor noise...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 relative z-10 animate-on-scroll">
+                <div class="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-all">
+                    <i class="ri-user-follow-line text-cyan-400"></i>
+                    <div>
+                        <p class="text-[8px] text-white/40 uppercase">KYC Linkage</p>
+                        <p class="text-xs font-bold">100% Match</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-all">
+                    <i class="ri-qr-scan-2-line text-cyan-400"></i>
+                    <div>
+                        <p class="text-[8px] text-white/40 uppercase">Seal Integrity</p>
+                        <p class="text-xs font-bold text-emerald-400">Intact</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-all">
+                    <i class="ri-terminal-window-line text-cyan-400"></i>
+                    <div>
+                        <p class="text-[8px] text-white/40 uppercase">Encryption</p>
+                        <p class="text-xs font-bold">AES-256 GCM</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-all">
+                    <i class="ri-rfid-line text-cyan-400"></i>
+                    <div>
+                        <p class="text-[8px] text-white/40 uppercase">RFID Auto-Scan</p>
+                        <p class="text-xs font-bold text-cyan-400">Ready</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="laser-scanner" class="fixed left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_20px_#10b981] z-[100] hidden"></div>
+        </section>
+
 
         <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -1085,6 +1274,79 @@
         });
 
         // ----------------------------- section 4 ----------------------------- //
+        // 1. Hiệu ứng "The Deep Scan"
+        function startDeepScan() {
+            const laser = document.getElementById('laser-scanner');
+            laser.classList.remove('hidden');
+
+            // Laser quét từ trên xuống
+            gsap.fromTo(laser, {
+                top: '0%'
+            }, {
+                top: '100%',
+                duration: 3,
+                ease: "power1.inOut",
+                onComplete: () => {
+                    laser.classList.add('hidden');
+                    triggerBlockchainSeal(); // Sau khi quét xong thì đóng dấu
+                }
+            });
+
+            // Hiệu ứng các hàng dữ liệu rung nhẹ (giả lập audit)
+            gsap.to('.env-card', {
+                x: 2,
+                duration: 0.1,
+                repeat: 10,
+                yoyo: true,
+                ease: "none"
+            });
+        }
+
+        // 2. Hiệu ứng "Blockchain Seal" (Digital Wax Seal)
+        function triggerBlockchainSeal() {
+            const seal = document.getElementById('wax-seal');
+
+            gsap.to(seal, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.8,
+                ease: "back.out(1.7)",
+                onComplete: () => {
+                    // Hiệu ứng "tan chảy" nhẹ vào nền
+                    gsap.to(seal, {
+                        opacity: 0.2,
+                        duration: 2,
+                        delay: 1,
+                        filter: "blur(5px)"
+                    });
+                    alert("INTEGRITY SEALED: All assets verified on Blockchain.");
+                }
+            });
+        }
+
+        // 3. Hiệu ứng "Alert Cascading" (Giả lập sự cố môi trường)
+        function simulateEnvironmentalAlert() {
+            const humidityCard = document.getElementById('humidity-sensor');
+            humidityCard.classList.add('emergency-alert');
+
+            // Thông báo cho Admin
+            console.warn("ALERT: Humidity level deviation detected in Central Vault!");
+        }
+
+        // Kích hoạt alert sau 10 giây để demo
+        setTimeout(simulateEnvironmentalAlert, 10000);
+
+        // 4. Scroll Reveal cho Section 4
+        gsap.from("#sentinel-audit .animate-on-scroll", {
+            scrollTrigger: {
+                trigger: "#sentinel-audit",
+                start: "top 80%",
+            },
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2
+        });
 
         // ----------------------------- section 5 ----------------------------- //
 
