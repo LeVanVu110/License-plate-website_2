@@ -197,7 +197,7 @@
                 </div>
             </div>
 
-            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex gap-4 xl:hidden z-50 shadow-2xl">
+            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex gap-4 xl:hidden z-49 shadow-2xl">
                 <button class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Discard All</button>
                 <button onclick="showImpactReport()" class="flex-1 py-3 bg-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-blue-500/20">Apply Changes</button>
             </div>
