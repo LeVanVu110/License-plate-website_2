@@ -122,30 +122,36 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="VaultManager.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'VaultManager.php') ? 'active' : ''; ?>" style="text-decoration: none;">
                 <div class="nav-icon-box">
-                    <i class="ri-exchange-funds-line text-white/50"></i>
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-safe-2-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 </div>
                 <span class="nav-label text-white/50">Vault Manager</span>
                 <div class="active-indicator"></div>
             </a>
             <a href="VipVelations.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'VipVelations.php') ? 'active' : ''; ?>" style="text-decoration: none;">
                 <div class="nav-icon-box">
-                    <i class="ri-exchange-funds-line text-white/50"></i>
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-user-star-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 </div>
                 <span class="nav-label text-white/50">Vip Velations</span>
                 <div class="active-indicator"></div>
             </a>
 
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
-                <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
-                <i class="ri-user-star-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
-                <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">VIP RELATIONS</span>
+            <a href="Financial.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'Financial.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <!-- <i class="ri-exchange-funds-line text-white/50"></i> -->
+                    <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+
+                </div>
+                <span class="nav-label text-white/50">Financial Ledger</span>
+                <div class="active-indicator"></div>
             </a>
 
-            <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
+            <!-- <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
                 <i class="ri-wallet-3-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
                 <span class="jetbrains text-xs text-white/50 group-hover/item:text-white transition-opacity group-[.collapsed]:opacity-0">FINANCIAL LEDGER</span>
-            </a>
+            </a> -->
 
             <a href="#" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all">
                 <div class="nav-beam absolute left-0 w-1 h-0 bg-cyan-400 rounded-full transition-all duration-300"></div>
