@@ -101,6 +101,61 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        /* Hiệu ứng tia sáng chạy quanh viền nút (Golden Pulse) */
+        @keyframes pulse-gold {
+            0% {
+                box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(241, 196, 15, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+            }
+        }
+
+        .animate-pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+
+        /* Hiệu ứng Brushed Gold */
+        .bg-brushed-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F1C40F 50%, #C5A028 100%);
+            background-size: 200% 200%;
+        }
+
+        /* Mobile Floating Action Button (FAB) */
+        @media (max-width: 768px) {
+            #add-vip-btn {
+                position: fixed;
+                bottom: 5px;
+                right: 0px;
+                z-index: 999;
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #add-vip-btn div {
+                padding: 0;
+                background: transparent;
+                border: none;
+                gap: 0;
+            }
+
+            #portal-content {
+                height: 100vh;
+                border-radius: 0;
+                margin-top: 270%;
+            }
+        }
+
         /* Responsive cho Mobile */
         @media (max-width: 768px) {
             #vip-header {
@@ -455,8 +510,8 @@
                     <button onclick="togglePrivacy()" class="ml-2 text-white/20 hover:text-white"><i class="ri-eye-line text-xs"></i></button>
                 </div>
 
-                <div class="flex items-center gap-2 md:gap-4 flex-1 justify-end md:flex-none">
-                    <div class="relative group flex-1 md:flex-none">
+                <div class="flex items-center gap-6 md:gap-12 flex-1 justify-end md:flex-none">
+                    <div class="relative group flex-5 md:flex-none">
                         <i class="ri-search-2-line absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xs"></i>
                         <input type="text" id="deep-search" autocomplete="off" placeholder="Search..."
                             class="bg-white/5 border border-white/10 rounded-lg md:rounded-xl py-2 pl-9 pr-3 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-[#0891B2] w-full md:w-[180px] lg:w-[240px] transition-all">
@@ -470,10 +525,88 @@
                         </div>
                     </div>
 
-                    <button class="bg-[#F1C40F] text-black w-9 h-9 md:w-auto md:h-auto md:px-5 md:py-2.5 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="ri-add-line font-bold"></i>
-                        <span class="hidden md:inline ml-2 text-[10px] font-bold uppercase tracking-widest">Add VIP</span>
-                    </button>
+                    <div class="relative ml-4">
+                        <button onclick="openVipPortal()" id="add-vip-btn" class="group relative overflow-hidden bg-gradient-to-br from-[#D4AF37] via-[#F1C40F] to-[#C5A028] p-[1px] rounded-xl shadow-[0_0_20px_rgba(241,196,15,0.2)] hover:shadow-[0_0_30px_rgba(241,196,15,0.4)] transition-all duration-500">
+                            <div class="bg-black/20 backdrop-blur-sm px-4 py-2 md:px-6 md:py-2.5 rounded-[11px] flex items-center gap-3 border border-white/10 group-active:scale-95 transition-transform">
+                                <div class="relative w-5 h-5 flex items-center justify-center">
+                                    <i class="ri-add-line text-black font-bold text-lg transition-all duration-500 group-hover:opacity-0 group-hover:rotate-180"></i>
+                                    <i class="ri-vip-crown-fill text-black absolute opacity-0 scale-50 transition-all duration-500 group-hover:opacity-100 group-hover:scale-100"></i>
+                                </div>
+                                <span class="hidden sm:inline text-black font-bold text-[10px] tracking-[2px] uppercase">Add New VIP</span>
+                                <span class="sm:hidden text-black font-bold text-[10px]">VIP</span>
+                            </div>
+                            <div class="absolute inset-0 rounded-xl border border-[#F1C40F] animate-pulse-gold opacity-50"></div>
+                        </button>
+                    </div>
+
+                    <div id="vip-portal" class="fixed inset-0 z-[1000] hidden" style="margin-top: 25%;">
+                        <div id="portal-bg" class="absolute inset-0 bg-black/90 backdrop-blur-xl translate-y-[-100%] transition-transform duration-700 ease-in-out"></div>
+
+                        <div class="relative h-full flex items-center justify-center p-4">
+                            <div id="portal-content" class="w-full max-w-4xl bg-[#0a0a0a] border border-[#D4AF37]/30 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(212,175,55,0.1)] opacity-0 translate-y-10">
+
+                                <div class="p-8 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-[#D4AF37]/5 to-transparent">
+                                    <div>
+                                        <h2 class="text-[#D4AF37] font-mono text-[10px] tracking-[5px] uppercase">Portal Access</h2>
+                                        <h1 class="text-2xl text-white font-light mt-1">THE VIP <span class="font-bold">ONBOARDING</span></h1>
+                                    </div>
+                                    <button onclick="closeVipPortal()" class="text-white/20 hover:text-white transition-colors"><i class="ri-close-line text-3xl"></i></button>
+                                </div>
+
+                                <div class="p-8 md:p-12 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+                                        <div class="space-y-6 portal-field">
+                                            <div class="group">
+                                                <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Identification</label>
+                                                <input type="text" oninput="checkDuplicate(this.value)" placeholder="Phone or Email..." class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
+                                                <div id="duplicate-warning" class="hidden items-center gap-2 mt-2 text-rose-500 animate-bounce">
+                                                    <i class="ri-error-warning-line"></i> <span class="text-[10px] font-bold">EXISTING VIP DETECTED</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="group">
+                                                <label class="text-[9px] text-white/30 uppercase block mb-2">Initial Deposit (VND)</label>
+                                                <input type="number" id="deposit-input" oninput="predictRank(this.value)" placeholder="Amount..." class="w-full bg-white/5 border-b border-white/10 py-3 text-2xl text-[#F1C40F] font-mono focus:outline-none transition-all">
+                                                <p id="money-text" class="text-[10px] text-white/40 italic mt-2">Đang chờ nhập liệu...</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-6 portal-field">
+                                            <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                                <label class="text-[9px] text-white/30 uppercase block mb-4">Predicted Rank</label>
+                                                <div id="rank-display" class="flex items-center gap-4">
+                                                    <div class="w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center grayscale opacity-30 transition-all duration-500" id="rank-icon">
+                                                        <i class="ri-vip-diamond-line text-2xl"></i>
+                                                    </div>
+                                                    <span id="rank-name" class="text-white/20 font-bold tracking-widest uppercase">Awaiting Data</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="text-[9px] text-white/30 uppercase block mb-3">Special Interests</label>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <span class="px-3 py-1 rounded-full border border-white/10 text-[9px] text-white/50 cursor-pointer hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">PHONG THUỶ</span>
+                                                    <span class="px-3 py-1 rounded-full border border-white/10 text-[9px] text-white/50 cursor-pointer hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">BIỂN SẢNH</span>
+                                                    <span class="px-3 py-1 rounded-full border border-white/10 text-[9px] text-white/50 cursor-pointer hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">ĐUÔI 99</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 portal-field">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" id="welcome-invite" class="accent-[#D4AF37]">
+                                            <label for="welcome-invite" class="text-[10px] text-white/60 uppercase tracking-widest cursor-pointer">Send Welcome Invitation</label>
+                                        </div>
+                                        <button class="w-full md:w-auto px-10 py-4 bg-[#D4AF37] text-black font-black text-xs uppercase tracking-[4px] rounded-xl hover:bg-[#F1C40F] transition-all shadow-lg shadow-[#D4AF37]/20">
+                                            Finalize Registration
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -946,6 +1079,101 @@
 
         // Haptic feedback giả lập
         if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+    // 1. Mở Portal với hiệu ứng Cascade
+    function openVipPortal() {
+        const portal = document.getElementById('vip-portal');
+        const bg = document.getElementById('portal-bg');
+        const content = document.getElementById('portal-content');
+        const fields = document.querySelectorAll('.portal-field');
+
+        portal.classList.remove('hidden');
+        portal.classList.add('flex');
+
+        // Hiệu ứng trượt màn hình xuống
+        gsap.to(bg, {
+            translateY: 0,
+            duration: 0.7,
+            ease: "power4.inOut"
+        });
+
+        // Hiệu ứng hiện Modal
+        gsap.to(content, {
+            opacity: 1,
+            translateY: 0,
+            duration: 0.5,
+            delay: 0.4
+        });
+
+        // Hiệu ứng Cascade (Thác đổ) cho các ô nhập liệu
+        gsap.fromTo(fields, {
+            opacity: 0,
+            y: 30
+        }, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.15,
+            delay: 0.6,
+            ease: "power2.out"
+        });
+    }
+
+    function closeVipPortal() {
+        gsap.to("#portal-bg", {
+            translateY: "-100%",
+            duration: 0.7,
+            ease: "power4.inOut",
+            onComplete: () => {
+                document.getElementById('vip-portal').classList.add('hidden');
+            }
+        });
+    }
+
+    // 2. Dự đoán hạng thẻ dựa trên tiền ký gửi
+    function predictRank(val) {
+        const amount = parseFloat(val);
+        const rankIcon = document.getElementById('rank-icon');
+        const rankName = document.getElementById('rank-name');
+        const moneyText = document.getElementById('money-text');
+
+        // Chuyển số thành chữ (Phản biện 1)
+        if (val) {
+            moneyText.innerText = formatMoneyToWords(amount) + " đồng";
+        } else {
+            moneyText.innerText = "Đang chờ nhập liệu...";
+        }
+
+        // Đề xuất hạng
+        if (amount >= 10000000000) { // 10 tỷ
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]";
+            rankName.innerText = "DIAMOND MEMBER";
+            rankName.classList.replace('text-white/20', 'text-cyan-500');
+        } else if (amount >= 1000000000) { // 1 tỷ
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-slate-300 flex items-center justify-center text-slate-300";
+            rankName.innerText = "PLATINUM MEMBER";
+            rankName.classList.replace('text-white/20', 'text-slate-300');
+        }
+    }
+
+    // 3. Background Check trùng lặp (Phản biện 2)
+    function checkDuplicate(val) {
+        const warning = document.getElementById('duplicate-warning');
+        // Giả lập check: Nếu nhập "090" thì báo trùng
+        if (val.startsWith("090")) {
+            warning.classList.replace('hidden', 'flex');
+            if (window.navigator.vibrate) window.navigator.vibrate([50, 50, 50]);
+        } else {
+            warning.classList.add('hidden');
+        }
+    }
+
+    // Hàm hỗ trợ đọc số tiền tiếng Việt
+    function formatMoneyToWords(number) {
+        // Đây là hàm rút gọn, bạn có thể tích hợp thư viện đọc số tiền chuyên sâu
+        if (number >= 1000000000) return (number / 1000000000).toFixed(1) + " Tỷ";
+        if (number >= 1000000) return (number / 1000000).toFixed(0) + " Triệu";
+        return number.toLocaleString('vi-VN');
     }
 
     // ----------------------------- section 2 ----------------------------- //
