@@ -41,6 +41,7 @@
             }
 
             /* ----------------------------- section 1 -----------------------------  */
+
             .space-mono {
                 font-family: 'Space Mono', monospace;
             }
@@ -119,6 +120,11 @@
                 .inventory-grid {
                     grid-template-columns: repeat(3, minmax(0, 1fr));
                 }
+
+                .tops {
+                    margin-top: 50px !important;
+                }
+
             }
 
             /* Tablet */
@@ -126,7 +132,10 @@
                 .inventory-grid {
                     grid-template-columns: repeat(5, minmax(0, 1fr));
                 }
+
             }
+
+            @media (min-width: 1028px) {}
 
             /* Desktop Ultra-Wide */
 
@@ -273,7 +282,7 @@
                 #document-vault {
                     /* margin-left: 17%; */
                     /* Độ rộng mặc định của sidebar thu gọn */
-                    width: 120% !important;
+                    width: 100% !important;
                 }
             }
 
@@ -311,7 +320,7 @@
                 #logistics-vault {
                     margin-left: 0% !important;
                     /* Độ rộng mặc định của sidebar thu gọn */
-                    width: 120% !important;
+                    width: 100% !important;
 
                 }
             }
@@ -337,10 +346,11 @@
                     box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
                 }
             }
+
             @media (max-width: 1024px) {
-                #sentinel-audit{
+                #sentinel-audit {
                     margin-left: 0% !important;
-                    width: 120% !important
+                    width: 100% !important
                 }
             }
 
@@ -370,9 +380,9 @@
                 </nav>
             </aside>
 
-            <main class="flex-1 p-4 md:p-8 lg:p-12">
+            <main class="flex-1 p-4 md:p-8 lg:p-12" style="width: 100%;">
 
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 bg-[#0a192f]/50 p-4 rounded-2xl border border-white/5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 bg-[#0a192f]/50 p-4 rounded-2xl border border-white/5 tops">
                     <div class="flex items-center gap-4 w-full md:w-auto">
                         <div class="relative w-full md:w-80">
                             <i class="ri-qr-scan-2-line absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400"></i>
