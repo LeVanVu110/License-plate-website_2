@@ -25,7 +25,50 @@
             padding: 0;
         }
 
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0 !important;
+                /* Loại bỏ khoảng trống sidebar trên mobile */
+                padding-bottom: 100px;
+                /* Tránh bị nút Emergency che khuất */
+            }
+        }
+
         /* ----------------------------- section 1 -----------------------------  */
+        /* Safety Shield Transition */
+        .reveal-particles {
+            animation: particles 0.5s forwards;
+        }
+
+        @keyframes particles {
+            0% {
+                filter: blur(8px);
+                opacity: 1;
+            }
+
+            100% {
+                filter: blur(0);
+                opacity: 1;
+            }
+        }
+
+        .service-tile {
+            backdrop-filter: blur(10px);
+        }
+
+        /* Tùy chỉnh thanh cuộn cho Log Webhook */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 10px;
+        }
 
         /* ----------------------------- section 2 -----------------------------  */
 
@@ -97,8 +140,11 @@
 
                         <div class="space-y-4">
                             <div class="bg-black/40 rounded-xl p-3 border border-white/5 flex justify-between items-center group/key">
-                                <code class="text-[10px] text-slate-400 font-mono blur-sm transition-all duration-500 api-key">vcb_live_xxxx_8888</code>
-                                <button onclick="revealKey(this)" class="text-slate-600 hover:text-white"><i class="ri-eye-off-line"></i></button>
+                                <code class="text-[10px] text-slate-400 font-mono blur-sm transition-all duration-300 api-key">vcb_live_xxxx_8888</code>
+
+                                <button onclick="revealKey(this)" class="text-slate-600 hover:text-white transition-colors">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
                             </div>
                             <div class="flex justify-between text-[9px] uppercase font-black tracking-widest text-slate-600">
                                 <span>Rate Limit</span>
@@ -179,97 +225,13 @@
                 </div>
             </div>
 
-            <div class="xl:hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] z-50">
+            <div class="xl:hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] z-49">
                 <button onclick="emergencySwitch()" class="w-full bg-rose-600 hover:bg-rose-700 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-2xl shadow-rose-900/40 transition-all border border-rose-400/20">
                     <i class="ri-error-warning-fill animate-pulse"></i>
                     <span class="text-xs font-black uppercase tracking-widest text-white">Emergency Switch-over</span>
                 </button>
             </div>
         </section>
-
-
-
-        <style>
-            /* Safety Shield Transition */
-            .reveal-particles {
-                animation: particles 0.5s forwards;
-            }
-
-            @keyframes particles {
-                0% {
-                    filter: blur(8px);
-                    opacity: 1;
-                }
-
-                100% {
-                    filter: blur(0);
-                    opacity: 1;
-                }
-            }
-
-            .service-tile {
-                backdrop-filter: blur(10px);
-            }
-        </style>
-
-        <script>
-            // 1. Re-sync 3D Rotation
-            function reSync(btn) {
-                const icon = btn.querySelector('i');
-                gsap.to(icon, {
-                    rotation: 360,
-                    duration: 1,
-                    ease: "expo.out",
-                    onComplete: () => {
-                        gsap.set(icon, {
-                            rotation: 0
-                        });
-                        alert("Gateway re-synchronized successfully.");
-                    }
-                });
-
-                // Haptic Feedback
-                if (window.navigator.vibrate) window.navigator.vibrate(20);
-            }
-
-            // 2. Reveal Secret Key (Safety Shield)
-            function revealKey(btn) {
-                const keyEl = btn.closest('.group/key').querySelector('.api-key');
-                const icon = btn.querySelector('i');
-
-                // Giả lập nhập mật khẩu cấp 2
-                const pass = confirm("Security Authorization Required. Verify FaceID/Password to reveal API Secret?");
-
-                if (pass) {
-                    keyEl.classList.remove('blur-sm');
-                    keyEl.classList.add('text-white');
-                    icon.classList.replace('ri-eye-off-line', 'ri-eye-line');
-
-                    // Tự động ẩn lại sau 10 giây
-                    setTimeout(() => {
-                        keyEl.classList.add('blur-sm');
-                        keyEl.classList.remove('text-white');
-                        icon.classList.replace('ri-eye-line', 'ri-eye-off-line');
-                    }, 10000);
-                }
-            }
-
-            // 3. Emergency Switch (Mobile Haptic)
-            function emergencySwitch() {
-                if (window.navigator.vibrate) {
-                    // Rung mạnh liên tục để cảnh báo
-                    window.navigator.vibrate([100, 50, 100, 50, 300]);
-                }
-
-                const confirmSwitch = confirm("CRITICAL ACTION: Switch all traffic to Backup Gateway (Techcombank Hub)?");
-                if (confirmSwitch) {
-                    alert("Protocol Initiated: Traffic redirected to Secondary Node.");
-                }
-            }
-
-            // 4. Drag & Drop Grid (Dùng SortableJS nếu có, đây là giả lập)
-            // Sẽ cho phép Admin di chuyển các thẻ ưu tiên
-        </script>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
 
@@ -284,6 +246,73 @@
 </body>
 <script>
     // ----------------------------- section 1 ----------------------------- //
+    // 1. Re-sync 3D Rotation
+    function reSync(btn) {
+        const icon = btn.querySelector('i');
+        gsap.to(icon, {
+            rotation: 360,
+            duration: 1,
+            ease: "expo.out",
+            onComplete: () => {
+                gsap.set(icon, {
+                    rotation: 0
+                });
+                alert("Gateway re-synchronized successfully.");
+            }
+        });
+
+        // Haptic Feedback
+        if (window.navigator.vibrate) window.navigator.vibrate(20);
+    }
+
+    // 2. Reveal Secret Key (Safety Shield)
+    function revealKey(btn) {
+        // 1. Tìm thẻ <code> trong cùng một div cha
+        const keyElement = btn.parentElement.querySelector('code');
+        const icon = btn.querySelector('i');
+
+        // 2. Kiểm tra xem đang ẩn hay hiện
+        const isHidden = keyElement.classList.contains('blur-sm');
+
+        if (isHidden) {
+            // HIỆN: Bỏ blur, đổi màu chữ, đổi icon
+            keyElement.classList.remove('blur-sm');
+            keyElement.classList.add('text-cyan-400'); // Thêm màu cho nổi bật khi hiện
+            icon.classList.replace('ri-eye-off-line', 'ri-eye-line');
+
+            // (Tùy chọn) Tự động ẩn lại sau 5 giây để bảo mật
+            setTimeout(() => {
+                if (!keyElement.classList.contains('blur-sm')) {
+                    revealKey(btn); // Gọi lại hàm để ẩn đi
+                }
+            }, 5000);
+
+        } else {
+            // ẨN: Thêm lại blur, đổi lại màu cũ, đổi icon
+            keyElement.classList.add('blur-sm');
+            keyElement.classList.remove('text-cyan-400');
+            icon.classList.replace('ri-eye-line', 'ri-eye-off-line');
+        }
+
+        // Phản hồi rung nhẹ trên mobile (nếu có hỗ trợ)
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+
+    // 3. Emergency Switch (Mobile Haptic)
+    function emergencySwitch() {
+        if (window.navigator.vibrate) {
+            // Rung mạnh liên tục để cảnh báo
+            window.navigator.vibrate([100, 50, 100, 50, 300]);
+        }
+
+        const confirmSwitch = confirm("CRITICAL ACTION: Switch all traffic to Backup Gateway (Techcombank Hub)?");
+        if (confirmSwitch) {
+            alert("Protocol Initiated: Traffic redirected to Secondary Node.");
+        }
+    }
+
+    // 4. Drag & Drop Grid (Dùng SortableJS nếu có, đây là giả lập)
+    // Sẽ cho phép Admin di chuyển các thẻ ưu tiên
 
     // ----------------------------- section 2 ----------------------------- //
 
