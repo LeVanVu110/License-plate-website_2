@@ -52,41 +52,161 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
-         /* Custom Scrollbar for Logs */
-            #threat-feed-stream::-webkit-scrollbar {
-                width: 0px;
+        /* Custom Scrollbar for Logs */
+        #threat-feed-stream::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .log-entry {
+            border-left: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .log-critical {
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.1) 0%, transparent 100%);
+            border-left-color: #f43f5e;
+            animation: glitch-flash 0.5s infinite steps(2);
+        }
+
+        @keyframes glitch-flash {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
             }
 
-            .log-entry {
-                border-left: 2px solid transparent;
-                transition: all 0.3s ease;
+            50% {
+                opacity: 0.8;
+                transform: translateX(1px);
+                color: #fff;
             }
 
-            .log-critical {
-                background: linear-gradient(90deg, rgba(244, 63, 94, 0.1) 0%, transparent 100%);
-                border-left-color: #f43f5e;
-                animation: glitch-flash 0.5s infinite steps(2);
+            100% {
+                opacity: 1;
+                transform: translateX(0);
             }
+        }
 
-            @keyframes glitch-flash {
-                0% {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
+        /* Đảm bảo scrollbar gọn gàng và không làm vỡ layout */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 3px;
+        }
 
-                50% {
-                    opacity: 0.8;
-                    transform: translateX(1px);
-                    color: #fff;
-                }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-                100% {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-            }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Cold Industrial Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Admin Card Styles */
+        .admin-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-card:hover {
+            border-color: #3b82f6;
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateX(5px);
+        }
+
+        .admin-card.idle {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: session-pulse 2s infinite;
+        }
+
+        @keyframes session-pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Log Entry Styles */
+        .log-row {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .log-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-left-color: #3b82f6;
+        }
+
+        .val-old {
+            color: #f43f5e;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .val-new {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Kill Command Animation */
+        .kill-btn:hover i {
+            animation: shake 0.2s infinite;
+            color: #ef4444;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: rotate(0);
+            }
+
+            25% {
+                transform: rotate(10deg);
+            }
+
+            75% {
+                transform: rotate(-10deg);
+            }
+
+            100% {
+                transform: rotate(0);
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -225,15 +345,19 @@
                         </div>
                     </div>
 
-                    <div class="flex-1 bg-black/60 border border-white/5 rounded-[2rem] p-6 overflow-hidden flex flex-col">
-                        <p class="text-[10px] text-white/40 uppercase font-black tracking-widest mb-4">Neural Log Stream</p>
-                        <div id="threat-feed-stream" class="flex-1 font-['JetBrains_Mono'] text-[9px] space-y-2 overflow-y-auto pr-2 scrollbar-hide">
+                    <div class="flex-1 bg-black/60 border border-white/5 rounded-[2rem] p-6 overflow-hidden flex flex-col min-h-0">
+
+                        <p class="text-[10px] text-white/40 uppercase font-black tracking-widest mb-4 flex-none">
+                            Neural Log Stream
+                        </p>
+
+                        <div id="threat-feed-stream" class="flex-1 font-['JetBrains_Mono'] text-[9px] space-y-2 overflow-y-auto pr-2 custom-scrollbar min-h-0 h-[350px]">
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-white/5">
+                        <div class="mt-4 pt-4 border-t border-white/5 flex-none">
                             <div id="blacklist-status-card" class="flex items-center justify-between p-3 bg-blue-500/5 rounded-xl border border-blue-500/20 transition-all duration-500">
                                 <div>
-                                    <p id="blacklist-label" class="text-[10px] text-blue-400 font-bold uppercase">Auto-Blacklist: ACTIVE</p>
+                                    <p id="blacklist-label" class="text-[10px] text-blue-400 font-bold uppercase">Auto-Blacklist: PAUSED</p>
                                     <p id="blacklist-count" class="text-[8px] text-white/20">0 IP currently blocked</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
@@ -248,6 +372,81 @@
         </section>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
+        <section id="forensic-oversight" class="py-10 px-4 md:px-10 mb-20">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-black text-slate-200 tracking-tighter uppercase">Internal Oversight</h2>
+                    <p class="text-[10px] text-slate-500 font-bold tracking-[3px] uppercase">Forensic Matrix v2.0 // Append-Only Ledger</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex items-center gap-2 bg-slate-900/50 border border-slate-800 px-4 py-2 rounded-lg">
+                        <span class="w-2 h-2 rounded-full bg-rose-600 shadow-[0_0_8px_#e11d48]" id="status-led"></span>
+                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest" id="status-text">System: Standby</span>
+                    </div>
+                    <button onclick="initForensicSystem()" id="init-btn" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-blue-900/20">
+                        Initialize Matrix
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[750px]">
+
+                <div class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
+                    <div class="flex items-center justify-between px-2">
+                        <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Active Guardians</span>
+                        <span class="text-[10px] text-blue-400 font-mono" id="admin-count">00 ONLINE</span>
+                    </div>
+
+                    <div id="admin-list" class="flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+                    </div>
+
+                    <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
+                        <p class="text-[9px] text-slate-500 uppercase font-bold mb-3 tracking-widest">Forensic Tools</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="p-2 bg-slate-800/50 hover:bg-slate-700 rounded border border-slate-700 text-[8px] text-slate-300 uppercase font-bold">Time-Travel</button>
+                            <button class="p-2 bg-slate-800/50 hover:bg-slate-700 rounded border border-slate-700 text-[8px] text-slate-300 uppercase font-bold">Heatmap</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 xl:col-span-9 bg-[#0a0f16] border border-slate-800 rounded-[2rem] flex flex-col overflow-hidden shadow-2xl">
+                    <div class="p-4 border-b border-slate-800 bg-slate-900/20 flex justify-between items-center">
+                        <div class="flex gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                <span class="text-[9px] text-slate-400 uppercase font-black">Command Stream</span>
+                            </div>
+                            <div class="h-4 w-[1px] bg-slate-800"></div>
+                            <span class="text-[9px] text-emerald-500 uppercase font-bold tracking-widest">Append-Only Active</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" placeholder="Filter Anomalies..." class="bg-black/40 border border-slate-700 rounded-md px-3 py-1 text-[10px] text-slate-300 focus:outline-none focus:border-blue-500 w-48">
+                        </div>
+                    </div>
+
+                    <div id="forensic-log-stream" class="flex-1 overflow-y-auto p-4 font-['JetBrains_Mono'] space-y-1 custom-scrollbar">
+                        <div class="h-full flex items-center justify-center">
+                            <p class="text-slate-600 text-[10px] uppercase tracking-[5px] animate-pulse">Waiting for System Initialization...</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-slate-800 bg-black/40 grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <p class="text-[8px] text-slate-500 uppercase">Integrity Hash</p>
+                            <p class="text-[9px] text-blue-400 font-mono truncate">SHA256: 8f2e...9a1b</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[8px] text-slate-500 uppercase">Cold Storage</p>
+                            <p class="text-[9px] text-emerald-500 font-mono">SYNCHRONIZED</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[8px] text-slate-500 uppercase">Uptime</p>
+                            <p id="forensic-uptime" class="text-[9px] text-white font-mono">00:00:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -556,6 +755,146 @@
         }
     }
     // ----------------------------- section 3 ----------------------------- //
+    let isForensicActive = false;
+    let uptimeSeconds = 0;
+    const admins = [{
+            name: "Admin_Vinh_X",
+            role: "Superuser",
+            ip: "142.10.44.1",
+            status: "active",
+            time: "12:45"
+        },
+        {
+            name: "Mod_Kira_99",
+            role: "Auditor",
+            ip: "192.168.1.5",
+            status: "active",
+            time: "05:12"
+        },
+        {
+            name: "Dev_Minh_Core",
+            role: "Developer",
+            ip: "10.0.0.22",
+            status: "idle",
+            time: "45:20"
+        }
+    ];
+
+    function initForensicSystem() {
+        isForensicActive = !isForensicActive;
+
+        const btn = document.getElementById('init-btn');
+        const statusLed = document.getElementById('status-led');
+        const statusText = document.getElementById('status-text');
+        const logStream = document.getElementById('forensic-log-stream');
+
+        if (isForensicActive) {
+            btn.innerText = "Shutdown Matrix";
+            btn.classList.replace('bg-blue-600', 'bg-rose-950');
+            statusLed.classList.replace('bg-rose-600', 'bg-emerald-500');
+            statusLed.classList.replace('shadow-[0_0_8px_#e11d48]', 'shadow-[0_0_8px_#10b981]');
+            statusText.innerText = "System: Operational";
+            logStream.innerHTML = ""; // Clear waiting message
+            renderAdmins();
+            startLogStream();
+        } else {
+            location.reload(); // Reset system
+        }
+    }
+
+    function renderAdmins() {
+        const list = document.getElementById('admin-list');
+        document.getElementById('admin-count').innerText = `${admins.length} ONLINE`;
+
+        list.innerHTML = admins.map(admin => `
+        <div class="admin-card p-4 rounded-xl flex items-center justify-between group ${admin.status === 'idle' ? 'idle' : ''}">
+            <div class="flex items-center gap-4 relative">
+                ${admin.status === 'active' ? '<div class="pulse-ring"></div>' : ''}
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center z-10">
+                    <i class="ri-user-shield-line text-slate-400"></i>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-white">${admin.name}</h5>
+                    <p class="text-[9px] text-slate-500 uppercase tracking-tighter">${admin.role} • ${admin.ip}</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+                <span class="text-[8px] font-mono text-slate-500">${admin.time}</span>
+                <button class="kill-btn opacity-0 group-hover:opacity-100 p-1 bg-rose-500/10 border border-rose-500/20 rounded transition-all">
+                    <i class="ri-forbid-line text-rose-500 text-xs"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function startLogStream() {
+        if (!isForensicActive) return;
+
+        const stream = document.getElementById('forensic-log-stream');
+        const actions = [{
+                type: 'EDIT',
+                target: 'VIP_LIMIT',
+                old: '5.0B',
+                new: '10.0B'
+            },
+            {
+                type: 'DELETE',
+                target: 'LOG_ENTRY_#442',
+                old: 'EXISTS',
+                new: 'NULL'
+            },
+            {
+                type: 'AUTH',
+                target: 'SUDO_ACCESS',
+                old: 'USER',
+                new: 'ROOT'
+            },
+            {
+                type: 'CONFIG',
+                target: 'PAYOUT_GATEWAY',
+                old: 'OFFLINE',
+                new: 'STAGING'
+            }
+        ];
+
+        setInterval(() => {
+            if (!isForensicActive) return;
+
+            const admin = admins[Math.floor(Math.random() * admins.length)];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            const time = new Date().toLocaleTimeString();
+
+            const logHtml = `
+            <div class="log-row animate-in fade-in slide-in-from-left duration-500">
+                <span class="text-slate-600">[${time}]</span>
+                <span class="text-blue-400 font-bold ml-2">${admin.name}</span>
+                <span class="text-slate-500 mx-1">executed</span>
+                <span class="text-white font-black px-1 rounded bg-slate-800">${action.type}</span>
+                <span class="text-slate-400 ml-1">on</span>
+                <span class="text-slate-200 underline decoration-slate-700">${action.target}</span>
+                <span class="ml-2 text-[9px] bg-black/40 px-2 py-0.5 border border-slate-800 rounded">
+                    <span class="val-old">${action.old}</span> 
+                    <i class="ri-arrow-right-line mx-1 text-slate-600"></i>
+                    <span class="val-new">${action.new}</span>
+                </span>
+            </div>
+        `;
+
+            stream.insertAdjacentHTML('afterbegin', logHtml);
+            if (stream.children.length > 30) stream.lastElementChild.remove();
+
+            uptimeSeconds++;
+            updateUptime();
+        }, 2500);
+    }
+
+    function updateUptime() {
+        const hrs = Math.floor(uptimeSeconds / 3600).toString().padStart(2, '0');
+        const mins = Math.floor((uptimeSeconds % 3600) / 60).toString().padStart(2, '0');
+        const secs = (uptimeSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('forensic-uptime').innerText = `${hrs}:${mins}:${secs}`;
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
