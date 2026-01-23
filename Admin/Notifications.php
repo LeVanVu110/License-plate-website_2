@@ -308,8 +308,37 @@
                                 </div>
                                 <input type="checkbox" checked class="accent-orange-500">
                             </div>
+                            <button onclick="openRateModal()" class="w-full py-3 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">
+                                Manual Rate Entry
+                            </button>
 
-                            <button class="w-full py-3 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">Manual Rate Entry</button>
+                            <div id="rate-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+                                <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeRateModal()"></div>
+                                <div class="relative w-[90%] max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl border border-slate-100">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Manual Exchange Rate</h3>
+                                        <button onclick="closeRateModal()" class="text-slate-400 hover:text-slate-900">
+                                            <i class="ri-close-line text-2xl"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="space-y-6">
+                                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                            <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">New USD/VND Rate</label>
+                                            <div class="flex items-end gap-3">
+                                                <input type="number" id="manual-rate-input" placeholder="24550"
+                                                    class="bg-transparent text-3xl font-black text-slate-900 w-full focus:outline-none border-b-2 border-slate-200 focus:border-emerald-500 pb-2 transition-all font-mono">
+                                                <span class="text-xs font-bold text-slate-400 mb-3">VND</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex gap-3">
+                                            <button onclick="closeRateModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">Cancel</button>
+                                            <button onclick="applyManualRate()" class="flex-[2] py-4 bg-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-emerald-200">Confirm Change</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -516,6 +545,67 @@
             if (window.navigator.vibrate) window.navigator.vibrate(2);
         }
     });
+    // 4. Manual Rate Modal Logic
+    function openRateModal() {
+        const modal = document.getElementById('rate-modal');
+        modal.classList.remove('hidden');
+        gsap.to(modal, {
+            opacity: 1,
+            duration: 0.3
+        });
+        gsap.fromTo(modal.querySelector('.relative'), {
+            scale: 0.8,
+            y: 20
+        }, {
+            scale: 1,
+            y: 0,
+            duration: 0.4,
+            ease: "back.out(1.5)"
+        });
+
+        // Lấy giá trị hiện tại (ví dụ 24,550) bỏ dấu phẩy để đưa vào input
+        const currentRate = document.querySelector('#currency-display p.text-2xl').innerText.split(' ')[0].replace(/,/g, '');
+        document.getElementById('manual-rate-input').value = currentRate;
+    }
+
+    function closeRateModal() {
+        const modal = document.getElementById('rate-modal');
+        gsap.to(modal, {
+            opacity: 0,
+            duration: 0.2,
+            onComplete: () => modal.classList.add('hidden')
+        });
+    }
+
+    function applyManualRate() {
+        const newVal = document.getElementById('manual-rate-input').value;
+        const displayElement = document.querySelector('#currency-display p.text-2xl');
+
+        if (newVal && newVal > 0) {
+            // Cập nhật số hiển thị kèm định dạng dấu phẩy
+            displayElement.innerHTML = `${Number(newVal).toLocaleString()} <span class="text-xs font-medium text-slate-400">VND</span>`;
+
+            // Hiệu ứng nháy xanh viền để xác nhận
+            const container = displayElement.parentElement;
+            gsap.fromTo(container, {
+                backgroundColor: "#ecfdf5"
+            }, {
+                backgroundColor: "#f8fafc",
+                duration: 1
+            });
+
+            if (window.navigator.vibrate) window.navigator.vibrate([30, 10, 30]);
+            closeRateModal();
+        } else {
+            // Rung lắc input nếu nhập sai
+            gsap.to('#manual-rate-input', {
+                x: 10,
+                repeat: 5,
+                yoyo: true,
+                duration: 0.05
+            });
+        }
+    }
 
     // ----------------------------- section 3 ----------------------------- //
 
