@@ -173,8 +173,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             <div class="flex gap-2 group-[.collapsed]:flex-col group-[.collapsed]:items-center">
-                <button class="flex-1 p-2 hover:bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors"><i class="ri-settings-4-line"></i></button>
-                <button class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors"><i class="ri-logout-box-r-line"></i></button>
+                <a href="Settings.php" class="flex-1 p-2 hover:bg-white/5 rounded-lg text-white/40 hover:text-white transition-colors flex justify-center items-center" title="Settings">
+                    <i class="ri-settings-4-line"></i>
+                </a>
+
+                <a href="logout" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center" title="Logout">
+                    <i class="ri-logout-box-r-line"></i>
+                </a>
             </div>
         </div>
     </aside>
