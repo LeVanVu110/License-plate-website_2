@@ -1,5 +1,40 @@
 <!DOCTYPE html>
 <html lang="vi">
+<?php
+session_start();
+require_once "config.php";
+require_once "Models/db.php";
+require_once "Models/Plate.php";
+require_once 'Models/News.php';
+
+$plateModel = new Plate();
+$data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
+
+$currentUser = null;
+if (isset($_SESSION['user_id'])) {
+    $userId = intval($_SESSION['user_id']);
+    // Truy vấn thông tin từ bảng customers
+    $sql = "SELECT * FROM customers WHERE id = $userId";
+    $result = Db::$connection->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        $currentUser = $result->fetch_assoc();
+    }
+}
+// PHẦN THÔNG BÁO - ĐÃ SỬA LỖI DẤU CHẤM THÀNH MŨI TÊN
+$user_id = $_SESSION['user_id'] ?? 0;
+$notifications_dropdown = [];
+
+if ($user_id > 0) {
+    $sql_nav = "SELECT * FROM notifications WHERE receiver_id = ? ORDER BY created_at DESC LIMIT 5";
+    // Thay dấu . bằng ->
+    $stmt_nav = Db::$connection->prepare($sql_nav);
+    $stmt_nav->bind_param("i", $user_id);
+    $stmt_nav->execute();
+    $notifications_dropdown = $stmt_nav->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+?>
+
 
 <head>
     <meta charset="UTF-8">
@@ -87,7 +122,6 @@
         }
 
 
-
         #account-menu {
             display: block !important;
             /* Luôn cho phép block để GSAP điều khiển opacity */
@@ -107,28 +141,6 @@
         }
     </style>
 </head>
-<?php
-session_start();
-require_once "config.php";
-require_once "Models/db.php";
-require_once "Models/Plate.php";
-require_once 'Models/News.php';
-
-$plateModel = new Plate();
-$data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
-
-$currentUser = null;
-if (isset($_SESSION['user_id'])) {
-    $userId = intval($_SESSION['user_id']);
-    // Truy vấn thông tin từ bảng customers
-    $sql = "SELECT * FROM customers WHERE id = $userId";
-    $result = Db::$connection->query($sql);
-
-    if ($result && $result->num_rows > 0) {
-        $currentUser = $result->fetch_assoc();
-    }
-}
-?>
 
 <body>
 
@@ -137,7 +149,7 @@ if (isset($_SESSION['user_id'])) {
         <span>Hotline: 1900 8888</span>
     </div>
 
-    <header id="main-header" class="glass-header sticky top-0 w-full z-50 transition-all duration-300 h-20 flex flex-col justify-center">
+    <header id="main-header" class="glass-header sticky top-0 w-full z-[100] transition-all duration-300 h-20 flex flex-col justify-center">
         <div class="container mx-auto px-4 md:px-6 flex items-center justify-between">
 
             <div class="logo flex items-center">
@@ -152,12 +164,60 @@ if (isset($_SESSION['user_id'])) {
             </nav>
 
             <div class="flex items-center space-x-4">
-                <div id="search-container" class="flex items-center">
-                    <input id="search-input" type="text" placeholder="Tìm biển số..." class="w-0 overflow-hidden bg-white/50 border-none rounded-full px-0 py-1 transition-all duration-500 focus:ring-1 ring-[#007FFF]">
-                    <button id="search-btn" class="p-2 hover:text-[#007FFF] transition-colors">
-                        <i class="ri-search-line text-xl"></i>
+                <div class="relative group">
+                    <button id="notification-btn" class="p-2 text-[#001A33]/70 hover:text-[#007FFF] transition-all duration-300 relative bg-white/50 rounded-full hover:bg-white shadow-sm border border-transparent hover:border-[#007FFF]/20">
+                        <i class="ri-notification-3-line text-xl"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 border border-white rounded-full"></span>
                     </button>
+
+                    <div id="notification-menu" class="absolute top-full right-0 w-80 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                        <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl overflow-hidden">
+                            <div class="p-4 border-b border-[#001A33]/5 flex justify-between items-center">
+                                <h3 class="text-[11px] font-bold tracking-widest text-[#001A33]">THÔNG BÁO</h3>
+                                <?php
+                                $unread_count = count(array_filter($notifications_dropdown, function ($n) {
+                                    return !$n['is_read'];
+                                }));
+                                if ($unread_count > 0):
+                                ?>
+                                    <span class="text-[9px] bg-[#007FFF]/10 text-[#007FFF] px-2 py-0.5 rounded-full font-bold"><?= $unread_count ?> MỚI</span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="max-h-[300px] overflow-y-auto">
+                                <?php if (empty($notifications_dropdown)): ?>
+                                    <div class="p-6 text-center text-[10px] text-slate-400 uppercase tracking-widest">
+                                        Không có thông báo mới
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($notifications_dropdown as $noti): ?>
+                                        <div class="p-4 hover:bg-[#007FFF]/5 transition-colors cursor-pointer border-b border-[#001A33]/5 relative <?= !$noti['is_read'] ? 'bg-blue-50/30' : '' ?>">
+                                            <?php if (!$noti['is_read']): ?>
+                                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-1 bg-[#007FFF] rounded-full"></div>
+                                            <?php endif; ?>
+
+                                            <p class="text-[11px] text-[#001A33] font-medium leading-snug">
+                                                <span class="font-bold text-[#007FFF]"><?= htmlspecialchars($noti['title']) ?>:</span>
+                                                <?= htmlspecialchars($noti['content']) ?>
+                                            </p>
+                                            <p class="text-[9px] text-[#001A33]/40 mt-1">
+                                                <?php
+                                                // Hiển thị thời gian tương đối đơn giản
+                                                echo date('H:i d/m', strtotime($noti['created_at']));
+                                                ?>
+                                            </p>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+
+                            <a href="account_notifications.php" class="block w-full py-3 text-center text-[10px] font-bold text-[#007FFF] hover:bg-gray-50 transition-all uppercase tracking-tighter border-t border-[#001A33]/5">
+                                Xem tất cả thông báo
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
                 <?php if ($currentUser): ?>
                     <div class="relative group" id="account-dropdown-trigger">
                         <div class="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-500 relative z-20">
@@ -177,8 +237,8 @@ if (isset($_SESSION['user_id'])) {
                             </div>
                         </div>
 
-                        <div id="account-menu" class="absolute top-[calc(100%+15px)] right-0 w-64 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-[120]">
-                            <div class="p-5 space-y-3">
+                        <div id="account-menu" class="absolute top-full right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                            <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl p-5 space-y-3">
 
                                 <?php
                                 $adminRoles = [1, 2, 3, 4, 5];
@@ -221,8 +281,8 @@ if (isset($_SESSION['user_id'])) {
                             </div>
                         </div>
 
-                        <div id="guest-menu" class="absolute top-[calc(100%+15px)] right-0 w-56 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-[120]">
-                            <div class="p-5 space-y-4">
+                        <div id="guest-menu" class="absolute top-full right-0 w-56 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                            <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl p-5 space-y-4">
                                 <p class="text-[10px] text-[#001A33]/60 leading-relaxed text-center italic">
                                     Đăng nhập để tham gia đấu giá và nhận ưu đãi VIP.
                                 </p>
@@ -238,12 +298,12 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                 <?php endif; ?>
+
                 <button class="md:hidden text-2xl" id="menu-toggle">
                     <i class="ri-menu-4-line"></i>
                 </button>
             </div>
         </div>
-
     </header>
 
     <div id="mobile-menu" class="fixed inset-0 bg-[#001A33]/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center space-y-8 text-white translate-y-[-100%] hidden">
@@ -267,14 +327,13 @@ if (isset($_SESSION['user_id'])) {
 
 
     <script>
-        // 1. Initial Reveal (Chào mừng)
+        // 1. Khởi tạo hiệu ứng GSAP
         gsap.from("#main-header", {
             y: -100,
             opacity: 0,
             duration: 1.2,
             ease: "power4.out"
         });
-
         gsap.from(".nav-item", {
             opacity: 0,
             y: 20,
@@ -284,14 +343,13 @@ if (isset($_SESSION['user_id'])) {
             ease: "back.out(1.7)"
         });
 
-        // 2. Scroll Morphing (Thích ứng cuộn)
+        // 2. Xử lý Header khi Scroll
         window.addEventListener('scroll', () => {
             const header = document.getElementById('main-header');
             const topBar = document.getElementById('top-bar');
-
             if (window.scrollY > 50) {
                 header.style.height = '60px';
-                header.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
                 gsap.to(topBar, {
                     y: -50,
                     duration: 0.3
@@ -306,107 +364,111 @@ if (isset($_SESSION['user_id'])) {
             }
         });
 
-        // 3. Pulse Animation cho nút Ký Gửi
-        gsap.to("#btn-ky-gui", {
-            scale: 1.05,
-            duration: 0.8,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
-
-        // 4. Search Expansion
-        let searchOpen = false;
-        const searchBtn = document.getElementById('search-btn');
-        const searchInput = document.getElementById('search-input');
-
-        searchBtn.addEventListener('click', () => {
-            // desktop
-            if (window.innerWidth > 768) {
-                if (!searchOpen) {
-                    gsap.to(searchInput, {
-                        width: 300,
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        duration: 0.5,
-                        ease: "expo.out"
-                    });
-                } else {
-                    gsap.to(searchInput, {
-                        width: 0,
-                        paddingLeft: 0,
-                        paddingRight: 0,
-                        duration: 0.5,
-                        ease: "expo.in"
-                    });
-                }
-                searchOpen = !searchOpen;
-            }
-            // mobite
-            if (window.innerWidth <= 768) {
-                if (!searchOpen) {
-                    gsap.to(searchInput, {
-                        width: 95,
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        duration: 0.5,
-                        ease: "expo.out"
-                    });
-                } else {
-                    gsap.to(searchInput, {
-                        width: 0,
-                        paddingLeft: 0,
-                        paddingRight: 0,
-                        duration: 0.5,
-                        ease: "expo.in"
-                    });
-                }
-                searchOpen = !searchOpen;
-            }
-
-
-        });
-
-        // 5. Mobile Liquid Menu
+        // 3. Mobile Side Menu (Kho số, Đấu giá...)
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
         const closeMenu = document.getElementById('close-menu');
 
-        menuToggle.addEventListener('click', () => {
+        menuToggle?.addEventListener('click', () => {
             mobileMenu.classList.remove('hidden');
             gsap.to(mobileMenu, {
                 y: 0,
                 duration: 0.8,
                 ease: "power4.inOut"
             });
-            gsap.from(".menu-link", {
-                y: 50,
-                opacity: 0,
-                stagger: 0.1,
-                duration: 0.6,
-                delay: 0.3,
-                ease: "back.out"
-            });
         });
 
-        closeMenu.addEventListener('click', () => {
+        closeMenu?.addEventListener('click', () => {
             gsap.to(mobileMenu, {
                 y: "-100%",
                 duration: 0.6,
                 ease: "power4.in",
-                onComplete: () => {
-                    mobileMenu.classList.add('hidden');
-                }
+                onComplete: () => mobileMenu.classList.add('hidden')
             });
         });
 
-        // 6. Micro-interactions: Glow effect
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
+        // 4. Hàm điều khiển Dropdown (Account/Notification)
+        // 4. Hàm điều khiển Dropdown (Account/Notification)
+        function toggleDropdown(menuId, forceClose = false) {
+            const menu = document.getElementById(menuId);
+            if (!menu) return;
+
+            if (forceClose) {
+                gsap.to(menu, {
+                    autoAlpha: 0,
+                    y: 10,
+                    duration: 0.2,
+                    overwrite: true
+                });
+                menu.classList.remove('is-open');
+                menu.classList.remove('is-visible'); // SỬA TẠI ĐÂY: Tắt click khi đóng
+            } else {
+                const isOpen = menu.classList.contains('is-open');
+                // Đóng các cái khác
+                document.querySelectorAll('[id$="-menu"]').forEach(m => {
+                    if (m.id !== menuId) toggleDropdown(m.id, true);
+                });
+
+                if (!isOpen) {
+                    menu.classList.add('is-open');
+                    menu.classList.add('is-visible'); // SỬA TẠI ĐÂY: Bật click khi mở
+                    gsap.to(menu, {
+                        autoAlpha: 1,
+                        y: 0,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                } else {
+                    toggleDropdown(menuId, true);
+                }
+            }
+        }
+
+        // 5. Gán sự kiện Click cho các vùng Trigger
+        const accountTrigger = document.getElementById('account-dropdown-trigger');
+        const guestTrigger = document.getElementById('guest-trigger');
+        const notifyBtn = document.getElementById('notification-btn');
+
+        // Xử lý Account/Guest
+        [accountTrigger, guestTrigger].forEach(trigger => {
+            trigger?.addEventListener('click', (e) => {
+                // Nếu bấm vào link bên trong thì để nó tự chuyển trang
+                if (e.target.closest('a')) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+                const menuId = trigger.id === 'account-dropdown-trigger' ? 'account-menu' : 'guest-menu';
+                toggleDropdown(menuId);
+            });
+        });
+
+        // Xử lý Thông báo
+        notifyBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdown('notification-menu');
+        });
+
+        // 6. FIX LỖI "ĐÈ": Đóng dropdown khi bấm ra ngoài nhưng trừ Menu điều hướng
+        document.addEventListener('click', (e) => {
+            // Kiểm tra nếu click trúng vào các link menu chính (nav-item) hoặc logo
+            if (e.target.closest('.nav-item') || e.target.closest('.logo')) {
+                return; // Để trình duyệt xử lý link bình thường
+            }
+
+            // Nếu không phải click vào vùng dropdown thì đóng tất cả dropdown đang mở
+            if (!e.target.closest('.group')) {
+                document.querySelectorAll('[id$="-menu"]').forEach(m => {
+                    if (m.classList.contains('is-open')) toggleDropdown(m.id, true);
+                });
+            }
+        });
+
+        // 7. Glow Effect Desktop
+        document.querySelectorAll('.nav-item').forEach(item => {
             const glow = document.createElement('div');
             glow.className = 'glow-effect';
             item.appendChild(glow);
-
             item.addEventListener('mousemove', (e) => {
                 const rect = item.getBoundingClientRect();
                 gsap.to(glow, {
@@ -416,86 +478,11 @@ if (isset($_SESSION['user_id'])) {
                     duration: 0.2
                 });
             });
-
-            item.addEventListener('mouseleave', () => {
-                gsap.to(glow, {
-                    opacity: 0,
-                    duration: 0.3
-                });
-            });
-
+            item.addEventListener('mouseleave', () => gsap.to(glow, {
+                opacity: 0,
+                duration: 0.3
+            }));
         });
-        // XỬ LÝ MENU TÀI KHOẢN (ACCOUNT DROPDOWN) - BẢN FIX CUỐI CÙNG
-        const accountTrigger = document.getElementById('account-dropdown-trigger');
-        const accountMenu = document.getElementById('account-menu');
-        let isAccountMenuOpen = false;
-
-        // Hàm mở menu
-        function openAccountMenu() {
-            accountMenu.classList.add('is-visible');
-            gsap.to(accountMenu, {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            isAccountMenuOpen = true;
-        }
-
-        // Hàm đóng menu
-        function closeAccountMenu() {
-            gsap.to(accountMenu, {
-                autoAlpha: 0,
-                y: 15,
-                duration: 0.3,
-                onComplete: () => accountMenu.classList.remove('is-visible')
-            });
-            isAccountMenuOpen = false;
-        }
-
-        // 1. Dành cho Desktop (Hover)
-        accountTrigger.addEventListener('mouseenter', () => {
-            if (window.innerWidth > 768) openAccountMenu();
-        });
-
-        accountTrigger.addEventListener('mouseleave', () => {
-            if (window.innerWidth > 768) {
-                e.preventDefault(); // Quan trọng: Chặn click giả lập sau touch
-                e.stopPropagation();
-
-                if (!isAccountMenuOpen) {
-                    openAccountMenu();
-                } else {
-                    closeAccountMenu();
-                }
-            }
-        });
-
-        // 2. Dành cho Mobile (Dùng duy nhất Touchstart để tránh xung đột Click)
-        accountTrigger.addEventListener('touchstart', (e) => {
-            if (window.innerWidth <= 768) {
-                e.preventDefault(); // Quan trọng: Chặn click giả lập sau touch
-                e.stopPropagation();
-
-                if (!isAccountMenuOpen) {
-                    openAccountMenu();
-                } else {
-                    closeAccountMenu();
-                }
-            }
-        }, {
-            passive: false
-        });
-
-        // 3. Đóng menu khi chạm/bấm ra vùng ngoài
-        const handleOutsideClick = (e) => {
-            if (isAccountMenuOpen && !accountTrigger.contains(e.target)) {
-                closeAccountMenu();
-            }
-        };
-
-        document.addEventListener('mousedown', handleOutsideClick); // Cho Desktop
-        document.addEventListener('touchstart', handleOutsideClick); // Cho Mobile
     </script>
 </body>
 

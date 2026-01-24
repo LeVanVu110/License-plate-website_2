@@ -12,6 +12,7 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
     exit();
 }
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -237,7 +238,11 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                                 <span class="btn-text">Publish Changes</span>
                                 <i class="ri-send-plane-fill absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 airplane-icon"></i>
                             </button>
+                           
                         </div>
+                         <button onclick="pushNotification()" class="mt-6 w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-indigo-200">
+                                GỬI THÔNG BÁO NGAY <i class="ri-send-plane-fill ml-2"></i>
+                            </button>
                     </div>
 
                     <div class="xl:col-span-5 flex flex-col items-center">
@@ -489,23 +494,21 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
         updatePreview(this.value);
     });
 
-    // 3. Device Switch (Flip 3D)
-    function switchDevice(type) {
-        const card = document.getElementById('preview-card');
-        gsap.to(card, {
-            rotationY: "+=180",
-            duration: 0.8,
-            ease: "back.out(1.2)",
-            onComplete: () => {
-                // Thay đổi giao diện bên trong nếu là Email (giả lập)
-                const screen = card.querySelector('.bg-white');
-                if (type === 'mail') {
-                    screen.classList.add('bg-slate-100');
-                } else {
-                    screen.classList.remove('bg-slate-100');
-                }
-            }
+    // Biến lưu loại thiết bị đang chọn (Mặc định là Push)
+    let currentType = 'Push';
+
+    function switchDevice(device) {
+        // Chuyển đổi tên để khớp với ENUM trong Database của bạn
+        if (device === 'sms') currentType = 'SMS';
+        else if (device === 'mail') currentType = 'Email';
+        else currentType = 'Push';
+
+        // UI Feedback: Đổi màu icon/button
+        document.querySelectorAll('.flex.gap-2 button').forEach(btn => {
+            btn.classList.remove('text-indigo-600', 'bg-indigo-50');
+            btn.classList.add('text-slate-400');
         });
+        event.currentTarget.classList.add('text-indigo-600', 'bg-indigo-50');
     }
 
     // 4. Send Test Animation
@@ -526,6 +529,48 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             icon.classList.remove('airplane-fly');
             icon.style.opacity = '0';
         }, 1500);
+    }
+
+    function pushNotification() {
+        const textarea = document.getElementById('editor-textarea');
+        const content = textarea.value;
+
+        if (!content.trim()) {
+            alert("Vui lòng nhập nội dung thông báo!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('content', content);
+        formData.append('type', currentType);
+
+        // Hiệu ứng loading nút bấm
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerText = "Đang gửi...";
+        btn.disabled = true;
+
+        fetch('push_notification_action.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    textarea.value = ''; // Xóa nội dung sau khi gửi
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Lỗi kết nối server!");
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
     }
 
     function hapticFeedback() {
