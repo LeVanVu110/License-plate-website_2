@@ -88,6 +88,7 @@
     </style>
 </head>
 <?php
+
 // 1. Lấy tên file hiện tại (ví dụ: MarketControl.php)
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -181,14 +182,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     <div class="absolute bottom-full left-0 mb-2 w-48 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/settings:opacity-100 group-hover/settings:visible transition-all duration-300 z-[100] overflow-hidden">
                         <div class="p-1 flex flex-col">
+                            <a href="../index.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-lg transition-all border-b border-white/5 mb-1">
+                                <i class="ri-home-4-line"></i>
+                                <span class="uppercase tracking-widest font-bold">Quay về Trang chủ</span>
+                            </a>
+
                             <a href="Settings.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-equalizer-line text-cyan-400"></i>
                                 <span class="uppercase tracking-widest font-bold">Cài đặt chung</span>
                             </a>
+
                             <a href="Notifications.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-notification-3-line text-amber-400"></i>
                                 <span class="uppercase tracking-widest font-bold">Thông báo</span>
                             </a>
+
                             <a href="Infrastructure.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-node-tree text-purple-400"></i>
                                 <span class="uppercase tracking-widest font-bold font-mono">Infrastructure</span>

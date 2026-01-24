@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php
-session_start();
-
 // Mảng các ID được phép vào vùng Admin
+session_start();
 $admin_roles = [1, 2, 3, 4, 5];
 
 if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles)) {
     // Nếu không có quyền, đuổi về trang login hoặc báo lỗi
-    header("Location: ../login.php?error=access_denied");
+    header("Location: login.php?error=access_denied");
     exit();
 }
 ?>
