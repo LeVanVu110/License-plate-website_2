@@ -116,29 +116,30 @@
                         </div>
                     </div>
 
+
                     <div class="w-full md:w-1/2 p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
+                        <?php if (isset($_GET['error'])): ?>
+                            <div class="bg-red-500/20 border border-red-500 text-red-500 p-3 rounded-lg text-xs mb-4 animate-pulse">
+                                Tài khoản hoặc mật khẩu không chính xác!
+                            </div>
+                        <?php endif; ?>
                         <div class="mb-8">
                             <h3 class="text-2xl lg:text-3xl text-white font-light mb-2">Xin chào, <span class="text-cyan-400 italic">Quý khách</span></h3>
                             <p class="text-white/40 text-sm">Vui lòng đăng nhập để tiếp tục</p>
                         </div>
 
-                        <form class="space-y-6 lg:space-y-8">
+                        <form action="login_process.php" method="POST" class="space-y-6 lg:space-y-8">
                             <div class="relative">
-                                <input type="email" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-cyan-400 transition-all peer">
+                                <input type="email" name="email" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-cyan-400 transition-all peer">
                                 <label class="absolute left-0 top-3 text-white/30 pointer-events-none transition-all duration-300 origin-left">EMAIL ADDRESS</label>
                             </div>
-
                             <div class="relative">
-                                <input type="password" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-cyan-400 transition-all peer">
+                                <input type="password" name="password" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-cyan-400 transition-all peer">
                                 <label class="absolute left-0 top-3 text-white/30 pointer-events-none transition-all duration-300 origin-left">PASSWORD</label>
-                                <div class="biometric-scan absolute inset-0 bg-cyan-400/5 opacity-0 pointer-events-none"></div>
                             </div>
-
-                            <a href="Dashboard.php" class="block w-full">
-                                <button type="button" class="w-full py-4 bg-gradient-to-r from-blue-700 to-cyan-500 text-white rounded-xl font-bold tracking-widest hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all">
-                                    ĐĂNG NHẬP
-                                </button>
-                            </a>
+                            <button type="submit" name="btn_login" class="w-full py-4 bg-gradient-to-r from-blue-700 to-cyan-500 text-white rounded-xl font-bold tracking-widest hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all">
+                                ĐĂNG NHẬP
+                            </button>
                         </form>
                         <p class="mt-8 text-center text-white/20 text-xs">
                             Chưa có tài khoản? <button onclick="flipCard()" class="text-white hover:text-cyan-400 transition-colors">Đăng ký ngay</button>
@@ -162,11 +163,20 @@
                             <h3 class="text-2xl lg:text-3xl text-white font-light mb-2">Kiến tạo <span class="text-blue-500 italic">Di sản</span></h3>
                             <p class="text-white/40 text-sm">Đăng ký tài khoản đấu giá định danh</p>
                         </div>
-                        <form class="space-y-5 lg:space-y-6">
-                            <div class="relative"><input type="text" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer"><label class="absolute left-0 top-3 text-white/30 transition-all origin-left">FULL NAME</label></div>
-                            <div class="relative"><input type="email" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer"><label class="absolute left-0 top-3 text-white/30 transition-all origin-left">EMAIL</label></div>
-                            <div class="relative"><input type="password" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer"><label class="absolute left-0 top-3 text-white/30 transition-all origin-left">CREATE PASSWORD</label></div>
-                            <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold tracking-widest hover:bg-cyan-400 transition-all">TIẾP TỤC</button>
+                        <form action="register_process.php" method="POST" class="space-y-5 lg:space-y-6">
+                            <div class="relative">
+                                <input type="text" name="full_name" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer">
+                                <label class="absolute left-0 top-3 text-white/30 transition-all origin-left">FULL NAME</label>
+                            </div>
+                            <div class="relative">
+                                <input type="email" name="email" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer">
+                                <label class="absolute left-0 top-3 text-white/30 transition-all origin-left">EMAIL</label>
+                            </div>
+                            <div class="relative">
+                                <input type="password" name="password" required class="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none peer">
+                                <label class="absolute left-0 top-3 text-white/30 transition-all origin-left">CREATE PASSWORD</label>
+                            </div>
+                            <button type="submit" name="btn_register" class="w-full py-4 bg-white text-black rounded-xl font-bold tracking-widest hover:bg-cyan-400 transition-all">TIẾP TỤC</button>
                         </form>
                         <p class="mt-8 text-center text-white/20 text-xs">
                             Đã có tài khoản? <button onclick="flipCard()" class="text-white hover:text-cyan-400 transition-colors">Quay lại đăng nhập</button>

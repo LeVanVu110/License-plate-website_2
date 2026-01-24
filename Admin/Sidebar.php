@@ -197,7 +197,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
 
-                <a href="/logout" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center w-full" title="Logout">
+                <a href="logout.php" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center w-full" title="Logout">
                     <i class="ri-logout-box-r-line"></i>
                 </a>
             </div>

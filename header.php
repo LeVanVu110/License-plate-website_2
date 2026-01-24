@@ -108,6 +108,7 @@
     </style>
 </head>
 <?php
+session_start();
 require_once "config.php";
 require_once "Models/db.php";
 require_once "Models/Plate.php";
@@ -116,7 +117,17 @@ require_once 'Models/News.php';
 $plateModel = new Plate();
 $data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
 
+$currentUser = null;
+if (isset($_SESSION['user_id'])) {
+    $userId = intval($_SESSION['user_id']);
+    // Truy vấn thông tin từ bảng customers
+    $sql = "SELECT * FROM customers WHERE id = $userId";
+    $result = Db::$connection->query($sql);
 
+    if ($result && $result->num_rows > 0) {
+        $currentUser = $result->fetch_assoc();
+    }
+}
 ?>
 
 <body>
@@ -147,37 +158,86 @@ $data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [.
                         <i class="ri-search-line text-xl"></i>
                     </button>
                 </div>
-
-                <div class="relative group" id="account-dropdown-trigger">
-                    <div class="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-500 relative z-20">
-                        <div class="hidden sm:block text-right pointer-events-none">
-                            <p class="text-[8px] text-[#001A33]/50 tracking-[1px] uppercase font-bold">Thành viên VIP</p>
-                            <p class="text-[11px] text-[#001A33] font-semibold leading-tight">Mr. Sapphire</p>
-                        </div>
-                        <div class="relative pointer-events-none">
-                            <div class="w-10 h-10 rounded-full border-2 border-[#007FFF]/30 p-0.5 overflow-hidden shadow-lg">
-                                <img src="https://i.pravatar.cc/100?img=11" alt="Avatar" class="w-full h-full rounded-full object-cover">
+                <?php if ($currentUser): ?>
+                    <div class="relative group" id="account-dropdown-trigger">
+                        <div class="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-500 relative z-20">
+                            <div class="hidden sm:block text-right pointer-events-none">
+                                <p class="text-[8px] text-[#001A33]/50 tracking-[1px] uppercase font-bold">
+                                    Thành viên <?= htmlspecialchars($currentUser['rank']) ?>
+                                </p>
+                                <p class="text-[11px] text-[#001A33] font-semibold leading-tight">
+                                    <?= htmlspecialchars($currentUser['full_name']) ?>
+                                </p>
                             </div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-[#00f2ff] border-2 border-white rounded-full status-pulse"></div>
+                            <div class="relative pointer-events-none">
+                                <div class="w-10 h-10 rounded-full border-2 border-[#007FFF]/30 p-0.5 overflow-hidden shadow-lg bg-white">
+                                    <img src="<?= htmlspecialchars($currentUser['avatar']) ?>" alt="Avatar" class="w-full h-full rounded-full object-cover">
+                                </div>
+                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-[#00f2ff] border-2 border-white rounded-full status-pulse"></div>
+                            </div>
+                        </div>
+
+                        <div id="account-menu" class="absolute top-[calc(100%+15px)] right-0 w-64 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                            <div class="p-5 space-y-3">
+
+                                <?php
+                                $adminRoles = [1, 2, 3, 4, 5];
+                                if (isset($currentUser['role_id']) && in_array($currentUser['role_id'], $adminRoles)):
+                                ?>
+                                    <a href="Admin/Dashboard.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-blue-600 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                                        QUẢN TRỊ VIÊN <i class="ri-admin-line"></i>
+                                    </a>
+                                    <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
+                                <?php endif; ?>
+
+                                <a href="account_kho_bau.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                                    KHO BÁU CỦA TÔI <i class="ri-gem-line"></i>
+                                </a>
+
+                                <a href="account_lich_su_dau_gia.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
+                                    LỊCH SỬ ĐẤU GIÁ <i class="ri-history-line"></i>
+                                </a>
+
+                                <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
+
+                                <a href="Admin/logout.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-red-500 hover:scale-105 transition-all">
+                                    ĐĂNG XUẤT <i class="ri-logout-box-r-line"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="account-menu" class="absolute top-[calc(100%+15px)] right-0 w-64 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 transition-all duration-300 z-[120]">
-                        <div class="p-5 space-y-3">
-                            <a href="account_kho_bau.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
-                                KHO BÁU CỦA TÔI <i class="ri-gem-line"></i>
-                            </a>
-                            <a href="account_lich_su_dau_gia.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#001A33]/70 hover:text-[#007FFF] transition-all transform hover:translate-x-2">
-                                LỊCH SỬ ĐẤU GIÁ <i class="ri-history-line"></i>
-                            </a>
-                            <div class="h-[1px] bg-[#001A33]/5 my-2"></div>
-                            <a href="Admin/login.php" class="flex items-center justify-between text-[11px] font-bold tracking-wider text-red-500 hover:scale-105 transition-all">
-                                ĐĂNG XUẤT <i class="ri-logout-box-r-line"></i>
-                            </a>
+                <?php else: ?>
+                    <div class="relative group" id="guest-trigger">
+                        <div class="flex items-center gap-3 cursor-pointer p-1 pr-4 rounded-full bg-[#007FFF]/10 hover:bg-[#007FFF]/20 border border-[#007FFF]/20 transition-all duration-500 relative z-20">
+                            <div class="relative pointer-events-none">
+                                <div class="w-10 h-10 rounded-full border-2 border-dashed border-[#007FFF]/30 p-0.5 overflow-hidden shadow-md bg-white/50 flex items-center justify-center">
+                                    <i class="ri-user-3-line text-[#007FFF] text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="hidden sm:block text-left pointer-events-none">
+                                <p class="text-[8px] text-[#001A33]/50 tracking-[1px] uppercase font-bold">Chào mừng bạn</p>
+                                <p class="text-[11px] text-[#007FFF] font-bold leading-tight">ĐĂNG NHẬP NGAY</p>
+                            </div>
+                        </div>
+
+                        <div id="guest-menu" class="absolute top-[calc(100%+15px)] right-0 w-56 bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                            <div class="p-5 space-y-4">
+                                <p class="text-[10px] text-[#001A33]/60 leading-relaxed text-center italic">
+                                    Đăng nhập để tham gia đấu giá và nhận ưu đãi VIP.
+                                </p>
+                                <div class="space-y-2">
+                                    <a href="Admin/login.php" class="flex items-center justify-center gap-2 w-full py-2.5 bg-[#007FFF] text-white rounded-xl text-[11px] font-bold tracking-widest hover:bg-[#005bb3] hover:shadow-lg hover:shadow-[#007FFF]/30 transition-all active:scale-95">
+                                        ĐĂNG NHẬP <i class="ri-login-box-line"></i>
+                                    </a>
+                                    <a href="register.php" class="flex items-center justify-center gap-2 w-full py-2.5 bg-white border border-[#007FFF]/30 text-[#007FFF] rounded-xl text-[11px] font-bold tracking-widest hover:bg-gray-50 transition-all">
+                                        TẠO TÀI KHOẢN
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                <?php endif; ?>
                 <button class="md:hidden text-2xl" id="menu-toggle">
                     <i class="ri-menu-4-line"></i>
                 </button>
