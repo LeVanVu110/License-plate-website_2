@@ -17,8 +17,14 @@ $plateData = null;
 //     // Ví dụ: Điều hướng về index nếu không tìm thấy
 //     echo "<script>alert('Không tìm thấy biển số này!'); window.location.href='index.php';</script>";
 // }
-$searchTerm = isset($_GET['plate']) ? $_GET['plate'] : null;
-$data = $plateModel->getSearchData($searchTerm);
+// $searchTerm = isset($_GET['plate']) ? $_GET['plate'] : null;
+// $data = $plateModel->getSearchData($searchTerm);
+$searchTerm = $_GET['plate'] ?? null;
+$category = $_GET['cat'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
+
+// Gọi hàm với 3 tham số
+$data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -437,41 +443,32 @@ $data = $plateModel->getSearchData($searchTerm);
 
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto">
                     <span class="text-[10px] tracking-widest text-white/40 uppercase mr-2 hidden lg:block">Phân loại:</span>
-                    <button class="filter-tag active" data-filter="all">Tất cả</button>
-                    <button class="filter-tag" data-filter="tiet-tien">Sảnh tiến</button>
-                    <button class="filter-tag" data-filter="tu-quy">Tứ quý</button>
-                    <button class="filter-tag" data-filter="loc-phat">Lộc phát</button>
-                </div>
-
-                <div class="flex items-center gap-5 border-x border-white/10 px-8 hidden xl:flex">
-                    <button class="element-btn kim" title="Hành Kim">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn moc" title="Hành Mộc">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn thuy" title="Hành Thủy">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn hoa" title="Hành Hỏa">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn tho" title="Hành Thổ">
-                        <div class="dot"></div>
-                    </button>
+                    <?php
+                    $current_cat = $_GET['cat'] ?? 'all';
+                    $price_val = $_GET['max_price'] ?? 5000;
+                    ?>
+                    <button class="filter-tag <?php echo $current_cat == 'all' ? 'active' : ''; ?>" onclick="applyFilter('all')">Tất cả</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Sảnh tiến' ? 'active' : ''; ?>" onclick="applyFilter('Sảnh tiến')">Sảnh tiến</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Tứ quý' ? 'active' : ''; ?>" onclick="applyFilter('Tứ quý')">Tứ quý</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Lộc phát' ? 'active' : ''; ?>" onclick="applyFilter('Lộc phát')">Lộc phát</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Ngũ quý' ? 'active' : ''; ?>" onclick="applyFilter('Ngũ quý')">Ngũ quý</button>
                 </div>
 
                 <div class="flex-1 max-w-xs px-4 hidden md:block">
                     <div class="flex justify-between mb-1">
-                        <span class="text-[9px] text-white/40 uppercase tracking-tighter">Budget Range</span>
-                        <span id="price-label" class="text-[10px] text-blue-400 space-mono">0 - 5B</span>
+                        <span class="text-[9px] text-white/40 uppercase tracking-tighter">Ngân sách (Tỷ)</span>
+                        <span id="price-label" class="text-[10px] text-blue-400 space-mono">0 - <?php echo ($price_val / 1000); ?>B</span>
                     </div>
-                    <input type="range" min="0" max="5000" value="5000" class="price-slider w-full cursor-pointer" id="price-range">
+                    <input type="range" min="0" max="5000" value="<?php echo $price_val; ?>"
+                        class="price-slider w-full cursor-pointer" id="price-range"
+                        oninput="updatePriceLabel(this.value)" onchange="applyPriceFilter(this.value)">
                 </div>
 
                 <div class="flex items-center gap-6">
                     <div class="text-right hidden sm:block">
-                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none">39</span>
+                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none">
+                            <?php echo (count($data['cars']) + count($data['motorbikes'])); ?>
+                        </span>
                         <span class="text-[8px] text-white/30 uppercase tracking-widest">Kết quả</span>
                     </div>
                     <button class="bg-blue-600 hover:bg-white hover:text-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[2px] transition-all duration-500 flex items-center gap-2">
@@ -855,6 +852,26 @@ $data = $plateModel->getSearchData($searchTerm);
         closeBtn.addEventListener('click', closeMobileFilter);
         backdrop.addEventListener('click', closeMobileFilter);
     });
+
+    function applyFilter(category) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (category === 'all') {
+            urlParams.delete('cat');
+        } else {
+            urlParams.set('cat', category);
+        }
+        window.location.href = "?" + urlParams.toString();
+    }
+
+    function updatePriceLabel(val) {
+        document.getElementById('price-label').innerText = `0 - ${val/1000}B`;
+    }
+
+    function applyPriceFilter(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('max_price', val);
+        window.location.href = "?" + urlParams.toString();
+    }
 
     // ----------------------------- section 3 ----------------------------- //
     // 1. Hàm Teleport Biển số từ Section 1 xuống Section 3

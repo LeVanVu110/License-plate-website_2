@@ -55,37 +55,84 @@ class Plate extends Db
         $result = $stmt->get_result();
         return $result->fetch_assoc(); // Trả về 1 kết quả duy nhất
     }
-    public function getSearchData($keyword = null)
+    // public function getSearchData($keyword = null)
+    // {
+    //     $data = ['cars' => [], 'motorbikes' => []];
+
+    //     // 1. Nếu không có từ khóa hoặc từ khóa chỉ toàn khoảng trắng, trả về mảng rỗng luôn
+    //     if (empty(trim($keyword))) {
+    //         return $data;
+    //     }
+
+    //     // 2. Làm sạch từ khóa và chuẩn bị truy vấn tìm kiếm gần đúng
+    //     // real_escape_string kết hợp với Prepared Statement giúp chống SQL Injection tuyệt đối
+    //     $search = "%" . self::$connection->real_escape_string($keyword) . "%";
+
+    //     // Tìm kiếm trong cột plate_number, sắp xếp theo giá giảm dần
+    //     $sql = "SELECT * FROM plates WHERE plate_number LIKE ? ORDER BY current_price DESC";
+
+    //     $stmt = self::$connection->prepare($sql);
+    //     $stmt->bind_param("s", $search);
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+    //     $plates = $result->fetch_all(MYSQLI_ASSOC);
+
+    //     // 3. Phân loại dữ liệu vào đúng nhóm để hiển thị lên giao diện
+    //     foreach ($plates as $plate) {
+    //         if ($plate['vehicle_type'] === 'Car') {
+    //             $data['cars'][] = $plate;
+    //         } else if ($plate['vehicle_type'] === 'Motorbike') {
+    //             $data['motorbikes'][] = $plate;
+    //         }
+    //     }
+
+    //     return $data;
+    // }
+    public function getSearchData($keyword = null, $category = null, $maxPrice = null)
     {
         $data = ['cars' => [], 'motorbikes' => []];
+        $conditions = [];
+        $params = [];
+        $types = "";
 
-        // 1. Nếu không có từ khóa hoặc từ khóa chỉ toàn khoảng trắng, trả về mảng rỗng luôn
-        if (empty(trim($keyword))) {
-            return $data;
+        $sql = "SELECT * FROM plates WHERE 1=1";
+
+        // Lọc theo từ khóa tìm kiếm
+        if (!empty($keyword)) {
+            $sql .= " AND plate_number LIKE ?";
+            $params[] = "%$keyword%";
+            $types .= "s";
         }
 
-        // 2. Làm sạch từ khóa và chuẩn bị truy vấn tìm kiếm gần đúng
-        // real_escape_string kết hợp với Prepared Statement giúp chống SQL Injection tuyệt đối
-        $search = "%" . self::$connection->real_escape_string($keyword) . "%";
+        // Lọc theo danh mục (Tứ quý, Sảnh tiến...)
+        if (!empty($category) && $category !== 'all') {
+            $sql .= " AND category = ?";
+            $params[] = $category;
+            $types .= "s";
+        }
 
-        // Tìm kiếm trong cột plate_number, sắp xếp theo giá giảm dần
-        $sql = "SELECT * FROM plates WHERE plate_number LIKE ? ORDER BY current_price DESC";
+        // Lọc theo giá (Chuyển đổi từ tỷ sang VNĐ: 1 tỷ = 1,000,000,000)
+        if (!empty($maxPrice)) {
+            $sql .= " AND current_price <= ?";
+            $params[] = $maxPrice * 1000000;
+            $types .= "d";
+        }
+
+        $sql .= " ORDER BY current_price DESC";
 
         $stmt = self::$connection->prepare($sql);
-        $stmt->bind_param("s", $search);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
         $stmt->execute();
         $result = $stmt->get_result();
         $plates = $result->fetch_all(MYSQLI_ASSOC);
 
-        // 3. Phân loại dữ liệu vào đúng nhóm để hiển thị lên giao diện
         foreach ($plates as $plate) {
-            if ($plate['vehicle_type'] === 'Car') {
-                $data['cars'][] = $plate;
-            } else if ($plate['vehicle_type'] === 'Motorbike') {
-                $data['motorbikes'][] = $plate;
-            }
+            if ($plate['vehicle_type'] === 'Car') $data['cars'][] = $plate;
+            else $data['motorbikes'][] = $plate;
         }
-
         return $data;
     }
 }
