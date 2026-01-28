@@ -401,7 +401,7 @@ $otherNews = $newsData['list'];    // Danh sách các bài còn lại
                                 <?= $featured['summary'] ?>
                             </p>
 
-                            <a href="chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&image=<?= $featured['thumbnail'] ?>&name=<?= mb_strtoupper($featured['title'], 'UTF-8') ?>&id=<?= $featured['id'] ?>"
+                            <a href="chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&id=<?= $featured['id'] ?>"
                                 class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
                                 Đọc Ngay
                             </a>
@@ -442,42 +442,42 @@ $otherNews = $newsData['list'];    // Danh sách các bài còn lại
             </div>
 
             <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
-                <?php foreach($newsData_PhongThuy as $item): ?>
-                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
-                    class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
-                    <div class="absolute bottom-0 p-8">
-                        <span class="tag mb-4 inline-block"><?php echo $item['tag']; ?></span>
-                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight"><?php echo $item['title']; ?></h3>
-                    </div>
-                </a>
+                <?php foreach ($newsData_PhongThuy as $item): ?>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-8">
+                            <span class="tag mb-4 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
                 <?php endforeach ?>
-                <?php foreach($newsData_ThiTruong as $item): ?>
+                <?php foreach ($newsData_ThiTruong as $item): ?>
 
-                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
-                    class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
-                    <div class="absolute bottom-0 p-6">
-                        <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
-                        <h3 class="text-xl font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
-                    </div>
-                </a>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-xl font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
                 <?php endforeach ?>
-                <?php foreach($newsData_PhapLy as $item): ?>
-                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
-                    class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
-                    <div class="absolute bottom-0 p-6 z-20">
-                        <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
-                        <h3 class="text-sm font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
-                    </div>
-                </a>
+                <?php foreach ($newsData_PhapLy as $item): ?>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
+                        <div class="absolute bottom-0 p-6 z-20">
+                            <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-sm font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
                 <?php endforeach ?>
 
                 <!-- <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"

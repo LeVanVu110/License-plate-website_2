@@ -1,9 +1,24 @@
 <?php include "header.php"; ?>
 <?php
 // Nhận dữ liệu
-$ten = $_GET['name'] ?? 'Tiêu đề';
-$gia = $_GET['price'] ?? '0';
-$anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
+$newsModel = new News();
+// $ten = $_GET['name'] ?? 'Tiêu đề';
+// $gia = $_GET['price'] ?? '0';
+// $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
+// Kiểm tra nếu có ID hoặc Slug trên URL
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $item = $newsModel->getById($id);
+} elseif (isset($_GET['slug'])) {
+    $slug = $_GET['slug'];
+    $item = $newsModel->getBySlug($slug);
+}
+
+// Nếu không tìm thấy bài viết, chuyển hướng về trang tin tức hoặc báo lỗi
+if (!$item) {
+    header("Location: tin_tuc.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -242,42 +257,41 @@ $anh = $_GET['image'] ?? 'link_anh_mac_dinh.jpg';
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
     <section id="insight-horizon" class="relative min-h-[90vh] bg-[#000F1A] overflow-hidden">
-
-        <div class="hero-image-container absolute inset-0 z-0">
-            <div class="hero-overlay absolute inset-0 bg-gradient-to-t from-[#000F1A] via-transparent to-black/30 z-10"></div>
-            <img src="<?php echo htmlspecialchars($anh); ?>"
-                id="hero-img"
-                class="w-full h-full object-cover opacity-0"
-                alt="Featured News Image">
-        </div>
-
-        <div class="relative z-20 container mx-auto px-6 h-screen flex flex-col justify-end pb-24 lg:pb-32">
-
-            <div class="max-w-5xl">
-                <h1 id="news-headline" class="text-4xl md:text-6xl lg:text-8xl font-serif text-[#E0F2F7] leading-tight tracking-tighter opacity-0">
-                    <?php echo htmlspecialchars($ten); ?>
-                </h1>
+            <div class="hero-image-container absolute inset-0 z-0">
+                <div class="hero-overlay absolute inset-0 bg-gradient-to-t from-[#000F1A] via-transparent to-black/30 z-10"></div>
+                <img src="<?php echo $item['thumbnail']; ?>"
+                    id="hero-img"
+                    class="w-full h-full object-cover opacity-0"
+                    alt="Featured News Image">
             </div>
 
-            <div id="meta-info-bar" class="mt-8 flex items-center gap-6 p-4 rounded-r-full bg-blue-900/20 backdrop-blur-md border-l-4 border-[#00FFFF] max-w-fit opacity-0 translate-x-[-50px]">
-                <div class="flex items-center gap-2">
-                    <i class="ri-user-3-line text-[#00FFFF]"></i>
-                    <span class="font-mono text-[10px] md:text-xs text-[#E0F2F7] uppercase tracking-widest">By Sapphire Admin</span>
+            <div class="relative z-20 container mx-auto px-6 h-screen flex flex-col justify-end pb-24 lg:pb-32">
+
+                <div class="max-w-5xl">
+                    <h1 id="news-headline" class="text-4xl md:text-6xl lg:text-8xl font-serif text-[#E0F2F7] leading-tight tracking-tighter opacity-0">
+                        <?php echo $item['title']; ?>
+                    </h1>
                 </div>
-                <div class="w-[1px] h-4 bg-white/20"></div>
-                <div class="flex items-center gap-2">
-                    <i class="ri-calendar-event-line text-[#00FFFF]"></i>
-                    <span class="font-mono text-[10px] md:text-xs text-[#E0F2F7] uppercase tracking-widest">24 Oct 2024</span>
-                </div>
-                <div class="w-[1px] h-4 bg-white/20"></div>
-                <div class="flex items-center gap-2">
-                    <i class="ri-time-line text-[#00FFFF]"></i>
-                    <span class="font-mono text-[10px] md:text-xs text-[#00FFFF] uppercase tracking-widest">5 Phút đọc</span>
+
+                <div id="meta-info-bar" class="mt-8 flex items-center gap-6 p-4 rounded-r-full bg-blue-900/20 backdrop-blur-md border-l-4 border-[#00FFFF] max-w-fit opacity-0 translate-x-[-50px]">
+                    <div class="flex items-center gap-2">
+                        <i class="ri-user-3-line text-[#00FFFF]"></i>
+                        <span class="font-mono text-[10px] md:text-xs text-[#E0F2F7] uppercase tracking-widest"><?php echo $item['author_name']; ?></span>
+                    </div>
+                    <div class="w-[1px] h-4 bg-white/20"></div>
+                    <div class="flex items-center gap-2">
+                        <i class="ri-calendar-event-line text-[#00FFFF]"></i>
+                        <span class="font-mono text-[10px] md:text-xs text-[#E0F2F7] uppercase tracking-widest"><?php echo $item['created_at']; ?></span>
+                    </div>
+                    <div class="w-[1px] h-4 bg-white/20"></div>
+                    <div class="flex items-center gap-2">
+                        <i class="ri-time-line text-[#00FFFF]"></i>
+                        <span class="font-mono text-[10px] md:text-xs text-[#00FFFF] uppercase tracking-widest">5 Phút đọc</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
         <div id="reading-progress" class="fixed top-0 left-0 w-0 h-1 bg-[#00FFFF] z-[100] shadow-[0_0_10px_#00FFFF]"></div>
+
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
