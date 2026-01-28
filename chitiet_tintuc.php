@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
 
 // Nếu không tìm thấy bài viết, chuyển hướng về trang tin tức hoặc báo lỗi
 if (!$item) {
-    header("Location: tin_tuc.php");
+    echo "<script>window.location.href='tin_tuc.php';</script>";
     exit();
 }
 ?>

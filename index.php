@@ -1515,7 +1515,7 @@
         if (searchValue !== "") {
             // 2. Chuyển hướng trang kèm tham số tìm kiếm (query)
             // Ví dụ: detail_oto_xemay.php?plate=30K88888
-            window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`;
+            window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`; 
         } else {
             // Nếu không nhập gì mà bấm nút thì rung nhẹ ô input để báo hiệu
             const wrapper = document.querySelector('.crystal-search');

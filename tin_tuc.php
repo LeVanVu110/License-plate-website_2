@@ -383,7 +383,6 @@ $otherNews = $newsData['list'];    // Danh sách các bài còn lại
     // Nếu không có bài viết nào, có thể ẩn section hoặc hiện mặc định
     if ($featured):
     ?>
-        ?>
         <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
 
             <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>

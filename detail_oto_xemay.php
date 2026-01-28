@@ -1,6 +1,24 @@
 <?php include "header.php"; ?>
 <?php
 $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
+$plateModel = new Plate();
+$plateData = null;
+
+// 1. Lấy từ khóa từ URL
+// if (isset($_GET['plate']) && !empty($_GET['plate'])) {
+//     $searchQuery = $_GET['plate'];
+
+//     // 2. Gọi Model để tìm kiếm
+//     $plateData = $plateModel->getByPlateNumber($searchQuery);
+// }
+
+// 3. Nếu không tìm thấy, có thể mặc định hiện một biển số mẫu hoặc báo lỗi
+// if (!$plateData) {
+//     // Ví dụ: Điều hướng về index nếu không tìm thấy
+//     echo "<script>alert('Không tìm thấy biển số này!'); window.location.href='index.php';</script>";
+// }
+$searchTerm = isset($_GET['plate']) ? $_GET['plate'] : null;
+$data = $plateModel->getSearchData($searchTerm);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -308,7 +326,8 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
     <div id="radar-beam"></div>
 
     <header class="pt-20 pb-10 text-center px-6" style="background-color: #000814;">
-        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy 39 kết quả cho di sản "<?php echo $query; ?>"</p>
+        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy <?php echo count($data['cars']) ?> kết quả cho di sản "<?php echo $query; ?>" <?php echo $plateData ? $plateData['plate_number'] : "Không tìm thấy"; ?></p>
+        <title>Kết quả: <?php echo $plateData ? $plateData['plate_number'] : "Không tìm thấy"; ?></title>
         <div class="h-[1px] w-24 bg-blue-500/30 mx-auto"></div>
     </header>
 
@@ -323,84 +342,90 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
 
         <section id="auto-vault" class="vault-container active-tab pb-20">
             <h3 class="text-[10px] tracking-[5px] text-white/30 uppercase mb-10 flex items-center gap-4 p-5">
-                <i class="ri-steering-2-line "></i> Auto-Vault Allocation
+                <i class="ri-steering-2-line"></i>
+                "Kết quả tìm kiếm cho:"<?php echo count($data['cars']) ?>
             </h3>
+
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++):
-                    // 1. Giả định dữ liệu thực tế (Thay bằng biến từ Database của bạn)
-                    $plate_prefix = "30K";
-                    $plate_main = "999.99"; // Giả sử đây là biến $query của bạn
-                    $full_plate = $plate_prefix . "-" . $plate_main;
+                <?php if (!empty($data['cars'])): ?>
+                    <?php foreach ($data['cars'] as $plate):
+                        $detail_url = "chitiet_bienso_oto.php?plate=" . urlencode($plate['plate_number']) . "&id=" . $plate['id'];
+                    ?>
+                        <a href="<?php echo $detail_url; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.03]">
+                            <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                                VIP CAR
+                            </div>
 
-                    $price_raw = 2450000000;
-                    $location = "Hà Nội";
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">
+                                    <?php echo $plate['category']; ?>
+                                </span>
+                                <span class="text-[10px] text-white/40 italic"><?php echo $plate['status']; ?></span>
+                            </div>
 
-                    // 2. Tạo Link chuyển dữ liệu qua trang chi tiết
-                    // Bạn có thể đổi tên file thành chitiet_bienso_xeoto.php nếu cần tách riêng
-                    $detail_url = "chitiet_bienso_oto.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price_raw) . "&address=" . urlencode($location);
-                ?>
-                    <a href="<?php echo $detail_url; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.03]">
-                        <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">
-                            VƯỢNG TÀI
-                        </div>
+                            <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">
+                                <?php echo $plate['plate_number']; ?>
+                            </h2>
 
-                        <div class="flex justify-between items-start mb-8">
-                            <span class="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Tứ Quý</span>
-                            <i class="ri-bookmark-line text-white/20"></i>
-                        </div>
-
-                        <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">
-                            <?php echo $plate_prefix; ?>-<?php echo $plate_main; ?>
-                        </h2>
-
-                        <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">
-                                <?php echo number_format($price_raw, 0, ',', '.'); ?>
-                                <small class="text-[10px] text-white/40">VND</small>
-                            </span>
-                        </div>
-                    </a>
-                <?php endfor; ?>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white/40 text-xs tracking-wider">
+                                    <i class="ri-map-pin-line"></i> <?php echo $plate['address']; ?>
+                                </span>
+                                <span class="text-white/80 space-mono text-lg italic">
+                                    <?php echo number_format($plate['current_price'], 0, ',', '.'); ?>
+                                    <small class="text-[10px] text-white/40">VND</small>
+                                </span>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                        <p class="text-white/30 italic">Không tìm thấy biển số nào khớp với yêu cầu của bạn.</p>
+                        <a href="index.php" class="text-blue-500 text-xs uppercase tracking-widest mt-4 inline-block">Thử lại</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
 
         <section id="moto-vault" class="vault-container pb-20">
             <h3 class="text-[10px] tracking-[5px] text-white/30 uppercase mb-10 flex items-center gap-4 p-5">
-                <i class="ri-motorbike-line"></i> Moto-Vault Allocation
+                <i class="ri-motorbike-line"></i>Kết quả tìm kiếm cho: <?php echo count($data['motorbikes']) ?>
             </h3>
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++):
-                    // Giả định dữ liệu (Bạn hãy thay thế bằng biến từ DB của bạn)
-                    $plate_base = "29G1";
-                    $plate_num = "888.88"; // Ví dụ lấy từ $query của bạn
-                    $full_plate = $plate_base . "-" . $plate_num;
-                    $price = "450000000";
-                    $address = "Hà Nội";
+                <?php if (!empty($data['motorbikes'])): ?>
+                    <?php foreach ($data['motorbikes'] as $plate):
+                        $detail_link = "chitiet_bienso_xemay.php?plate=" . urlencode($plate['plate_number']) . "&id=" . $plate['id'];
+                    ?>
+                        <a href="<?php echo $detail_link; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-transform hover:scale-[1.02]">
+                            <div class="absolute -right-0 -top-0 text-cyan-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity" style="top: 15px; right: 25px;">MOTO</div>
 
-                    // Tạo link với tham số URL (Sử dụng urlencode để tránh lỗi ký tự đặc biệt)
-                    $detail_link = "chitiet_bienso_xemay.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price) . "&address=" . urlencode($address);
-                ?>
-                    <a href="<?php echo $detail_link; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-transform hover:scale-[1.02]">
-                        <div class="absolute -right-0 -top-0 text-cyan-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity"
-                            style="top: 15px; right: 25px;">ĐẠI CÁT</div>
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="bg-cyan-500/10 text-cyan-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">
+                                    <?php echo $plate['category']; ?>
+                                </span>
+                                <i class="ri-bookmark-line text-white/20"></i>
+                            </div>
 
-                        <div class="flex justify-between items-start mb-8">
-                            <span class="bg-cyan-500/10 text-cyan-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Lộc Phát</span>
-                            <i class="ri-bookmark-line text-white/20"></i>
-                        </div>
+                            <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">
+                                <?php
+                                // Tách biển số để hiển thị kiểu biển vuông xe máy
+                                $parts = explode('-', $plate['plate_number']);
+                                echo $parts[0] . (isset($parts[1]) ? "<br>" . $parts[1] : "");
+                                ?>
+                            </h2>
 
-                        <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">
-                            <?php echo $plate_base; ?><br><?php echo $plate_num; ?>
-                        </h2>
-
-                        <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">
-                                <?php echo number_format($price, 0, ',', '.'); ?>
-                                <small class="text-[10px] text-white/40">VND</small>
-                            </span>
-                        </div>
-                    </a>
-                <?php endfor; ?>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white/40 text-xs italic">
+                                    <i class="ri-map-pin-line"></i> <?php echo $plate['address']; ?>
+                                </span>
+                                <span class="text-white/80 space-mono text-lg italic">
+                                    <?php echo number_format($plate['current_price'], 0, ',', '.'); ?>
+                                    <small class="text-[10px] text-white/40">VND</small>
+                                </span>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </section>
     </main>
