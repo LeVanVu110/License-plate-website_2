@@ -20,4 +20,31 @@ class News extends Db
             'list' => $allNews       // Các bài còn lại
         ];
     }
+    public function get_PhongThuy()
+    {
+        $sql = "SELECT * FROM `news` 
+            WHERE `tag`= '#PhongThuy' 
+            ORDER BY `created_at` DESC";
+
+        $result = self::$connection->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    public function get_ThiTruong()
+    {
+        $sql = "SELECT * FROM `news` 
+            WHERE `tag`= '#ThiTruong' 
+            ORDER BY `created_at` DESC";
+
+        $result = self::$connection->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    public function get_PhapLy()
+    {
+        $sql = "SELECT * FROM `news` 
+            WHERE `tag`= '#PhapLy' 
+            ORDER BY `created_at` DESC";
+
+        $result = self::$connection->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }

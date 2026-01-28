@@ -34,8 +34,6 @@ if ($user_id > 0) {
     $notifications_dropdown = $stmt_nav->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 ?>
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -138,6 +136,24 @@ if ($user_id > 0) {
             #search-input {
                 width: 131px;
             }
+
+            /* Đảm bảo menu thông báo không bị văng ra khỏi màn hình mobile */
+            #notification-menu {
+                right: -50px;
+                /* Điều chỉnh lại vị trí để vừa màn hình điện thoại */
+                width: 90vw;
+                /* Cho chiều ngang rộng ra dễ nhìn trên mobile */
+                max-width: 320px;
+            }
+
+            /* Đảm bảo vùng bấm đủ lớn */
+            #notification-btn {
+                min-width: 40px;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -164,13 +180,13 @@ if ($user_id > 0) {
             </nav>
 
             <div class="flex items-center space-x-4">
-                <div class="relative group">
+                <div class="relative">
                     <button id="notification-btn" class="p-2 text-[#001A33]/70 hover:text-[#007FFF] transition-all duration-300 relative bg-white/50 rounded-full hover:bg-white shadow-sm border border-transparent hover:border-[#007FFF]/20">
                         <i class="ri-notification-3-line text-xl"></i>
                         <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 border border-white rounded-full"></span>
                     </button>
 
-                    <div id="notification-menu" class="absolute top-full right-0 w-80 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                    <div id="notification-menu" class="absolute top-full right-0 w-80 pt-4 opacity-0 invisible translate-y-2 transition-all duration-300 z-[120]">
                         <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl overflow-hidden">
                             <div class="p-4 border-b border-[#001A33]/5 flex justify-between items-center">
                                 <h3 class="text-[11px] font-bold tracking-widest text-[#001A33]">THÔNG BÁO</h3>
@@ -219,7 +235,7 @@ if ($user_id > 0) {
                 </div>
 
                 <?php if ($currentUser): ?>
-                    <div class="relative group" id="account-dropdown-trigger">
+                    <div class="relative" id="account-dropdown-trigger">
                         <div class="flex items-center gap-3 cursor-pointer p-1 rounded-full hover:bg-white/20 transition-all duration-500 relative z-20">
                             <div class="hidden sm:block text-right pointer-events-none">
                                 <p class="text-[8px] text-[#001A33]/50 tracking-[1px] uppercase font-bold">
@@ -237,7 +253,7 @@ if ($user_id > 0) {
                             </div>
                         </div>
 
-                        <div id="account-menu" class="absolute top-full right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                        <div id="account-menu" class="absolute top-full right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
                             <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl p-5 space-y-3">
 
                                 <?php
@@ -268,7 +284,7 @@ if ($user_id > 0) {
                     </div>
 
                 <?php else: ?>
-                    <div class="relative group" id="guest-trigger">
+                    <div class="relative" id="guest-trigger">
                         <div class="flex items-center gap-3 cursor-pointer p-1 pr-4 rounded-full bg-[#007FFF]/10 hover:bg-[#007FFF]/20 border border-[#007FFF]/20 transition-all duration-500 relative z-20">
                             <div class="relative pointer-events-none">
                                 <div class="w-10 h-10 rounded-full border-2 border-dashed border-[#007FFF]/30 p-0.5 overflow-hidden shadow-md bg-white/50 flex items-center justify-center">
@@ -281,7 +297,7 @@ if ($user_id > 0) {
                             </div>
                         </div>
 
-                        <div id="guest-menu" class="absolute top-full right-0 w-56 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[120]">
+                        <div id="guest-menu" class="absolute top-full right-0 w-56 pt-4 opacity-0 invisible translate-y-2  transition-all duration-300 z-[120]">
                             <div class="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-2xl p-5 space-y-4">
                                 <p class="text-[10px] text-[#001A33]/60 leading-relaxed text-center italic">
                                     Đăng nhập để tham gia đấu giá và nhận ưu đãi VIP.
@@ -306,7 +322,7 @@ if ($user_id > 0) {
         </div>
     </header>
 
-    <div id="mobile-menu" class="fixed inset-0 bg-[#001A33]/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center space-y-8 text-white translate-y-[-100%] hidden">
+    <div id="mobile-menu" class="fixed inset-0 bg-[#001A33]/95 backdrop-blur-xl z-[150] flex flex-col items-center justify-center space-y-8 text-white translate-y-[-100%] hidden">
         <button id="close-menu" class="absolute top-6 right-6 text-3xl text-white/50">&times;</button>
         <a href="Digital_Vault.php" class="menu-link text-3xl font-bold">Kho Số</a>
         <a href="dau_gia.php" class="menu-link text-3xl font-bold">Đấu Giá</a>
@@ -400,18 +416,21 @@ if ($user_id > 0) {
                     duration: 0.2,
                     overwrite: true
                 });
-                menu.classList.remove('is-open');
-                menu.classList.remove('is-visible'); // SỬA TẠI ĐÂY: Tắt click khi đóng
+                menu.classList.remove('is-open', 'is-visible');
+                menu.style.visibility = 'hidden';
             } else {
                 const isOpen = menu.classList.contains('is-open');
-                // Đóng các cái khác
+
+                // Đóng các cái khác trước khi mở cái mới
                 document.querySelectorAll('[id$="-menu"]').forEach(m => {
-                    if (m.id !== menuId) toggleDropdown(m.id, true);
+                    if (m.id !== menuId && m.classList.contains('is-open')) {
+                        toggleDropdown(m.id, true);
+                    }
                 });
 
                 if (!isOpen) {
-                    menu.classList.add('is-open');
-                    menu.classList.add('is-visible'); // SỬA TẠI ĐÂY: Bật click khi mở
+                    menu.style.visibility = 'visible';
+                    menu.classList.add('is-open', 'is-visible');
                     gsap.to(menu, {
                         autoAlpha: 1,
                         y: 0,
@@ -432,7 +451,7 @@ if ($user_id > 0) {
         // Xử lý Account/Guest
         [accountTrigger, guestTrigger].forEach(trigger => {
             trigger?.addEventListener('click', (e) => {
-                // Nếu bấm vào link bên trong thì để nó tự chuyển trang
+                // Nếu bấm vào link thực sự bên trong menu thì cho đi tiếp
                 if (e.target.closest('a')) return;
 
                 e.preventDefault();
@@ -441,8 +460,7 @@ if ($user_id > 0) {
                 toggleDropdown(menuId);
             });
         });
-
-        // Xử lý Thông báo
+        // Xử lý Thông báo - Sửa lỗi Mobile
         notifyBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -450,16 +468,23 @@ if ($user_id > 0) {
         });
 
         // 6. FIX LỖI "ĐÈ": Đóng dropdown khi bấm ra ngoài nhưng trừ Menu điều hướng
+        // 6. Đóng dropdown khi bấm ra ngoài (Fix lỗi đơ Menu Mobile)
         document.addEventListener('click', (e) => {
-            // Kiểm tra nếu click trúng vào các link menu chính (nav-item) hoặc logo
-            if (e.target.closest('.nav-item') || e.target.closest('.logo')) {
-                return; // Để trình duyệt xử lý link bình thường
+            // Nếu click vào các link điều hướng chính -> Cho phép nhảy trang
+            if (e.target.closest('.nav-item') || e.target.closest('.logo') || e.target.closest('.menu-link')) {
+                return;
             }
 
-            // Nếu không phải click vào vùng dropdown thì đóng tất cả dropdown đang mở
-            if (!e.target.closest('.group')) {
+            const isDropdown = e.target.closest('[id$="-menu"]');
+            const isTrigger = e.target.closest('#notification-btn') ||
+                e.target.closest('#account-dropdown-trigger') ||
+                e.target.closest('#guest-trigger');
+            // Nếu click RA NGOÀI cả nút bấm và menu -> Đóng tất cả
+            if (!isDropdown && !isTrigger) {
                 document.querySelectorAll('[id$="-menu"]').forEach(m => {
-                    if (m.classList.contains('is-open')) toggleDropdown(m.id, true);
+                    if (m.classList.contains('is-open')) {
+                        toggleDropdown(m.id, true);
+                    }
                 });
             }
         });

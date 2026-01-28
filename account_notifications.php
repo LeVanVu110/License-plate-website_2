@@ -285,9 +285,17 @@ $db = new Db();
                     <?php if (empty($notifications)): ?>
                         <div class="p-10 text-center text-slate-500 text-xs">Không có thông báo nào.</div>
                     <?php else: ?>
-                        <?php foreach ($notifications as $noti):
+                        
+                        <?php $index = 0; // Biến đếm vị trí
+                        foreach ($notifications as $noti):
                             $is_unread = !$noti['is_read'];
                             // Xác định icon và màu sắc dựa trên Type
+                            $icon = "ri-notification-3-line";
+                            $color_class = "blue";
+                            $opacity = 1 - ($index * 0.12);
+                            if ($opacity < 0.4) $opacity = 0.4;
+
+                            // Logic icon
                             $icon = "ri-notification-3-line";
                             $color_class = "blue";
                             if ($noti['type'] == 'SMS') {
@@ -299,16 +307,16 @@ $db = new Db();
                                 $color_class = "emerald";
                             }
                         ?>
-                            <div class="notif-item <?= $is_unread ? 'unread' : 'read' ?> relative p-6 border-b border-slate-900 hover:bg-slate-900/50 transition-all cursor-pointer group <?= !$is_unread ? 'opacity-60' : '' ?>"
+                            <div class="notif-item <?= $is_unread ? 'unread' : 'read' ?> relative p-6 border-b border-slate-900 hover:bg-slate-900/50 transition-all cursor-pointer group <?= !$is_unread ? 'opacity-90' : '' ?>"
                                 onclick='openDetail(<?= json_encode($noti) ?>)'>
 
                                 <?php if ($is_unread): ?>
-                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
                                 <?php endif; ?>
 
                                 <div class="flex gap-4">
                                     <div class="relative">
-                                        <div class="w-12 h-12 rounded-2xl bg-<?= $color_class ?>-500/10 flex items-center justify-center text-<?= $color_class ?>-400">
+                                        <div class="w-12 h-12 rounded-2xl bg-<?= $color_class ?>-500/10 flex items-center justify-center text-<?= $color_class ?>-400 <?= !$is_unread ? 'grayscale-[0.5]' : '' ?>">
                                             <i class="<?= $icon ?> text-xl"></i>
                                         </div>
                                         <?php if ($is_unread): ?>
@@ -317,14 +325,16 @@ $db = new Db();
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex justify-between items-start mb-1">
-                                            <h4 class="text-sm font-bold text-white truncate group-hover:text-blue-400 transition-colors">
+                                            <h4 class="text-sm font-bold <?= $is_unread ? 'text-white' : 'text-slate-300' ?> truncate group-hover:text-blue-400 transition-colors">
                                                 <?= htmlspecialchars($noti['title']) ?>
                                             </h4>
                                             <span class="text-[9px] font-mono text-slate-500 uppercase">
                                                 <?= date('H:i', strtotime($noti['created_at'])) ?>
                                             </span>
                                         </div>
-                                        <p class="text-xs text-slate-400 line-clamp-1"><?= htmlspecialchars($noti['content']) ?></p>
+                                        <p class="text-xs <?= $is_unread ? 'text-slate-400' : 'text-slate-500' ?> line-clamp-1">
+                                            <?= htmlspecialchars($noti['content']) ?>
+                                        </p>
                                     </div>
                                 </div>
                             </div>

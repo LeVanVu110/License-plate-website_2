@@ -363,6 +363,18 @@ $data = $newsModel->get();
 
 $featured = $data['featured'];
 $list = $data['list'];
+
+// $newsModel = new News();
+$newsData = $newsModel->get();
+$newsData_PhongThuy = $newsModel->get_PhongThuy();
+$newsData_ThiTruong = $newsModel->get_ThiTruong();
+$newsData_PhapLy = $newsModel->get_PhapLy();
+
+
+
+
+// $featured = $newsData['featured']; // Bài viết mới nhất (thường dùng làm ô to nhất)
+$otherNews = $newsData['list'];    // Danh sách các bài còn lại
 ?>
 
 <body>
@@ -430,47 +442,51 @@ $list = $data['list'];
             </div>
 
             <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
-
-                <a href="chitiet_tintuc.php?name=Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)&image=https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070"
+                <?php foreach($newsData_PhongThuy as $item): ?>
+                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
                     class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
                     <div class="absolute bottom-0 p-8">
-                        <span class="tag mb-4 inline-block">#PhongThuy</span>
-                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight">Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)</h3>
+                        <span class="tag mb-4 inline-block"><?php echo $item['tag']; ?></span>
+                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight"><?php echo $item['title']; ?></h3>
                     </div>
                 </a>
+                <?php endforeach ?>
+                <?php foreach($newsData_ThiTruong as $item): ?>
 
-                <a href="chitiet_tintuc.php?name=Tổng hợp giá đấu các phiên VIP tháng 1/2026&image=https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000"
+                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
                     class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
                     <div class="absolute bottom-0 p-6">
-                        <span class="tag mb-2 inline-block">#ThiTruong</span>
-                        <h3 class="text-xl font-bold text-[#E0F7FA]">Tổng hợp giá đấu các phiên VIP tháng 1/2026</h3>
+                        <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                        <h3 class="text-xl font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
                     </div>
                 </a>
-
-                <a href="chitiet_tintuc.php?name=Tương lai di sản số trên blockchain&image=https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000"
+                <?php endforeach ?>
+                <?php foreach($newsData_PhapLy as $item): ?>
+                <a href="chitiet_tintuc.php?name=<?php echo $item['title']; ?>&image=<?php echo $item['thumbnail'];?>"
                     class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                    <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
                     <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
                     <div class="absolute bottom-0 p-6 z-20">
-                        <span class="tag mb-2 inline-block">#PhapLy</span>
-                        <h3 class="text-sm font-bold text-[#E0F7FA]">Tương lai di sản số trên blockchain</h3>
+                        <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                        <h3 class="text-sm font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
                     </div>
                 </a>
+                <?php endforeach ?>
 
-                <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"
+                <!-- <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"
                     class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854" class="thumb-img absolute inset-0 w-full h-full object-cover opacity-40">
                     <div class="absolute bottom-0 p-6">
                         <h3 class="text-sm font-bold text-[#E0F7FA]">Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim</h3>
                     </div>
-                </a>
+                </a> -->
 
             </div>
         </div>

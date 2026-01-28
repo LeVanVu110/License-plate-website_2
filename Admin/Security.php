@@ -110,6 +110,10 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
+        #map-canvas{
+            width: 100%;
+            height: 70%;
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
         /* Cold Industrial Scrollbar */
