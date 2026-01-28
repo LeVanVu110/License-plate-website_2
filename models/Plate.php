@@ -88,30 +88,79 @@ class Plate extends Db
 
     //     return $data;
     // }
+    // public function getSearchData($keyword = null, $category = null, $maxPrice = null)
+    // {
+    //     $data = ['cars' => [], 'motorbikes' => []];
+    //     $conditions = [];
+    //     $params = [];
+    //     $types = "";
+
+    //     $sql = "SELECT * FROM plates WHERE 1=1";
+
+    //     // Lọc theo từ khóa tìm kiếm
+    //     if (!empty($keyword)) {
+    //         $sql .= " AND plate_number LIKE ?";
+    //         $params[] = "%$keyword%";
+    //         $types .= "s";
+    //     }
+
+    //     // Lọc theo danh mục (Tứ quý, Sảnh tiến...)
+    //     if (!empty($category) && $category !== 'all') {
+    //         $sql .= " AND category = ?";
+    //         $params[] = $category;
+    //         $types .= "s";
+    //     }
+
+    //     // Lọc theo giá (Chuyển đổi từ tỷ sang VNĐ: 1 tỷ = 1,000,000,000)
+    //     if (!empty($maxPrice)) {
+    //         $sql .= " AND current_price <= ?";
+    //         $params[] = $maxPrice * 1000000;
+    //         $types .= "d";
+    //     }
+
+    //     $sql .= " ORDER BY current_price DESC";
+
+    //     $stmt = self::$connection->prepare($sql);
+    //     if (!empty($params)) {
+    //         $stmt->bind_param($types, ...$params);
+    //     }
+
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+    //     $plates = $result->fetch_all(MYSQLI_ASSOC);
+
+    //     foreach ($plates as $plate) {
+    //         if ($plate['vehicle_type'] === 'Car') $data['cars'][] = $plate;
+    //         else $data['motorbikes'][] = $plate;
+    //     }
+    //     return $data;
+    // }
     public function getSearchData($keyword = null, $category = null, $maxPrice = null)
     {
         $data = ['cars' => [], 'motorbikes' => []];
-        $conditions = [];
         $params = [];
         $types = "";
 
         $sql = "SELECT * FROM plates WHERE 1=1";
 
-        // Lọc theo từ khóa tìm kiếm
-        if (!empty($keyword)) {
-            $sql .= " AND plate_number LIKE ?";
-            $params[] = "%$keyword%";
-            $types .= "s";
+        // NÂNG CẤP: Tìm kiếm kép (Số xe hoặc Danh mục)
+        if (!empty(trim($keyword))) {
+            $search = "%" . trim($keyword) . "%";
+            // Nếu người dùng nhập "Tứ quý", nó sẽ khớp ở vế category
+            $sql .= " AND (plate_number LIKE ? OR category LIKE ?)";
+            $params[] = $search;
+            $params[] = $search;
+            $types .= "ss";
         }
 
-        // Lọc theo danh mục (Tứ quý, Sảnh tiến...)
+        // Lọc theo nút bấm Category (Nếu có)
         if (!empty($category) && $category !== 'all') {
             $sql .= " AND category = ?";
             $params[] = $category;
             $types .= "s";
         }
 
-        // Lọc theo giá (Chuyển đổi từ tỷ sang VNĐ: 1 tỷ = 1,000,000,000)
+        // Lọc theo giá
         if (!empty($maxPrice)) {
             $sql .= " AND current_price <= ?";
             $params[] = $maxPrice * 1000000;

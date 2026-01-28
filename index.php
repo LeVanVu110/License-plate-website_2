@@ -1509,20 +1509,11 @@
     })();
     // update code 
     function searchPlate() {
-        // 1. Lấy giá trị từ ô input
-        const searchValue = document.getElementById('main-search-input').value.trim();
+        const input = document.getElementById('main-search-input');
+        const searchValue = input.value.trim();
 
-        if (searchValue !== "") {
-            // 2. Chuyển hướng trang kèm tham số tìm kiếm (query)
-            // Ví dụ: detail_oto_xemay.php?plate=30K88888
-            window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`; 
-        } else {
-            // Nếu không nhập gì mà bấm nút thì rung nhẹ ô input để báo hiệu
-            const wrapper = document.querySelector('.crystal-search');
-            wrapper.classList.add('animate-shake');
-            setTimeout(() => wrapper.classList.remove('animate-shake'), 500);
-            alert("Vui lòng nhập dãy số bạn muốn tìm!");
-        }
+        // Chuyển hướng sang trang kết quả kèm theo từ khóa (có thể rỗng)
+        window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`;
     }
 
     // Thêm tính năng: Nhấn phím Enter cũng tìm kiếm luôn
