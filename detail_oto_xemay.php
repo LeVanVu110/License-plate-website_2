@@ -431,6 +431,11 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
                             </div>
                         </a>
                     <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                        <p class="text-white/30 italic">Không tìm thấy biển số nào khớp với yêu cầu của bạn.</p>
+                        <a href="index.php" class="text-blue-500 text-xs uppercase tracking-widest mt-4 inline-block">Thử lại</a>
+                    </div>
                 <?php endif; ?>
             </div>
         </section>
