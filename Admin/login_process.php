@@ -1,7 +1,12 @@
 <?php
-session_start();
-require_once "../config.php";
-require_once "../Models/db.php";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 2. Sử dụng đường dẫn tuyệt đối dựa trên __DIR__ để an toàn trên Linux
+require_once __DIR__ . "/../config.php";
+require_once __DIR__ . "/../models/db.php";
+
 
 $db = new Db();
 

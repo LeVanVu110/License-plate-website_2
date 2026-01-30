@@ -1,6 +1,6 @@
 <?php
-require_once "../config.php";
-require_once "../Models/db.php";
+require_once __DIR__ . "/../config.php";
+require_once __DIR__ . "/../models/db.php";
 $db = new Db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

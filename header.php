@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
 <?php
-session_start();
-require_once "config.php";
-require_once "Models/db.php";
-require_once "Models/Plate.php";
-require_once 'Models/News.php';
+// Kiểm tra session để tránh lỗi "Session already started"
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+require_once __DIR__ . "/config.php";
+
+// 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+require_once __DIR__ . "/models/db.php";
+
+// 3. Nạp Plate.php và News.php (Cùng nằm trong thư mục Models)
+require_once __DIR__ . "/models/Plate.php";
+require_once __DIR__ . "/models/News.php";
 
 $plateModel = new Plate();
 $data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]
@@ -34,6 +43,7 @@ if ($user_id > 0) {
     $notifications_dropdown = $stmt_nav->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

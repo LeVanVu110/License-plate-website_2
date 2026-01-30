@@ -1,14 +1,18 @@
 <?php
-session_start();
-require_once "../config.php";
-require_once "../Models/db.php";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 1. Sử dụng đường dẫn tuyệt đối __DIR__ để tránh lỗi trên Linux
+require_once __DIR__ . "/../config.php";
+require_once __DIR__ . "/../models/db.php";
 
 if (isset($_POST['btn_register'])) {
     // Lấy và làm sạch dữ liệu đầu vào
     $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
-    
+
     // Khởi tạo kết nối DB
     $db = new Db();
 
@@ -32,9 +36,9 @@ if (isset($_POST['btn_register'])) {
     // Mặc định role_id = 7 (Standard_User), rank = 'Gold' theo file SQL của bạn
     $sql = "INSERT INTO customers (role_id, full_name, email, password_hash, rank, avatar, created_at) 
             VALUES (7, ?, ?, ?, 'Gold', 'img/vips/default.jpg', NOW())";
-    
+
     $stmt = Db::$connection->prepare($sql);
-    
+
     if (!$stmt) {
         die("Lỗi truy vấn: " . Db::$connection->error);
     }
