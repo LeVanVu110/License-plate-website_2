@@ -886,7 +886,12 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
+<?php  
+$newsModel = new News();
+$datas = $newsModel->get();
 
+$featured = $datas['featured'];
+?>
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
     <section id="hero-stage" class="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -922,20 +927,24 @@
             </div>
         </div>
     </section>
-
-    <section class="py-32 flex flex-col md:flex-row items-center justify-center gap-16 px-10 border-t border-white/5 bg-[#000D1A]">
-        <div class="w-full md:w-1/3 overflow-hidden rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000">
-            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000" class="w-full h-96 object-cover transform hover:scale-110 transition-transform duration-700">
-        </div>
-        <div class="md:w-1/2">
-            <span class="text-blue-500 text-[10px] tracking-[5px] uppercase">Heritage Journal</span>
-            <h2 class="serif text-white text-4xl mt-4 mb-8">Giải mã ý nghĩa biển số Ngũ Quý 9 <br> dưới góc độ đầu tư di sản.</h2>
-            <button class="discovery-btn group text-[10px] tracking-[4px] uppercase text-white px-10 py-4" onclick="window.location.href='detail_news.php'">
-                Khám phá chi tiết
-                <div class="flow-light"></div>
-            </button>
-        </div>
-    </section>
+    <?php
+    // Nếu không có bài viết nào, có thể ẩn section hoặc hiện mặc định
+    if ($featured):
+    ?>
+        <section class="py-32 flex flex-col md:flex-row items-center justify-center gap-16 px-10 border-t border-white/5 bg-[#000D1A]">
+            <div class="w-full md:w-1/3 overflow-hidden rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000">
+                <img src="<?= $featured['thumbnail'] ?>" class="w-full h-96 object-cover transform hover:scale-110 transition-transform duration-700">
+            </div>
+            <div class="md:w-1/2">
+                <span class="text-blue-500 text-[10px] tracking-[5px] uppercase">Heritage Journal</span>
+                <h2 class="serif text-white text-4xl mt-4 mb-8"><?= mb_strtoupper($featured['title'], 'UTF-8') ?></h2>
+                <button class="discovery-btn group text-[10px] tracking-[4px] uppercase text-white px-10 py-4" onclick="window.location.href='chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&id=<?= $featured['id'] ?>'">
+                    Khám phá chi tiết
+                    <div class="flow-light"></div>
+                </button>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="infinite-vault" class="relative py-16 md:py-24 bg-[#000D1A] overflow-hidden">

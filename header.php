@@ -183,7 +183,7 @@ if ($user_id > 0) {
             </div>
 
             <nav class="hidden md:flex items-center space-x-8 text-[#001A33] font-medium">
-                <a href="Digital_Vault.php" class="nav-item relative py-2">Kho Số</a>
+                <a href="detail_oto_xemay.php" class="nav-item relative py-2">Kho Số</a>
                 <a href="dau_gia.php" class="nav-item relative py-2">Đấu Giá</a>
                 <a href="dinh_gia_AI.php" class="nav-item relative py-2">Định Giá AI</a>
                 <a href="tin_tuc.php" class="nav-item relative py-2">Tin Tức</a>

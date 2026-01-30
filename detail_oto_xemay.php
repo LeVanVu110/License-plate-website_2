@@ -1,24 +1,14 @@
 <?php include "header.php"; ?>
 <?php
-$query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
+
+if (isset($_GET['plate']) != "") {
+    $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "tất cả";
+} else {
+    $query = "tất cả";
+}
+
 $plateModel = new Plate();
 $plateData = null;
-
-// 1. Lấy từ khóa từ URL
-// if (isset($_GET['plate']) && !empty($_GET['plate'])) {
-//     $searchQuery = $_GET['plate'];
-
-//     // 2. Gọi Model để tìm kiếm
-//     $plateData = $plateModel->getByPlateNumber($searchQuery);
-// }
-
-// 3. Nếu không tìm thấy, có thể mặc định hiện một biển số mẫu hoặc báo lỗi
-// if (!$plateData) {
-//     // Ví dụ: Điều hướng về index nếu không tìm thấy
-//     echo "<script>alert('Không tìm thấy biển số này!'); window.location.href='index.php';</script>";
-// }
-// $searchTerm = isset($_GET['plate']) ? $_GET['plate'] : null;
-// $data = $plateModel->getSearchData($searchTerm);
 $searchTerm = $_GET['plate'] ?? null;
 $category = $_GET['cat'] ?? null;
 $maxPrice = $_GET['max_price'] ?? null;
@@ -26,6 +16,7 @@ $maxPrice = $_GET['max_price'] ?? null;
 // Gọi hàm với 3 tham số
 $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -332,7 +323,7 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
     <div id="radar-beam"></div>
 
     <header class="pt-20 pb-10 text-center px-6" style="background-color: #000814;">
-        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy <?php echo count($data['cars']) ?> kết quả cho di sản "<?php echo $query; ?>" <?php echo $plateData ? $plateData['plate_number'] : "Không tìm thấy"; ?></p>
+        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy kết quả cho di sản "<?php echo $query; ?>" <?php echo $plateData ? $plateData['plate_number'] : ""; ?></p>
         <title>Kết quả: <?php echo $plateData ? $plateData['plate_number'] : "Không tìm thấy"; ?></title>
         <div class="h-[1px] w-24 bg-blue-500/30 mx-auto"></div>
     </header>
