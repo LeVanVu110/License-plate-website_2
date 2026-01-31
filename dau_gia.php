@@ -747,7 +747,7 @@ $bidCount = $res_count->fetch_assoc()['total'];
             </div>
         </div>
     </div>
-    <div class="mt-10 bg-[#001A33] p-6 rounded-2xl border border-white/10">
+    <!-- <div class="mt-10 bg-[#001A33] p-6 rounded-2xl border border-white/10">
         <h3 class="text-white font-bold mb-4">Thông báo mới nhất</h3>
         <table class="w-full text-left text-sm text-white/70">
             <thead>
@@ -782,7 +782,7 @@ $bidCount = $res_count->fetch_assoc()['total'];
             echo number_format($u_info['bidding_limit'], 0, ',', '.');
             ?>đ
         </span>
-    </div>
+    </div> -->
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <?php
@@ -816,79 +816,6 @@ $bidCount = $res_count->fetch_assoc()['total'];
                     </div>
                 </div>
             </div>
-
-            <!-- <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="1" data-time="55">
-                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
-                        <div class="glint-layer absolute inset-0 pointer-events-none"></div>
-
-                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center overflow-hidden border border-white/5">
-                            <div class="absolute inset-0 bg-gradient-to-t from-cyan-500/10 to-transparent"></div>
-                            <div class="plate-mockup bg-white text-black px-6 py-3 rounded-lg font-bold text-2xl font-mono shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                51L - 888.88
-                            </div>
-                            <div class="quick-view absolute inset-0 bg-[#000F1A]/90 backdrop-blur-md flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <p class="text-cyan-400 text-[10px] uppercase mb-2">Thông số chi tiết</p>
-                                <div class="flex gap-4 text-white/70 text-xs">
-                                    <span>Bước giá: 5M</span>
-                                    <span>Lượt trả: 86</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
-                                <span>Thời gian còn lại</span>
-                                <span class="text-red-400 countdown-text">55s</span>
-                            </div>
-                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full bg-cyan-500 w-[80%]"></div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between mt-auto">
-                            <div>
-                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
-                                <p class="text-[#99FFFF] font-bold text-xl font-mono price-val">1.250M</p>
-                            </div>
-                            <button class="bg-cyan-500 hover:bg-[#99FFFF] text-[#000F1A] px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
-                                Tham chiến
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="2" data-time="3600">
-                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
-                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center border border-white/5">
-                            <div class="plate-mockup bg-white text-black w-24 h-24 rounded-lg font-bold text-xl font-mono flex flex-col items-center justify-center leading-tight">
-                                <span>29-AA</span>
-                                <span>999.99</span>
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
-                                <span>Thời gian còn lại</span>
-                                <span class="text-cyan-400 countdown-text">01:00:00</span>
-                            </div>
-                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full bg-cyan-500 w-[40%]"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto">
-                            <div>
-                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
-                                <p class="text-[#99FFFF] font-bold text-xl font-mono">450M</p>
-                            </div>
-                            <button class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-[#000F1A] transition-all">
-                                Tham chiến
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div> -->
             <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php if ($res_grid && $res_grid->num_rows > 0): ?>
                     <?php while ($item = $res_grid->fetch_assoc()):
@@ -978,6 +905,27 @@ $bidCount = $res_count->fetch_assoc()['total'];
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <?php
+    // Lấy 2 phiên "khủng" nhất để hiển thị Card lớn
+    $sql_top_sold = "SELECT a.*, p.plate_number, c.full_name, MAX(b.bid_amount) as final_price 
+                 FROM auctions a 
+                 JOIN plates p ON a.plate_id = p.id 
+                 JOIN bids b ON a.id = b.auction_id 
+                 JOIN customers c ON b.customer_id = c.id
+                 WHERE a.end_time <= NOW() AND b.is_winning_bid = 1
+                 GROUP BY a.id
+                 ORDER BY final_price DESC LIMIT 2";
+    $res_top_sold = Db::$connection->query($sql_top_sold);
+
+    // Lấy danh sách Top 5 kỷ lục cho bảng dưới
+    $sql_records = "SELECT c.full_name, MAX(b.bid_amount) as final_price 
+                FROM bids b 
+                JOIN customers c ON b.customer_id = c.id
+                WHERE b.is_winning_bid = 1
+                GROUP BY b.customer_id
+                ORDER BY final_price DESC LIMIT 5";
+    $res_records = Db::$connection->query($sql_records);
+    ?>
     <section id="hall-of-sovereigns" class="relative min-h-screen py-24 bg-[#00050A] overflow-hidden">
 
         <canvas id="star-dust" class="absolute inset-0 z-0 opacity-40"></canvas>
@@ -995,59 +943,51 @@ $bidCount = $res_count->fetch_assoc()['total'];
             </div>
 
             <div id="honor-carousel" class="flex flex-col lg:flex-row justify-center items-center gap-12 lg:gap-8 h-full">
-
-                <div class="honor-card group relative" data-sold="true">
-                    <div class="video-overlay absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 rounded-2xl overflow-hidden">
-                        <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                            <!-- <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-street-traffic-with-cars-and-lights-34538-wide.mp4" type="video/mp4"> -->
-                        </video>
+                <?php while ($sold = $res_top_sold->fetch_assoc()): ?>
+                    <div class="honor-card group relative">
+                        <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
+                            <div class="sold-seal">SOLD</div>
+                            <div class="honor-plate relative mb-8">
+                                <div class="sapphire-filter"></div>
+                                <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
+                                    <?php echo $sold['plate_number']; ?>
+                                </div>
+                            </div>
+                            <div class="text-center space-y-2">
+                                <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
+                                <h4 class="text-white text-xl font-light tracking-wide">
+                                    <?php
+                                    $name = $sold['full_name'];
+                                    echo mb_substr($name, 0, 3) . "****";
+                                    ?>
+                                </h4>
+                                <div class="price-sparkle-wrap mt-4">
+                                    <span class="text-silver text-2xl font-bold font-mono price-sparkle">
+                                        <?php echo number_format($sold['final_price'], 0, ',', '.'); ?>đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="beam-effect"></div>
                     </div>
-
-                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
-                        <div class="sold-seal">SOLD</div>
-
-                        <div class="honor-plate relative mb-8">
-                            <div class="sapphire-filter"></div>
-                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
-                                30K - 888.88
-                            </div>
-                        </div>
-
-                        <div class="text-center space-y-2">
-                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
-                            <h4 class="text-white text-xl font-light tracking-wide">Mr. Hoang****</h4>
-                            <div class="price-sparkle-wrap mt-4">
-                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">2.450.000.000đ</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="beam-effect"></div>
-                </div>
-
-                <div class="honor-card group relative">
-                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
-                        <div class="sold-seal">SOLD</div>
-                        <div class="honor-plate relative mb-8">
-                            <div class="sapphire-filter"></div>
-                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
-                                51L - 999.99
-                            </div>
-                        </div>
-                        <div class="text-center space-y-2">
-                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
-                            <h4 class="text-white text-xl font-light tracking-wide">Mrs. Tuyet**</h4>
-                            <div class="price-sparkle-wrap mt-4">
-                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">1.890.000.000đ</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="beam-effect"></div>
-                </div>
-
+                <?php endwhile; ?>
             </div>
 
             <div class="mt-32 max-w-2xl mx-auto glass-panel p-8 rounded-3xl border border-white/5 bg-white/5">
+                <h3 class="text-silver text-center text-sm uppercase tracking-[10px] mb-8" style="color: #20c3dc">Bảng Vàng Kỷ Lục</h3>
+                <div class="space-y-4">
+                    <?php
+                    $rank = 1;
+                    while ($rec = $res_records->fetch_assoc()): ?>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                            <span class="text-white/40 font-mono">0<?php echo $rank++; ?>. <?php echo mb_substr($rec['full_name'], 0, 3); ?>**</span>
+                            <span class="text-cyan-400 font-bold"><?php echo number_format($rec['final_price'], 0, ',', '.'); ?>đ</span>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+
+            <!-- <div class="mt-32 max-w-2xl mx-auto glass-panel p-8 rounded-3xl border border-white/5 bg-white/5">
                 <h3 class="text-silver text-center text-sm uppercase tracking-[10px] mb-8">Bảng Vàng Kỷ Lục</h3>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center border-b border-white/5 pb-4">
@@ -1059,12 +999,12 @@ $bidCount = $res_count->fetch_assoc()['total'];
                         <span class="text-cyan-400 font-bold">9.200.000.000đ</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
-        <!-- <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
+        <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
             Đăng ký phiên tới
-        </button> -->
+        </button>
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
@@ -1868,44 +1808,53 @@ $bidCount = $res_count->fetch_assoc()['total'];
             });
         });
 
-        // 2. Star Dust Particle System
+        // 2. Star Dust Particle System - Nâng cấp
         const canvas = document.getElementById('star-dust');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         let stars = [];
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 200; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 1.5,
-                vX: (Math.random() - 0.5) * 0.2,
-                vY: (Math.random() - 0.5) * 0.2
+                size: Math.random() * 2,
+                vX: (Math.random() - 0.5) * 0.3,
+                vY: (Math.random() - 0.5) * 0.3,
+                opacity: Math.random()
             });
         }
 
         function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00FFFF";
+
             stars.forEach(s => {
                 s.x += s.vX;
                 s.y += s.vY;
-                if (s.x < 0 || s.x > canvas.width) s.vX *= -1;
-                if (s.y < 0 || s.y > canvas.height) s.vY *= -1;
+
+                // Tràn biên thì xuất hiện ở phía đối diện (Loop)
+                if (s.x < 0) s.x = canvas.width;
+                if (s.x > canvas.width) s.x = 0;
+                if (s.y < 0) s.y = canvas.height;
+                if (s.y > canvas.height) s.y = 0;
+
+                // Vẽ hạt với hiệu ứng phát sáng nhẹ
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(153, 255, 255, ${s.opacity})`; // Màu Cyan nhạt
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = "#00FFFF";
                 ctx.fill();
             });
             requestAnimationFrame(animateStars);
         }
         animateStars();
-
-        // 3. Mobile 3D Carousel (Simple version)
-        if (window.innerWidth < 1024) {
-            // Sử dụng cử chỉ vuốt để thay đổi focus cho thẻ
-            // Ở đây có thể tích hợp thư viện Swiper.js hoặc tự viết logic xoay 3D
-        }
     });
 
     // ----------------------------- section 4 ----------------------------- //
