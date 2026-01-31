@@ -434,8 +434,8 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <nav id="strategic-filter" class="sticky top-0 z-[80] w-full px-6 py-4 transition-all duration-500" style="background-color: #000814;">
-        <div class="max-w-[1400px] mx-auto">
-            <div class="glass-filter rounded-2xl md:rounded-full px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 border border-white/10 shadow-2xl">
+        <div class="max-w-[1400px] mx-auto ">
+            <div class="glass-filter rounded-2xl md:rounded-full px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 border border-white/10 shadow-2xl ">
 
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto">
                     <span class="text-[10px] tracking-widest text-white/40 uppercase mr-2 hidden lg:block">Phân loại:</span>
@@ -462,15 +462,15 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
 
                 <div class="flex items-center gap-6">
                     <div class="text-right hidden sm:block">
-                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none">
+                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none text-center">
                             <?php echo (count($data['cars']) + count($data['motorbikes'])); ?>
                         </span>
                         <span class="text-[8px] text-white/30 uppercase tracking-widest">Kết quả</span>
                     </div>
-                    <button class="bg-blue-600 hover:bg-white hover:text-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[2px] transition-all duration-500 flex items-center gap-2">
+                    <!-- <button class="bg-blue-600 hover:bg-white hover:text-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[2px] transition-all duration-500 flex items-center gap-2">
                         <i class="ri-equalizer-line"></i>
                         <span class="hidden sm:inline">LỌC CHUYÊN SÂU</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -493,7 +493,7 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
                     <div class="flex flex-wrap gap-3">
                         <button class="filter-tag active">Tất cả</button>
                         <button class="filter-tag">Sảnh tiến</button>
-                        <button class="filter-tag">Tứ quý</button>
+                        <button class="filter-tag">Tứ quýs</button>
                         <button class="filter-tag">Lộc phát</button>
                     </div>
                 </div>
@@ -602,7 +602,9 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
                         </div>
                     </div>
 
-                    <button class="w-full py-4 border border-blue-500/50 text-blue-400 text-[10px] tracking-[4px] font-bold uppercase hover:bg-blue-500 hover:text-white transition-all">Xem danh sách mở rộng</button>
+                    <button onclick="expandDiscovery()" class="w-full py-4 border border-blue-500/50 text-blue-400 text-[10px] tracking-[4px] font-bold uppercase hover:bg-blue-500 hover:text-white transition-all">
+                        Xem danh sách mở rộng
+                    </button>
                 </div>
 
                 <div class="flip-card-container h-[450px] perspective-1000">
@@ -1083,6 +1085,71 @@ $data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
                 scrub: true
             }
         });
+        // Thêm vào trong phần script GSAP của bạn
+        gsap.to("#morphing-text", {
+            scrollTrigger: {
+                trigger: "#acquisition-hub",
+                start: "top center",
+            },
+            onStart: () => {
+                const phrases = ["Tìm thấy báu vật?", "Sở hữu di sản?", "Định danh đẳng cấp?"];
+                let i = 0;
+                setInterval(() => {
+                    gsap.to("#morphing-text", {
+                        opacity: 0,
+                        y: -10,
+                        duration: 0.5,
+                        onComplete: () => {
+                            i = (i + 1) % phrases.length;
+                            document.getElementById("morphing-text").innerText = phrases[i];
+                            gsap.to("#morphing-text", {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.5
+                            });
+                        }
+                    });
+                }, 3000);
+            }
+        });
+    });
+
+    async function expandDiscovery() {
+        // 1. Cuộn mượt mà lên khu vực bộ lọc (Strategic Filter)
+        const filterSection = document.getElementById('strategic-filter');
+        if (filterSection) {
+            filterSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // 2. Cập nhật trạng thái nút "Tất cả" trên thanh Filter
+        const allBtn = document.querySelector('.filter-tag[data-filter-val="all"]');
+        if (allBtn) {
+            document.querySelectorAll('.filter-tag').forEach(btn => btn.classList.remove('active'));
+            allBtn.classList.add('active');
+        }
+
+        // 3. Reset thanh kéo giá về mức cao nhất (5 tỷ)
+        const priceSlider = document.getElementById('price-range');
+        if (priceSlider) {
+            priceSlider.value = 5000;
+            if (typeof updatePriceLabel === 'function') updatePriceLabel(5000);
+        }
+
+        // 4. Gọi hàm cập nhật dữ liệu (AJAX) để lấy toàn bộ danh sách
+        // Chúng ta truyền 'all' vào để lấy tất cả không điều kiện
+        if (typeof updateFilters === 'function') {
+            // Đợi 500ms để cuộn xong rồi mới hiện hiệu ứng render cho đẹp
+            setTimeout(() => {
+                updateFilters('all');
+            }, 500);
+        }
+    }
+    document.getElementById('magnetic-btn').addEventListener('click', () => {
+        // Ví dụ: Mở khung chat hoặc Form yêu cầu
+        alert("Hệ thống Heritage Hunter đã sẵn sàng. Vui lòng để lại số điện thoại, Quản gia sẽ liên hệ ngay!");
     });
 
     // ----------------------------- section 5 ----------------------------- //
