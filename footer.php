@@ -1,5 +1,5 @@
 <footer id="main-footer" class="relative bg-[#000D1A] text-gray-400 pt-16 pb-8 overflow-hidden border-t border-[#007FFF]/30">
-    
+
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div id="blob-1" class="absolute w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] -bottom-20 -left-20"></div>
         <div id="blob-2" class="absolute w-60 h-60 bg-cyan-500/10 rounded-full blur-[80px] top-20 right-0"></div>
@@ -7,7 +7,7 @@
 
     <div class="container mx-auto px-6 relative z-10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            
+
             <div class="footer-col">
                 <div class="mb-6">
                     <span class="text-2xl font-extrabold text-white tracking-tighter uppercase">Biển Số <span class="text-[#007FFF]">Đẹp</span></span>
@@ -58,9 +58,8 @@
                         <span class="text-white font-bold">1900 8888</span>
                     </li>
                     <li class="pt-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg/1200px-Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg.png" 
-                             alt="BCT" 
-                             class="h-12 grayscale hover:grayscale-0 transition-all duration-500 cursor-help opacity-70 hover:opacity-100">
+                        <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg/1200px-Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg.png"alt="BCT"
+                            class="h-12 grayscale hover:grayscale-0 transition-all duration-500 cursor-help opacity-70 hover:opacity-100"> -->
                     </li>
                 </ul>
             </div>
@@ -87,6 +86,7 @@
         position: relative;
         transition: color 0.3s ease;
     }
+
     .footer-link::after {
         content: '';
         position: absolute;
@@ -97,9 +97,11 @@
         background-color: #007FFF;
         transition: width 0.3s ease;
     }
+
     .footer-link:hover {
         color: #fff;
     }
+
     .footer-link:hover::after {
         width: 100%;
     }
@@ -121,19 +123,38 @@
 
     // 2. Floating Blobs (Nền trôi nổi)
     gsap.to("#blob-1", {
-        x: 100, y: 50, duration: 10, repeat: -1, yoyo: true, ease: "sine.inOut"
+        x: 100,
+        y: 50,
+        duration: 10,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
     });
     gsap.to("#blob-2", {
-        x: -80, y: -40, duration: 8, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1
+        x: -80,
+        y: -40,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1
     });
 
     // 3. Hover Link Magnetic (Nhích chữ sang phải)
     document.querySelectorAll('.footer-link').forEach(link => {
         link.addEventListener('mouseenter', () => {
-            gsap.to(link, { x: 8, color: "#ffffff", duration: 0.3 });
+            gsap.to(link, {
+                x: 8,
+                color: "#ffffff",
+                duration: 0.3
+            });
         });
         link.addEventListener('mouseleave', () => {
-            gsap.to(link, { x: 0, color: "#9ca3af", duration: 0.3 });
+            gsap.to(link, {
+                x: 0,
+                color: "#9ca3af",
+                duration: 0.3
+            });
         });
     });
 
@@ -155,14 +176,30 @@
         if (window.innerWidth >= 768) return;
         const content = el.nextElementSibling;
         const icon = el.querySelector('i');
-        
+
         if (content.classList.contains('hidden')) {
             content.classList.remove('hidden');
-            gsap.from(content, { height: 0, opacity: 0, duration: 0.5, ease: "power2.out" });
-            gsap.to(icon, { rotate: 45, duration: 0.3 });
+            gsap.from(content, {
+                height: 0,
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+            gsap.to(icon, {
+                rotate: 45,
+                duration: 0.3
+            });
         } else {
-            gsap.to(content, { height: 0, opacity: 0, duration: 0.3, onComplete: () => content.classList.add('hidden') });
-            gsap.to(icon, { rotate: 0, duration: 0.3 });
+            gsap.to(content, {
+                height: 0,
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => content.classList.add('hidden')
+            });
+            gsap.to(icon, {
+                rotate: 0,
+                duration: 0.3
+            });
         }
     }
 </script>

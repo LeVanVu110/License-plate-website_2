@@ -15,6 +15,7 @@ require_once __DIR__ . "/models/db.php";
 // 3. Nạp Plate.php và News.php (Cùng nằm trong thư mục Models)
 require_once __DIR__ . "/models/Plate.php";
 require_once __DIR__ . "/models/News.php";
+require_once __DIR__ . "/models/Auction.php";
 
 $plateModel = new Plate();
 $data = $plateModel->get(); // Lấy mảng ['cars' => [...], 'motorbikes' => [...]]

@@ -1,4 +1,30 @@
 <?php include "header.php"; ?>
+<?php
+$auctionModel = new Auction();
+// Lấy danh sách các phiên đang live
+$liveAuctions = $auctionModel->getLiveAuctions();
+$currentAuction = $liveAuctions[0] ?? null;
+
+if (!$currentAuction) {
+    echo "<div class='min-h-screen bg-[#00050A] flex items-center justify-center text-cyan-500'>Hiện không có phiên đấu giá nào đang diễn ra.</div>";
+    include "footer.php";
+    exit;
+}
+
+// Tính toán dữ liệu
+$startingPrice = $currentAuction['starting_price'];
+$currentPrice = $currentAuction['current_max_bid'] ?? $startingPrice;
+
+// $endTime = $currentAuction['display_end_time'];
+// $remainingSeconds = $endTime - time();
+$endTime = time() + 10; // Ép thời gian kết thúc là thời điểm hiện tại + 10 giây
+$remainingSeconds = 10; // Luôn luôn còn 10 giây
+
+$sniperActive = $currentAuction['sniper_time'];
+$sql_count = "SELECT COUNT(*) as total FROM bids WHERE auction_id = " . $currentAuction['id'];
+$res_count = Db::$connection->query($sql_count);
+$bidCount = $res_count->fetch_assoc()['total'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -132,10 +158,11 @@
             .cube-face.top,
             .cube-face.bottom {
                 height: 40px;
-               
+
             }
-            .cube-face.bottom{
-                 top: -60px !important;
+
+            .cube-face.bottom {
+                top: -60px !important;
             }
 
             .cube-face.left,
@@ -203,6 +230,17 @@
                 flex: 1;
                 flex-direction: column;
             }
+        }
+
+        /* Ẩn mũi tên tăng giảm của input number */
+        #custom-amount-input::-webkit-outer-spin-button,
+        #custom-amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #custom-amount-input {
+            -moz-appearance: textfield;
         }
 
         /* ----------------------------- section 2 -----------------------------  */
@@ -553,7 +591,7 @@
 <body>
 
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section id="grand-arena" class="relative min-h-screen bg-[#00050A] overflow-hidden flex items-center justify-center">
+    <!-- <section id="grand-arena" class="relative min-h-screen bg-[#00050A] overflow-hidden flex items-center justify-center">
 
         <canvas id="energy-particles" class="absolute inset-0 z-0 opacity-60"></canvas>
 
@@ -636,7 +674,127 @@
                 </div>
             </div>
         </div>
+    </section> -->
+    <div id="toast-container" class="fixed top-30 left-6 z-[9999] flex flex-col gap-3"></div>
+
+    <section id="grand-arena" class="relative min-h-screen bg-[#00050A] overflow-hidden flex items-center justify-center">
+        <canvas id="energy-particles" class="absolute inset-0 z-0 opacity-60"></canvas>
+        <div class="absolute inset-0 z-0">
+            <div class="light-sweep absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent skew-x-12"></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div class="portal-side left-side w-full lg:w-1/4 flex flex-col gap-6">
+                <div class="glass-console p-6 rounded-2xl border-l-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl text-center">
+                    <p class="text-white/40 text-[10px] tracking-[4px] uppercase mb-1">Giá khởi điểm</p>
+                    <p class="text-white text-xl font-mono"><?php echo number_format($startingPrice, 0, ',', '.'); ?>đ</p>
+                    <div class="my-6 h-[1px] bg-cyan-500/20 w-full"></div>
+                    <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-1 font-bold">Giá hiện tại</p>
+                    <h3 id="current-price-display" class="text-[#99FFFF] text-4xl font-bold font-sans drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+                        <?php echo number_format($currentPrice, 0, ',', '.'); ?>
+                    </h3>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                        <p class="text-white/30 text-[8px] uppercase">Lượt trả giá</p>
+                        <p class="text-white font-bold" id="bid-count-display"><?php echo $bidCount; ?></p>
+                    </div>
+                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                        <p class="text-white/30 text-[8px] uppercase">Đang xem</p>
+                        <p class="text-cyan-400 font-bold">1.2k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pedestal-center relative perspective-2000 w-full lg:w-2/4 h-[400px] flex items-center justify-center">
+                <div id="crystal-cube" class="cube-3d">
+                    <div class="cube-face front flex items-center justify-center">
+                        <div class="legacy-plate-3d group">
+                            <div class="plate-aura absolute inset-0 blur-2xl bg-cyan-500/20 group-hover:bg-cyan-500/40 transition-all"></div>
+                            <div class="plate-body relative bg-[#F0F0F0] p-4 rounded-xl border-4 border-[#CCCCCC] shadow-2xl flex flex-col items-center">
+                                <span class="text-black/30 font-bold self-start text-xl">VN</span>
+                                <h2 id="plate-number" class="text-black text-6xl md:text-8xl font-black tracking-tighter py-4">
+                                    <?php echo $currentAuction['plate_number']; ?>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cube-face back bg-cyan-500/5 border border-cyan-500/20"></div>
+                    <div class="cube-face top bg-cyan-500/10 border border-cyan-500/20"></div>
+                    <div class="cube-face bottom bg-cyan-500/20 shadow-[0_0_100px_rgba(0,255,255,0.3)]"></div>
+                </div>
+            </div>
+
+            <div class="portal-side right-side w-full lg:w-1/4 flex flex-col gap-6">
+                <div class="glass-console p-6 rounded-2xl border-r-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl text-right">
+                    <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-2 font-bold">Thời gian còn lại</p>
+                    <div class="flex justify-end items-center gap-2 mb-2">
+                        <?php if ($sniperActive > 0): ?>
+                            <span class="text-[8px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30 animate-pulse">SNIPER PROTECT: +<?php echo $sniperActive; ?>s</span>
+                        <?php endif; ?>
+                    </div>
+                    <div id="countdown-timer" class="digital-font text-5xl md:text-6xl text-cyan-400 font-bold">--:--</div>
+                </div>
+
+                <div class="bid-control flex flex-col gap-4">
+                    <!-- <button id="bid-now-btn" class="relative group overflow-hidden py-6 rounded-2xl bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)] transition-all">
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="text-[10px] text-white/70 uppercase tracking-widest mb-1">Xác nhận mức giá</span>
+                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">Chọn mức giá phía dưới</span>
+                        </div>
+                    </button> -->
+                    <button id="bid-now-btn" class="relative group overflow-hidden py-6 rounded-2xl bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)] transition-all">
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="text-[10px] text-white/70 uppercase tracking-widest mb-1">Xác nhận mức giá</span>
+                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">Chọn mức giá phía dưới</span>
+                        </div>
+                    </button>
+
+                    <div class="flex gap-2">
+                        <button class="bid-prep-btn flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all" data-add="5000000">+5M</button>
+                        <button class="bid-prep-btn flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all" data-add="10000000">+10M</button>
+                        <button id="custom-bid-trigger" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all">Tùy chỉnh</button>
+                    </div>
+                </div>
+
+                <div class="recent-bidders bg-white/5 rounded-xl p-4 overflow-hidden h-32">
+                    <div class="marquee-vertical space-y-2" id="recent-bids-list">
+                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Ẩn danh ***</span> vừa trả giá</p>
+                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Người dùng VIP</span> đã tham gia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
+    <div id="custom-bid-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-[#001A33] border border-cyan-500/30 w-full max-w-md rounded-2xl p-8 shadow-[0_0_50px_rgba(0,255,255,0.1)] scale-90 transition-transform duration-300" id="modal-content">
+            <h3 class="text-cyan-400 text-xl font-bold mb-6 flex items-center gap-2">
+                <i class="ri-edit-2-line"></i> Nhập giá thầu tùy chỉnh
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-white/50 text-xs uppercase tracking-widest">Giá hiện tại</label>
+                    <p class="text-white text-lg font-mono"><?php echo number_format($currentPrice, 0, ',', '.'); ?>đ</p>
+                </div>
+
+                <div class="relative">
+                    <input type="number" id="custom-amount-input"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white text-2xl font-bold focus:outline-none focus:border-cyan-500 transition-all"
+                        placeholder="Nhập số tiền...">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30">VNĐ</span>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button id="close-modal" class="flex-1 py-3 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-all">Hủy</button>
+                    <button id="confirm-custom-bid" class="flex-1 py-3 rounded-xl bg-cyan-600 text-white font-bold hover:bg-cyan-500 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">Áp dụng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="multiverse-stakes" class="relative min-h-screen py-24 bg-[#000F1A] overflow-hidden">
@@ -756,7 +914,7 @@
                 <div class="honor-card group relative" data-sold="true">
                     <div class="video-overlay absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 rounded-2xl overflow-hidden">
                         <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                            <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-street-traffic-with-cars-and-lights-34538-wide.mp4" type="video/mp4">
+                            <!-- <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-street-traffic-with-cars-and-lights-34538-wide.mp4" type="video/mp4"> -->
                         </video>
                     </div>
 
@@ -1013,6 +1171,248 @@
 
             if (navigator.vibrate) navigator.vibrate(50);
         });
+    });
+    // Logic Countdown
+    let timeLeft = <?php echo $remainingSeconds; ?>;
+    const timerDisplay = document.getElementById('countdown-timer');
+
+    function formatTime(seconds) {
+        if (seconds <= 0) return "KẾT THÚC";
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    const countdownInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            timerDisplay.innerText = "HẾT GIỜ";
+            return;
+        }
+        timeLeft--;
+        timerDisplay.innerText = formatTime(timeLeft);
+    }, 1000);
+
+    // Hiệu ứng hạt Energy Particles (Cơ bản)
+    const canvas = document.getElementById('energy-particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function init() {
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+
+    // GSAP cho khối 3D Crystal
+    gsap.to("#crystal-cube", {
+        rotateY: 360,
+        duration: 20,
+        repeat: -1,
+        ease: "none"
+    });
+    // 1. Khởi tạo dữ liệu từ PHP
+    let currentPriceValue = <?php echo $currentPrice; ?>;
+    const auctionId = <?php echo $currentAuction['id']; ?>;
+    let pendingBid = 0; // Biến tạm để giữ số tiền đang chọn
+
+    // 2. Hàm hiển thị thông báo Toast (Thay cho Alert)
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+
+        // Style cho Toast
+        const borderCol = type === 'success' ? 'border-cyan-500' : 'border-red-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-fill text-cyan-400' : 'ri-error-warning-fill text-red-400';
+
+        toast.className = `bg-[#001A33]/95 border-l-4 ${borderCol} text-white p-4 rounded shadow-2xl backdrop-blur-md translate-x-full transition-all duration-500 flex items-center gap-3 min-w-[300px]`;
+        toast.innerHTML = `
+            <i class="${icon} text-xl"></i>
+            <span class="text-sm font-medium">${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        // Animation trượt vào
+        setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+
+        // Tự động biến mất sau 4 giây
+        setTimeout(() => {
+            toast.classList.add('opacity-0', '-translate-y-4');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    // 3. Hàm cập nhật hiển thị số tiền đang chờ trên nút bấm
+    function updatePendingDisplay(amount) {
+        pendingBid = amount;
+        const display = document.getElementById('pending-bid-display');
+        display.innerText = `TRẢ GIÁ: ${new Intl.NumberFormat('vi-VN').format(amount)}đ`;
+
+        // Hiệu ứng nhẹ khi số tiền thay đổi trên nút
+        gsap.fromTo(display, {
+            scale: 0.9
+        }, {
+            scale: 1,
+            duration: 0.3,
+            ease: "back.out"
+        });
+    }
+
+    // 4. Gán sự kiện cho các nút chọn mức giá (+5M, +10M, Tùy chỉnh)
+    document.querySelectorAll('.bid-control button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const text = this.innerText.trim();
+
+            // Nếu là nút Trả giá ngay thì bỏ qua (xử lý riêng ở mục 5)
+            if (this.id === 'bid-now-btn' || text.includes('Trả giá ngay')) return;
+
+            let amountToSet = 0;
+            if (text === '+5M') {
+                amountToSet = currentPriceValue + 5000000;
+                showToast("Đã chọn mức giá +5,000,000đ", "success");
+            } else if (text === '+10M') {
+                amountToSet = currentPriceValue + 10000000;
+                showToast("Đã chọn mức giá +10,000,000đ", "success");
+            }
+
+            if (amountToSet > 0) {
+                updatePendingDisplay(amountToSet);
+            }
+        });
+    });
+
+    // 5. Xử lý nút TRẢ GIÁ NGAY (Bấm cái này mới gửi dữ liệu đi)
+    document.getElementById('bid-now-btn').addEventListener('click', async function() {
+        if (pendingBid <= currentPriceValue) {
+            showToast("Vui lòng chọn mức giá thầu trước!", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+        formData.append('bid_amount', pendingBid);
+
+        try {
+            const response = await fetch('process_bid.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // Cập nhật giá hiển thị chính trên bảng điện tử
+                const priceDisplay = document.getElementById('current-price-display');
+                priceDisplay.innerText = result.new_price;
+                currentPriceValue = pendingBid; // Cập nhật mốc giá hiện tại
+
+                // Reset trạng thái nút chọn
+                pendingBid = 0;
+                document.getElementById('pending-bid-display').innerText = "Chọn mức giá phía dưới";
+
+                // Hiệu ứng Glow cho bảng giá chính
+                gsap.fromTo(priceDisplay, {
+                    scale: 1.3,
+                    color: "#fff"
+                }, {
+                    scale: 1,
+                    color: "#99FFFF",
+                    duration: 0.6
+                });
+
+                showToast(`Chúc mừng! Bạn đã dẫn đầu với giá ${result.new_price}đ`, 'success');
+
+                // Cập nhật lượt trả giá (nếu có element)
+                const countDisp = document.getElementById('bid-count-display');
+                if (countDisp) countDisp.innerText = parseInt(countDisp.innerText) + 1;
+
+            } else {
+                showToast(result.message, 'error');
+            }
+        } catch (error) {
+            showToast("Lỗi kết nối server!", "error");
+            console.error(error);
+        }
+    });
+    const modal = document.getElementById('custom-bid-modal');
+    const modalContent = document.getElementById('modal-content');
+    const customInput = document.getElementById('custom-amount-input');
+
+    // 1. Mở Modal khi bấm nút Tùy chỉnh
+    document.getElementById('custom-bid-trigger').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        customInput.value = currentPriceValue + 1000000; // Gợi ý giá tiếp theo
+        customInput.focus();
+
+        // Hiệu ứng phóng to nhẹ
+        setTimeout(() => modalContent.classList.remove('scale-90'), 10);
+    });
+
+    // 2. Đóng Modal
+    const closeModal = () => {
+        modalContent.classList.add('scale-90');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+    };
+
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // 3. Xử lý khi bấm Áp dụng trong Modal
+    document.getElementById('confirm-custom-bid').addEventListener('click', () => {
+        const val = parseFloat(customInput.value);
+
+        if (!val || val <= currentPriceValue) {
+            showToast("Giá phải lớn hơn giá hiện tại!", "error");
+            return;
+        }
+
+        // Cập nhật giá lên nút chính "Trả giá ngay"
+        updatePendingDisplay(val);
+        showToast("Đã thiết lập mức giá mới", "success");
+        closeModal();
     });
 
     // ----------------------------- section 2 ----------------------------- //
