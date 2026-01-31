@@ -114,7 +114,7 @@
         /* Hiệu ứng khi hover vào nút bấm */
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 127, 255, 0.4);
+            /* box-shadow: 0 10px 20px rgba(0, 127, 255, 0.4); */
         }
 
         /* Mobile specific adjustments */
@@ -886,12 +886,13 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
-<?php  
+<?php
 $newsModel = new News();
 $datas = $newsModel->get();
 
 $featured = $datas['featured'];
 ?>
+
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
     <section id="hero-stage" class="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -1195,7 +1196,33 @@ $featured = $datas['featured'];
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
-    <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
+    <?php
+    // 1. Lấy 5 giao dịch (bids) mới nhất để làm Marquee chạy ngang
+    $sql_marquee = "SELECT b.bid_amount, p.plate_number, c.full_name 
+                FROM bids b 
+                JOIN auctions a ON b.auction_id = a.id 
+                JOIN plates p ON a.plate_id = p.id 
+                JOIN customers c ON b.customer_id = c.id 
+                ORDER BY b.id DESC LIMIT 5"; // Sắp xếp theo ID giảm dần để lấy lượt mới nhất
+    $res_marquee = Db::$connection->query($sql_marquee);
+    // 2. Lấy 1 phiên đấu giá "Tiêu điểm" (Có giá cao nhất hiện tại)
+    $sql_spotlight = "SELECT a.id, p.plate_number, a.end_time, MAX(b.bid_amount) as current_max
+                  FROM auctions a
+                  JOIN plates p ON a.plate_id = p.id
+                  LEFT JOIN bids b ON a.id = b.auction_id
+                  WHERE a.end_time > NOW()
+                  GROUP BY a.id
+                  ORDER BY current_max DESC LIMIT 1";
+    $res_spotlight = Db::$connection->query($sql_spotlight);
+    $spotlight = $res_spotlight->fetch_assoc();
+
+    // 3. Lấy 3 biển số vừa được thêm vào hệ thống (Ký gửi mới nhất)
+    $sql_new_plates = "SELECT plate_number, starting_price, vehicle_type 
+                   FROM plates 
+                   ORDER BY id DESC LIMIT 3";
+    $res_new_plates = Db::$connection->query($sql_new_plates);
+    ?>
+    <!-- <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
         <div class="grainy-overlay"></div>
 
         <div class="absolute inset-0 pointer-events-none">
@@ -1300,6 +1327,72 @@ $featured = $datas['featured'];
                         <i class="ri-bank-line text-2xl"></i>
                         <i class="ri-newspaper-line text-2xl"></i>
                         <i class="ri-government-line text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
+        <div class="marquee-wrapper overflow-hidden mb-20">
+            <div class="marquee-content flex gap-8 whitespace-nowrap">
+                <?php while ($m = $res_marquee->fetch_assoc()): ?>
+                    <div class="transaction-card flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-sm border border-gray-100">
+                        <span class="customer-name font-bold text-[#001F3F]"><?php echo mb_substr($m['full_name'], 0, 3); ?>***</span>
+                        <span class="plate-number text-cyan-600 font-mono"><?php echo $m['plate_number']; ?></span>
+                        <span class="status-tag text-[10px]  text-green-600 px-2 py-1 rounded-md uppercase">Vừa trả giá</span>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="w-full lg:w-[60%] bg-[#001F3F] rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                    <?php if ($spotlight): ?>
+                        <div class="relative z-10">
+                            <h3 class="serif-title text-3xl mb-8 uppercase tracking-widest text-[#007FFF]">Phiên đấu giá tiêu điểm</h3>
+                            <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+                                <div class="plate-highlight bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20">
+                                    <span class="text-4xl md:text-5xl font-bold tracking-tighter serif-title"><?php echo $spotlight['plate_number']; ?></span>
+                                </div>
+
+                                <div class="countdown-timer flex gap-6 js-main-timer" data-endtime="<?php echo $spotlight['end_time']; ?>">
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold hour-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giờ</span>
+                                    </div>
+                                    <span class="text-4xl text-[#007FFF]">:</span>
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold min-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Phút</span>
+                                    </div>
+                                    <span class="text-4xl text-[#007FFF]">:</span>
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold sec-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giây</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="dau_gia.php?id=<?php echo $spotlight['id']; ?>" class="inline-block mt-10 px-10 py-4 bg-white text-[#001F3F] font-bold rounded-full hover:bg-[#007FFF] hover:text-white transition-all duration-500 shadow-xl">
+                                THAM GIA ĐẤU GIÁ NGAY
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    <i class="ri-hammer-line absolute right-[-20px] bottom-[-20px] text-[200px] text-white/5 rotate-12"></i>
+                </div>
+
+                <div class="w-full lg:w-[40%] bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white">
+                    <h3 class="sans-text font-bold tracking-[0.2em] text-[#001F3F] mb-8 text-sm uppercase">Ký gửi mới nhất</h3>
+                    <div class="space-y-6">
+                        <?php while ($p = $res_new_plates->fetch_assoc()): ?>
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                                <div>
+                                    <p class="text-sm font-bold text-[#001F3F]"><?php echo $p['plate_number']; ?></p>
+                                    <p class="text-[10px] text-gray-400">Mới cập nhật - <?php echo $p['vehicle_type']; ?></p>
+                                </div>
+                                <span class="text-[#007FFF] font-bold"><?php echo number_format($p['starting_price'] / 1000000000, 1); ?> Tỷ</span>
+                            </div>
+                        <?php endwhile; ?>
                     </div>
                 </div>
             </div>
@@ -1843,6 +1936,33 @@ $featured = $datas['featured'];
             ease: "power4.out"
         });
     });
+
+    function initSpotlightTimer() {
+        const timerWrap = document.querySelector('.js-main-timer');
+        if (!timerWrap) return;
+
+        const endTime = new Date(timerWrap.getAttribute('data-endtime')).getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                clearInterval(x);
+                timerWrap.innerHTML = "PHIÊN ĐÃ KẾT THÚC";
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerWrap.querySelector('.hour-val').innerText = hours < 10 ? "0" + hours : hours;
+            timerWrap.querySelector('.min-val').innerText = minutes < 10 ? "0" + minutes : minutes;
+            timerWrap.querySelector('.sec-val').innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+    }
+    initSpotlightTimer();
 
     // ----------------------------- section 5 ----------------------------- //
     // Sử dụng IIFE để cô lập code và chạy ngay
