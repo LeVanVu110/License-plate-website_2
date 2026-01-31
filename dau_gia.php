@@ -244,6 +244,31 @@ $bidCount = $res_count->fetch_assoc()['total'];
             -moz-appearance: textfield;
         }
 
+        .recent-bidders {
+            position: relative;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        #recent-bids-list {
+            display: flex;
+            flex-direction: column;
+            animation: marquee-up 10s linear infinite;
+            /* Nếu bạn muốn tự cuộn */
+        }
+
+        /* Hoặc nếu muốn cuộn bằng tay thì bỏ animation, thêm: */
+        .recent-bidders {
+            overflow-y: auto;
+        }
+
+        .recent-bidders::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .recent-bidders::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
         /* ----------------------------- section 2 -----------------------------  */
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
 
@@ -1534,6 +1559,42 @@ $bidCount = $res_count->fetch_assoc()['total'];
                 console.error('Lỗi khi gọi file finalize_auction.php:', error);
             });
     }
+
+    function updateRecentBids() {
+        const auctionId = <?php echo $currentAuction['id']; ?>;
+
+        fetch(`get_recent_bids.php?auction_id=${auctionId}`)
+            .then(response => response.json())
+            .then(data => {
+                const listContainer = document.getElementById('recent-bids-list');
+                if (data.length === 0) {
+                    listContainer.innerHTML = '<p class="text-[10px] text-white/40">Chưa có lượt trả giá nào.</p>';
+                    return;
+                }
+
+                // Tạo HTML cho danh sách
+                let html = '';
+                data.forEach(bid => {
+                    html += `
+                    <div class="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                        <p class="text-[10px] text-white/60">
+                            <span class="text-cyan-400 font-bold">${bid.name}</span> vừa trả giá
+                        </p>
+                        <span class="text-[9px] text-yellow-400">${bid.amount}</span>
+                    </div>
+                `;
+                });
+
+                listContainer.innerHTML = html;
+            })
+            .catch(err => console.error("Lỗi lấy danh sách bid:", err));
+    }
+
+    // Chạy lần đầu ngay khi load trang
+    updateRecentBids();
+
+    // Tự động cập nhật mỗi 3 giây
+    setInterval(updateRecentBids, 3000);
 
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
