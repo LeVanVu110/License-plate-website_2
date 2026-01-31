@@ -36,16 +36,11 @@ class Auction extends Db
     // Lấy chi tiết 1 phiên đấu giá cụ thể kèm thông tin người đang dẫn đầu
     public function getAuctionDetail($id)
     {
-        $sql = "SELECT a.*, p.plate_number, p.category, p.address,
-                (SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id) as current_price,
-                (SELECT COUNT(*) FROM bids WHERE auction_id = a.id) as total_bids
-                FROM auctions a
-                JOIN plates p ON a.plate_id = p.id
-                WHERE a.id = ?";
-
-        $stmt = self::$connection->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $sql = "SELECT a.*, p.plate_number, p.vehicle_type, p.starting_price 
+            FROM auctions a 
+            JOIN plates p ON a.plate_id = p.id 
+            WHERE a.id = $id";
+        $result = Db::$connection->query($sql);
+        return $result->fetch_assoc();
     }
 }

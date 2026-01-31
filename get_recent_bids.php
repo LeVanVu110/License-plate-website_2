@@ -21,7 +21,7 @@ while ($row = $result->fetch_assoc()) {
     // Ẩn bớt tên khách hàng để bảo mật (Ví dụ: Nguyễn Văn A -> Nguy*** A)
     $name = $row['full_name'];
     $display_name = mb_substr($name, 0, 3) . "***" . mb_substr($name, -1);
-    
+
     $data[] = [
         'name' => $display_name,
         'amount' => number_format($row['bid_amount'], 0, ',', '.') . 'đ',
