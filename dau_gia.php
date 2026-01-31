@@ -1,5 +1,6 @@
 <?php include "header.php"; ?>
 <?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 $auctionModel = new Auction();
 // Lấy danh sách các phiên đang live
 $liveAuctions = $auctionModel->getLiveAuctions();
@@ -15,10 +16,10 @@ if (!$currentAuction) {
 $startingPrice = $currentAuction['starting_price'];
 $currentPrice = $currentAuction['current_max_bid'] ?? $startingPrice;
 
-// $endTime = $currentAuction['display_end_time'];
-// $remainingSeconds = $endTime - time();
-$endTime = time() + 10; // Ép thời gian kết thúc là thời điểm hiện tại + 10 giây
-$remainingSeconds = 10; // Luôn luôn còn 10 giây
+$endTime = strtotime($currentAuction['end_time']); // Chuyển "2026-01-31 16:16:44" thành con số giây
+$remainingSeconds = $endTime - time();
+// $endTime = time() + 10; // Ép thời gian kết thúc là thời điểm hiện tại + 10 giây
+// $remainingSeconds = 10; // Luôn luôn còn 10 giây
 
 $sniperActive = $currentAuction['sniper_time'];
 $sql_count = "SELECT COUNT(*) as total FROM bids WHERE auction_id = " . $currentAuction['id'];
@@ -794,6 +795,42 @@ $bidCount = $res_count->fetch_assoc()['total'];
             </div>
         </div>
     </div>
+    <div class="mt-10 bg-[#001A33] p-6 rounded-2xl border border-white/10">
+        <h3 class="text-white font-bold mb-4">Thông báo mới nhất</h3>
+        <table class="w-full text-left text-sm text-white/70">
+            <thead>
+                <tr class="border-b border-white/5">
+                    <th class="py-2">Tiêu đề</th>
+                    <th>Nội dung</th>
+                    <th>Thời gian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $u_id = $_SESSION['user_id'] ?? 0;
+                $notifs = Db::$connection->query("SELECT * FROM notifications WHERE receiver_id = $u_id ORDER BY created_at DESC LIMIT 5");
+                while ($n = $notifs->fetch_assoc()):
+                ?>
+                    <tr class="border-b border-white/5">
+                        <td class="py-3 text-cyan-400"><?php echo $n['title']; ?></td>
+                        <td><?php echo $n['content']; ?></td>
+                        <td class="text-xs"><?php echo $n['created_at']; ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between text-xs mb-4">
+        <span class="text-white/50 uppercase">Hạn mức còn lại:</span>
+        <span class="text-cyan-400 font-bold">
+            <?php
+            // Lấy hạn mức từ database tương tự như lấy giá
+            $u_id = $_SESSION['user_id'];
+            $u_info = Db::$connection->query("SELECT bidding_limit FROM customers WHERE id = $u_id")->fetch_assoc();
+            echo number_format($u_info['bidding_limit'], 0, ',', '.');
+            ?>đ
+        </span>
+    </div>
 
 
     <!-- ----------------------------- section 2 -----------------------------  -->
@@ -1148,29 +1185,29 @@ $bidCount = $res_count->fetch_assoc()['total'];
         }
         animate();
 
-        // 4. Price Surge Logic
-        document.getElementById('bid-now-btn').addEventListener('click', () => {
-            const price = document.getElementById('current-price');
+        // // 4. Price Surge Logic
+        // document.getElementById('bid-now-btn').addEventListener('click', () => {
+        //     const price = document.getElementById('current-price');
 
-            // Hiệu ứng bùng nổ giá
-            gsap.timeline()
-                .to(price, {
-                    scale: 1.4,
-                    filter: "brightness(2)",
-                    duration: 0.1
-                })
-                .set(price, {
-                    textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN')
-                })
-                .to(price, {
-                    scale: 1,
-                    filter: "brightness(1)",
-                    duration: 0.4,
-                    ease: "back.out"
-                });
+        //     // Hiệu ứng bùng nổ giá
+        //     gsap.timeline()
+        //         .to(price, {
+        //             scale: 1.4,
+        //             filter: "brightness(2)",
+        //             duration: 0.1
+        //         })
+        //         .set(price, {
+        //             textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN')
+        //         })
+        //         .to(price, {
+        //             scale: 1,
+        //             filter: "brightness(1)",
+        //             duration: 0.4,
+        //             ease: "back.out"
+        //         });
 
-            if (navigator.vibrate) navigator.vibrate(50);
-        });
+        //     if (navigator.vibrate) navigator.vibrate(50);
+        // });
     });
     // Logic Countdown
     let timeLeft = <?php echo $remainingSeconds; ?>;
@@ -1414,6 +1451,89 @@ $bidCount = $res_count->fetch_assoc()['total'];
         showToast("Đã thiết lập mức giá mới", "success");
         closeModal();
     });
+    // 1. Khai báo các biến cần thiết (đảm bảo lấy đúng từ PHP)
+    let remainingSeconds = <?php echo $remainingSeconds; ?>;
+    const currentAuctionId = <?php echo $currentAuction['id']; ?>;
+    window.isFinalized = false; // Dùng window để đảm bảo biến toàn cục
+
+    const countdownTimer = setInterval(function() {
+        if (remainingSeconds <= 0) {
+            clearInterval(countdownTimer);
+            // document.getElementById('countdown').innerHTML = "00 : 00 : 00";
+
+            // Vô hiệu hóa nút trả giá
+            const bidBtn = document.getElementById('bid-now-btn');
+            if (bidBtn) {
+                bidBtn.disabled = true;
+                bidBtn.innerText = "PHIÊN ĐÃ KẾT THÚC";
+                bidBtn.style.backgroundColor = "#4B5563";
+                bidBtn.style.cursor = "not-allowed";
+            }
+
+            // CHỈ GỌI KẾT THÚC MỘT LẦN
+            if (!window.isFinalized) {
+                window.isFinalized = true;
+                console.log("Hết giờ! Đang gọi lệnh trừ tiền cho phiên ID: " + currentAuctionId);
+                finalizeAuction(currentAuctionId);
+            }
+            return;
+        }
+
+        remainingSeconds--;
+
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+        const seconds = remainingSeconds % 60;
+
+        document.getElementById('countdown').innerHTML =
+            `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+
+        if (remainingSeconds <= 5) {
+            document.getElementById('countdown').style.color = "#EF4444";
+        }
+    }, 1000);
+
+    // 2. Hàm finalizeAuction sửa lại để đảm bảo PHP nhận được auction_id
+    function finalizeAuction(auctionId) {
+        // Sử dụng URLSearchParams để chắc chắn PHP nhận được qua $_POST
+        const params = new URLSearchParams();
+        params.append('auction_id', auctionId);
+
+        fetch('finalize_auction.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Kết quả từ Server:", data);
+
+                if (data.status === 'success') {
+                    // Lấy ID người dùng hiện tại từ PHP để so sánh
+                    const currentUserId = <?php echo $_SESSION['user_id'] ?? 0; ?>;
+
+                    if (data.winner_id == currentUserId) {
+                        alert("CHÚC MỪNG! Bạn đã thắng cuộc. Hạn mức tiền của bạn đã bị khấu trừ.");
+                    } else {
+                        console.log("Phiên đấu giá kết thúc. Người thắng là khách hàng ID: " + data.winner_id);
+                    }
+                    // Load lại trang sau 2 giây để cập nhật số tiền mới trên giao diện
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+
+                } else if (data.status === 'already_finalized') {
+                    console.log("Phiên này đã được trừ tiền trước đó.");
+                } else if (data.status === 'no_bids') {
+                    console.log("Không có ai đặt giá, không trừ tiền.");
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gọi file finalize_auction.php:', error);
+            });
+    }
 
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
