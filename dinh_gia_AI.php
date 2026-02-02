@@ -221,6 +221,21 @@
             animation: master-pulse 2s infinite ease-in-out;
         }
 
+        #virtual-pdf {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 2px solid #22d3ee;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+            color: #000;
+        }
+
+        #virtual-pdf::before {
+            content: "📄";
+            font-size: 50px;
+        }
+
         /* Mobile Swiper Layout */
         @media (max-width: 768px) {
             #power-cards-container {
@@ -527,7 +542,10 @@
                         </div>
                         <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Xác Thực</h3>
                         <p class="text-sm text-white/60 mb-8">Tải bản báo cáo định giá (PDF) có dấu mộc bảo chứng AI.</p>
-                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Tải báo cáo</button>
+
+                        <button id="btn-download-report" class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
+                            Tải báo cáo
+                        </button>
                     </div>
                     <div id="virtual-pdf" class="absolute inset-0 bg-white opacity-0 scale-0 pointer-events-none rounded-lg flex items-center justify-center">
                         <span class="text-black font-bold">PDF REPORT</span>
@@ -544,7 +562,12 @@
                         </div>
                         <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Săn Tìm</h3>
                         <p class="text-sm text-white/60 mb-8">Tìm kiếm những biển số có giá trị tương đương trong kho báu.</p>
-                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Khám phá kho</button>
+                        <a href="detail_oto_xemay.php" class="inline-block">
+                            <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
+                                Khám phá kho
+                            </button>
+                        </a>
+                        <!-- <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Khám phá kho</button> -->
                     </div>
                 </div>
             </div>
@@ -1056,6 +1079,69 @@
                     if (navigator.vibrate) navigator.vibrate(20);
                     lastScrollLeft = currentScroll;
                 }
+            });
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadBtn = document.getElementById('btn-download-report');
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                // Lấy dữ liệu thực tế từ màn hình
+                const currentPrice = document.getElementById('value-counter').innerText;
+                const plate = document.getElementById('analyzing-plate').innerText;
+                const virtualPdf = document.getElementById('virtual-pdf');
+
+                // Nếu chưa định giá (vẫn là 0), thông báo cho người dùng
+                if (currentPrice === "0" || plate.includes("00A-000.00")) {
+                    if (typeof showToast === "function") showToast("Vui lòng định giá biển số trước!");
+                    else alert("Vui lòng định giá biển số trước!");
+                    return;
+                }
+
+                // Hiệu ứng Visual
+                downloadBtn.innerText = "ĐANG XỬ LÝ...";
+                gsap.to(virtualPdf, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.5
+                });
+
+                setTimeout(() => {
+                    try {
+                        // Nội dung báo cáo
+                        const content = `BAO CAO DINH GIA AI\nBien so: ${plate}\nGia tri: ${currentPrice} Trieu VND\nMa xac thuc: ${Math.random().toString(36).toUpperCase()}`;
+
+                        // Tạo Blob và tải file
+                        const blob = new Blob([content], {
+                            type: 'text/plain'
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = `Bao_cao_${plate}.txt`;
+
+                        document.body.appendChild(a);
+                        a.click(); // Kích hoạt tải
+
+                        // Dọn dẹp
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+
+                        // Reset giao diện
+                        downloadBtn.innerText = "TẢI BÁO CÁO";
+                        gsap.to(virtualPdf, {
+                            opacity: 0,
+                            scale: 0,
+                            duration: 0.3
+                        });
+                        showToast("Đã tải file thành công!");
+                    } catch (err) {
+                        console.error("Lỗi tải file:", err);
+                        // downloadBtn.innerText = "LỖI TẢI FILE";
+                    }
+                }, 1500);
             });
         }
     });
