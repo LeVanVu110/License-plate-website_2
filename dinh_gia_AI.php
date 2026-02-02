@@ -63,6 +63,46 @@
             }
         }
 
+        /* Thông Báo  */
+        /* Toast Notification Style */
+        #toast-container {
+            position: fixed;
+            top: 110px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border-left: 4px solid #22d3ee;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            display: flex;
+            items-center: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: #22d3ee;
+            font-size: 1.2rem;
+        }
+
+        .toast-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
         /* ----------------------------- section 2 -----------------------------  */
         .glass-module {
             background: linear-gradient(135deg, rgba(0, 26, 51, 0.4), rgba(0, 15, 26, 0.8));
@@ -204,6 +244,7 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
+    <div id="toast-container"></div>
     <section id="quantum-portal" class="relative min-h-screen bg-[#000814] overflow-hidden flex items-center justify-center">
 
         <canvas id="starfield-canvas" class="absolute inset-0 z-0"></canvas>
@@ -226,9 +267,14 @@
 
                 <div class="relative z-20 w-full px-8 text-center">
                     <div class="input-wrapper relative">
-                        <input type="text" id="plate-input" maxlength="10" placeholder="NHẬP BIỂN SỐ..."
+                        <input type="text"
+                            id="plate-input"
+                            maxlength="10"
+                            placeholder="NHẬP BIỂN SỐ..."
+                            pattern="[0-9]{2}[A-Z]{1}-[0-9]{3}\.[0-9]{2}"
+                            oninput="this.value = this.value.toUpperCase()"
                             class="w-full bg-transparent border-b-2 border-cyan-500/30 py-4 text-center text-3xl md:text-5xl font-mono text-cyan-400 focus:outline-none placeholder:text-cyan-900 tracking-widest uppercase">
-
+                        <p id="error-msg" class="text-red-500 text-xs mt-2 hidden">Vui lòng nhập đúng định dạng (VD: 51K-888.88)</p>
                         <div id="laser-line" class="absolute left-0 right-0 h-[2px] bg-cyan-400 shadow-[0_0_15px_#22d3ee] opacity-0 pointer-events-none"></div>
                     </div>
 
@@ -549,42 +595,81 @@
         });
 
         input.addEventListener('input', () => {
+            // --- PHẦN TỰ ĐỘNG ĐỊNH DẠNG (NEW) ---
+            let val = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
+            let formatted = "";
+
+            if (val.length > 0) {
+                formatted += val.substring(0, 2); // 2 số đầu
+                if (val.length >= 3) formatted += val.substring(2, 3); // 1 chữ cái
+                if (val.length > 3) formatted += "-" + val.substring(3, 6); // Dấu - và 3 số
+                if (val.length > 6) formatted += "." + val.substring(6, 8); // Dấu . và 2 số
+            }
+            e.target.value = formatted;
             // Digital Ripple
             speedMult = 5;
             setTimeout(() => speedMult = 1, 200);
             if ("vibrate" in navigator) navigator.vibrate(10);
         });
 
-        // 5. THE NEURAL CRUNCH (CLICK BUTTON)
+        // Hàm hiển thị thông báo bên phải màn hình
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+        <i class="ri-error-warning-line toast-icon"></i>
+        <div class="toast-content">${message}</div>
+    `;
+
+            container.appendChild(toast);
+
+            // Hiệu ứng hiện ra (dùng GSAP hoặc CSS class)
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+        // 5. THE NEURAL CRUNCH (SỬA ĐỔI)
+        // SỬA LẠI MỤC SỐ 5 TRONG CODE CỦA BẠN
         document.getElementById('btn-valuation').addEventListener('click', () => {
-            const crunchTl = gsap.timeline();
+            const input = document.getElementById('plate-input');
+            const laser = document.getElementById('laser-line');
+            const plateValue = input.value.trim();
 
-            // Co hội tụ hạt và rung màn hình
-            speedMult = 20;
-            document.body.classList.add('shake-screen');
+            // Regex chuẩn: 2 số - 1 chữ - gạch ngang - 3 số - chấm - 2 số
+            const plateRegex = /^\d{2}[A-Z]-\d{3}\.\d{2}$/;
 
-            crunchTl.to("#scanner-hub", {
-                    scale: 0.8,
-                    filter: "blur(10px)",
-                    duration: 0.5
-                })
-                .to(".radar-ring", {
-                    rotation: "+=1080",
-                    duration: 1,
-                    ease: "power4.in"
-                }, 0)
-                .to("#quantum-portal", {
-                    backgroundColor: "#22d3ee",
-                    duration: 0.1,
+            if (!plateRegex.test(plateValue)) {
+                // 1. Rung lắc input
+                gsap.to(input, {
+                    x: 10,
+                    duration: 0.05,
+                    repeat: 5,
+                    yoyo: true
+                });
+
+                // 2. Đổi laser sang màu đỏ cảnh báo
+                gsap.to(laser, {
+                    backgroundColor: "#ff4444",
+                    duration: 0.2,
                     yoyo: true,
                     repeat: 1
-                })
-                .add(() => {
-                    // Transition effect sang Section tiếp theo
-                    console.log("Valuation complete. Jumping to results...");
-                    document.body.classList.remove('shake-screen');
-                    // Window.scrollTo(...)
                 });
+
+                // 3. Hiển thị thông báo nhỏ bên góc phải (Thay vì alert)
+                showToast("Định dạng không hợp lệ. Ví dụ đúng: 51K-888.88");
+
+                return;
+            }
+
+            // --- Nếu đúng thì chạy hiệu ứng "Neural Crunch" như cũ ---
+            const crunchTl = gsap.timeline();
+            // ... code hiệu ứng của bạn tiếp tục ở đây ...
+            showToast("Đang kết nối Neural Network..."); // Thông báo thành công nếu muốn
         });
 
         // DATA STREAM DECRYPTION (Rìa màn hình)
@@ -597,6 +682,7 @@
             }
         });
     });
+
 
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
