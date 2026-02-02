@@ -1,4 +1,17 @@
 <?php include "header.php"; ?>
+<?php
+// Giả sử $user_id = $_SESSION['user_id'];
+$customerModel = new Customer();
+$summary = $customerModel->getAuctionSummary($_SESSION['user_id']);
+
+// Format tiền Capital sang dạng B (Tỷ) hoặc M (Triệu)
+$cap = $summary['capital'];
+if ($cap >= 1000000000) {
+    $capText = round($cap / 1000000000, 1) . 'B';
+} else {
+    $capText = round($cap / 1000000, 0) . 'M';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -307,7 +320,7 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section id="battle-summary" class="relative min-h-screen flex items-center justify-center py-20 px-6 bg-[#000814] overflow-hidden">
+    <!-- <section id="battle-summary" class="relative min-h-screen flex items-center justify-center py-20 px-6 bg-[#000814] overflow-hidden">
         <div class="nebula-bg absolute inset-0 opacity-40 pointer-events-none"></div>
 
         <div class="container mx-auto max-w-7xl relative z-10">
@@ -365,10 +378,75 @@
 
             </div>
         </div>
+    </section> -->
+    <section id="battle-summary" class="relative min-h-screen flex items-center justify-center py-20 px-6 bg-[#000814] overflow-hidden">
+        <div class="nebula-bg absolute inset-0 opacity-40 pointer-events-none"></div>
+
+        <div class="container mx-auto max-w-7xl relative z-10">
+            <div class="text-center mb-16 md:mb-24">
+                <h2 class="text-[10px] tracking-[8px] text-cyan-400 uppercase mb-4 opacity-70">Auction Intelligence</h2>
+                <h1 class="serif text-4xl md:text-6xl text-white font-light">Tổng Kết <span class="text-white/50 italic">Chiến Tích</span></h1>
+            </div>
+
+            <div class="totems-wrapper flex flex-col lg:flex-row items-center justify-around gap-16 lg:gap-8">
+
+                <div class="totem-item group relative" data-speed="0.05">
+                    <div class="sphere-glass relative w-64 h-64 md:w-72 md:h-72 rounded-full border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(0,255,255,0.1)]">
+                        <div class="liquid-fill absolute bottom-0 left-0 w-full bg-gradient-to-t from-cyan-500/40 to-cyan-300/10"
+                            style="height: <?php echo min($summary['wins'] * 10, 100); ?>%"
+                            data-percent="<?php echo min($summary['wins'] * 10, 100); ?>"></div>
+                        <div class="relative z-10 text-center">
+                            <p class="text-[10px] text-silver tracking-[3px] uppercase mb-2">The Victor</p>
+                            <span class="space-mono text-5xl md:text-6xl text-white font-bold counter"
+                                data-target="<?php echo $summary['wins']; ?>">0</span>
+                            <p class="text-[9px] text-cyan-400/60 mt-2 uppercase">Cuộc đấu thành công</p>
+                        </div>
+                    </div>
+                    <div class="extra-stats absolute -top-10 -right-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                        <p class="text-[10px] text-white/40 space-mono">Hụt: <?php echo $summary['lost']; ?> lượt</p>
+                    </div>
+                </div>
+
+                <div class="totem-item group relative" data-speed="-0.03">
+                    <div class="sphere-glass relative w-64 h-64 md:w-72 md:h-72 rounded-full border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(138,43,226,0.15)]">
+                        <div class="liquid-fill absolute bottom-0 left-0 w-full bg-gradient-to-t from-violet-600/40 to-cyan-400/10"
+                            style="height: <?php echo $summary['win_rate']; ?>%"
+                            data-percent="<?php echo $summary['win_rate']; ?>"></div>
+                        <div class="relative z-10 text-center p-4">
+                            <p class="text-[10px] text-silver tracking-[3px] uppercase mb-2">The Strategy</p>
+                            <span class="space-mono text-5xl md:text-6xl text-white font-bold counter"
+                                data-target="<?php echo $summary['win_rate']; ?>">0</span><span class="text-2xl text-white">%</span>
+                            <p class="text-[9px] text-cyan-400/60 mt-2 uppercase">Win Rate</p>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full -rotate-90">
+                            <circle cx="50%" cy="50%" r="48%" stroke="rgba(0, 255, 255, 0.1)" stroke-width="2" fill="none" />
+                            <circle class="progress-ring" cx="50%" cy="50%" r="48%" stroke="#00ffff" stroke-width="2" fill="none"
+                                stroke-dasharray="1000"
+                                style="stroke-dashoffset: <?php echo 1000 - (10 * $summary['win_rate']); ?>;" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="totem-item group relative" data-speed="0.04">
+                    <div class="sphere-glass relative w-64 h-64 md:w-72 md:h-72 rounded-full border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(0,127,255,0.1)]">
+                        <div class="liquid-fill absolute bottom-0 left-0 w-full bg-gradient-to-t from-blue-600/40 to-cyan-400/10"
+                            style="height: 60%" data-percent="60"></div>
+                        <div class="relative z-10 text-center">
+                            <p class="text-[10px] text-silver tracking-[3px] uppercase mb-2">The Capital</p>
+                            <div class="flex flex-col items-center">
+                                <span class="space-mono text-3xl md:text-4xl text-white font-bold"><?php echo $capText; ?></span>
+                                <p class="text-[9px] text-cyan-400/60 mt-2 uppercase italic text-center">Tài sản sở hữu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="live-war-room" class="relative min-h-screen py-16 md:py-24 px-4 md:px-6 bg-[#000814] overflow-hidden">
+    <!-- <section id="live-war-room" class="relative min-h-screen py-16 md:py-24 px-4 md:px-6 bg-[#000814] overflow-hidden">
         <div class="container mx-auto max-w-6xl relative z-10">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 border-b border-white/10 pb-6 gap-4">
                 <div class="text-center md:text-left">
@@ -435,7 +513,84 @@
 
             </div>
         </div>
+    </section> -->
+    <?php
+    $liveBids = $customerModel->getLiveWarRoom($_SESSION['user_id']);
+    ?>
+
+    <section id="live-war-room" class="relative min-h-screen py-16 md:py-24 px-4 md:px-6 bg-[#000814] overflow-hidden">
+        <div class="container mx-auto max-w-6xl relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 border-b border-white/10 pb-6 gap-4">
+                <div class="text-center md:text-left">
+                    <h2 class="text-[10px] tracking-[5px] text-red-500 uppercase mb-2">Live Situation</h2>
+                    <h3 class="serif text-3xl md:text-4xl text-white">Phòng <span class="text-red-500">Lệnh Chiến</span></h3>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-[10px] text-white/40 space-mono">STRIKE TIME: <?php echo date('H:i:s'); ?></p>
+                    <p class="text-xs text-emerald-400">Hệ thống bảo mật Quantum</p>
+                </div>
+            </div>
+
+            <div class="war-room-container flex flex-col gap-6">
+                <?php if (empty($liveBids)): ?>
+                    <div class="text-center py-20 border border-dashed border-white/10 rounded-2xl">
+                        <p class="text-white/30 space-mono">Chưa có lệnh chiến nào được kích hoạt.</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($liveBids as $bid):
+                        // Kiểm tra trạng thái: Đang dẫn đầu hay bị vượt mặt
+                        $isLeading = ($bid['user_last_bid'] >= $bid['highest_bid']);
+                        $statusClass = $isLeading ? 'leading border-[#00FFC2]/20' : 'outbid outbid-pulse border-[#FF0055]/30';
+                        $accentColor = $isLeading ? '#00FFC2' : '#FF0055';
+                    ?>
+                        <div class="auction-card group relative bg-[#050505] rounded-2xl p-5 md:p-6 border <?php echo $statusClass; ?> transition-all duration-500">
+                            <div class="relative z-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+
+                                <div class="w-full lg:w-1/4">
+                                    <div class="plate-render bg-gradient-to-br from-white/10 to-transparent p-4 rounded-xl border border-white/5">
+                                        <div class="text-center">
+                                            <p class="text-white/20 text-[8px] uppercase mb-1"><?php echo $bid['address']; ?></p>
+                                            <p class="space-mono text-2xl md:text-3xl text-white font-bold tracking-tighter"><?php echo $bid['plate_number']; ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full lg:w-1/3 text-center">
+                                    <p class="text-[9px] uppercase tracking-[3px] mb-2 <?php echo $isLeading ? 'text-white/30' : 'text-red-500 animate-pulse'; ?>">
+                                        <?php echo $isLeading ? 'Thời gian còn lại' : 'Critical Time'; ?>
+                                    </p>
+                                    <div class="countdown-timer font-mono text-3xl md:text-5xl text-white" data-endtime="<?php echo $bid['end_time']; ?>">
+                                        --:--:--
+                                    </div>
+                                </div>
+
+                                <div class="w-full lg:w-2/5 flex flex-col sm:flex-row items-center justify-between lg:justify-end gap-6">
+                                    <div class="text-center lg:text-right">
+                                        <p class="text-[9px] uppercase mb-1" style="color: <?php echo $accentColor; ?>">
+                                            <?php echo $isLeading ? 'Giá hiện tại (Leading)' : 'Bị vượt mặt!'; ?>
+                                        </p>
+                                        <span class="text-2xl md:text-3xl text-white font-bold">
+                                            <?php echo number_format($bid['highest_bid']); ?>
+                                        </span>
+                                    </div>
+
+                                    <a href="dau_gia.php?id=<?php echo $bid['auction_id']; ?>" class="block w-full sm:w-auto">
+                                        <button class="bid-btn w-full px-8 py-4 bg-white/5 backdrop-blur-md border rounded-xl text-xs font-bold transition-all"
+                                            style="border-color: <?php echo $accentColor; ?>; color: <?php echo $accentColor; ?>;"
+                                            onmouseover="this.style.backgroundColor='<?php echo $accentColor; ?>'; this.style.color='black'"
+                                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='<?php echo $accentColor; ?>'">
+                                            <?php echo $isLeading ? 'NÂNG GIÁ NHANH' : 'LẤY LẠI VỊ THẾ'; ?>
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
     </section>
+
 
     <!-- ----------------------------- section 3 -----------------------------  -->
     <section id="auction-chronology" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
@@ -750,6 +905,47 @@
             });
         }
     });
+
+    function updateCountdowns() {
+        const timers = document.querySelectorAll('.countdown-timer');
+
+        timers.forEach(timer => {
+            const endTimeStr = timer.getAttribute('data-endtime');
+            if (!endTimeStr) return;
+
+            const endTime = new Date(endTimeStr).getTime();
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                timer.innerHTML = "ĐÃ KẾT THÚC";
+                timer.classList.add('text-gray-500');
+                return;
+            }
+
+            // Tính toán ngày, giờ, phút, giây
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Định dạng hiển thị 00:00:00
+            const hDisplay = hours < 10 ? "0" + hours : hours;
+            const mDisplay = minutes < 10 ? "0" + minutes : minutes;
+            const sDisplay = seconds < 10 ? "0" + seconds : seconds;
+
+            timer.innerHTML = `${hDisplay}:${mDisplay}:${sDisplay}`;
+
+            // Hiệu ứng cảnh báo khi còn dưới 5 phút
+            if (distance < 300000) {
+                timer.classList.add('text-red-500', 'animate-pulse');
+            }
+        });
+    }
+
+    // Cập nhật mỗi giây
+    setInterval(updateCountdowns, 1000);
+    // Chạy ngay lập tức khi load trang
+    updateCountdowns();
 
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener("DOMContentLoaded", () => {

@@ -88,4 +88,68 @@ class Customer extends Db
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+    public function getAuctionSummary($user_id)
+    {
+        // Đếm số cuộc đấu giá thắng
+        $sqlWin = "SELECT COUNT(DISTINCT auction_id) as total_win FROM bids WHERE customer_id = ? AND is_winning_bid = 1";
+        $stmt = self::$connection->prepare($sqlWin);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $wins = $stmt->get_result()->fetch_assoc()['total_win'];
+
+        // Đếm tổng số cuộc đấu giá đã tham gia
+        $sqlTotal = "SELECT COUNT(DISTINCT auction_id) as total_joined FROM bids WHERE customer_id = ?";
+        $stmt = self::$connection->prepare($sqlTotal);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $total = $stmt->get_result()->fetch_assoc()['total_joined'];
+
+        // Tính Win Rate
+        $winRate = ($total > 0) ? round(($wins / $total) * 100) : 0;
+
+        // Tính tiền cọc (Giả định mỗi cuộc tham gia cọc 40tr hoặc lấy từ total_spent)
+        // Ở đây tôi lấy total_spent từ bảng customers để đại diện cho Capital
+        $sqlCap = "SELECT total_spent FROM customers WHERE id = ?";
+        $stmt = self::$connection->prepare($sqlCap);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $capital = $stmt->get_result()->fetch_assoc()['total_spent'] ?? 0;
+
+        return [
+            'wins' => $wins,
+            'lost' => ($total - $wins),
+            'win_rate' => $winRate,
+            'capital' => $capital
+        ];
+    }
+    public function getLiveWarRoom($user_id)
+    {
+        // b.auction_id nối với a.id
+        // a.plate_id nối với p.id
+        $sql = "SELECT 
+                a.id as auction_id, -- Bắt buộc phải lấy ID này để làm link
+                p.id as plate_id, 
+                p.plate_number, 
+                p.address, 
+                p.current_price, 
+                a.end_time,
+                MAX(b.bid_amount) as user_last_bid,
+                (SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id) as highest_bid
+            FROM bids b
+            JOIN auctions a ON b.auction_id = a.id
+            JOIN plates p ON a.plate_id = p.id
+            WHERE b.customer_id = ? AND a.end_time > NOW()
+            GROUP BY a.id
+            ORDER BY a.end_time ASC";
+
+        $stmt = self::$connection->prepare($sql);
+
+        if (!$stmt) {
+            die("Lỗi truy vấn SQL: " . self::$connection->error);
+        }
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }
