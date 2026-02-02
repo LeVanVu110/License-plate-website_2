@@ -1,4 +1,33 @@
 <?php include "header.php"; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Kiểm tra nếu đã đăng nhập thì lấy tên từ Session cho nhanh
+if (isset($_SESSION['full_name'])) {
+    $displayName = $_SESSION['full_name'];
+    $displayRank = $_SESSION['rank'];
+} else {
+    // Nếu chưa đăng nhập thì chuyển hướng hoặc hiện tên mặc định
+    $displayName = "Khách hàng";
+    $displayRank = "Gold";
+}
+if (isset($_SESSION['user_id'])) {
+    $customerModel = new Customer();
+    $user = $customerModel->getUserWithVipCode($_SESSION['user_id']);
+    $inventoryCount = $customerModel->getInventoryCount($_SESSION['user_id']);
+    $totalAssets = $customerModel->getTotalAssets($_SESSION['user_id']);
+    $inventory = $customerModel->getInventoryList($_SESSION['user_id']);
+
+    // Nếu có mã trong DB thì dùng, không thì hiện mặc định
+    $vipCode = !empty($user['vip_code']) ? $user['vip_code'] : "KBS-0000-0000";
+    $fullName = $user['full_name'];
+} else {
+    $inventoryCount = 0;
+    $totalAssets = 0;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -109,8 +138,8 @@
         }
 
         .plate-image {
-
-            background: radial-gradient(circle at center, #001A33 0%, #000814 100%);
+            /* background: radial-gradient(circle at center, #001A33 0%, #000814 100%); */
+            background: radial-gradient(circle at center, #0082ff 0%, #60ecff 100%);
             transition: transform 0.5s cubic-bezier(0.2, 0, 0.2, 1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
@@ -319,12 +348,12 @@
 
                         <div class="mt-auto">
                             <p class="text-[10px] text-blue-100/40 tracking-[3px] uppercase mb-1">MEMBER IDENTITY</p>
-                            <h2 class="text-3xl md:text-4xl font-light text-[#D4AF37] tracking-wider mb-4 serif italic">Mr. Alexander</h2>
+                            <h2 class="text-3xl md:text-4xl font-light text-[#D4AF37] tracking-wider mb-4 serif italic"><?php echo $displayName; ?></h2>
 
                             <div class="flex justify-between items-end border-t border-white/10 pt-4">
                                 <div>
                                     <p class="text-[9px] text-white/30 tracking-[2px]">VIP CODE</p>
-                                    <p class="space-mono text-sm text-white/80">KBS-8888-9999</p>
+                                    <p class="space-mono text-sm text-white/80"><?php echo $vipCode; ?></p>
                                 </div>
                                 <div class="w-12 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#F9E29C] rounded-md opacity-80 flex items-center justify-center">
                                     <div class="w-8 h-6 border border-black/10 rounded flex flex-col gap-1 p-1">
@@ -346,7 +375,7 @@
                     <div class="stats-box group border-l-2 border-blue-500/20 pl-6 py-2">
                         <p class="text-[10px] text-white/40 tracking-[4px] uppercase mb-2">Total Assets</p>
                         <div class="flex items-baseline gap-2">
-                            <span class="counter text-3xl font-light text-white" data-target="85000000000">0</span>
+                            <span class="counter text-3xl font-light text-white" data-target="<?php echo (int)$totalAssets; ?>">0</span>
                             <span class="text-xs text-blue-400 font-bold uppercase tracking-widest">VNĐ</span>
                         </div>
                     </div>
@@ -354,7 +383,7 @@
                     <div class="stats-box group border-l-2 border-blue-500/20 pl-6 py-2">
                         <p class="text-[10px] text-white/40 tracking-[4px] uppercase mb-2">Inventory</p>
                         <div class="flex items-baseline gap-2">
-                            <span class="counter text-3xl font-light text-white" data-target="12">0</span>
+                            <span class="counter text-3xl font-light text-white" data-target="<?php echo $inventoryCount; ?>">">0</span>
                             <span class="text-xs text-blue-400 font-bold uppercase tracking-widest">Báu vật</span>
                         </div>
                     </div>
@@ -362,7 +391,7 @@
                     <div class="stats-box group border-l-2 border-blue-500/20 pl-6 py-2">
                         <p class="text-[10px] text-white/40 tracking-[4px] uppercase mb-2">Rank Status</p>
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl font-light text-[#D4AF37] tracking-widest uppercase">Diamond</span>
+                            <span class="text-2xl font-light text-[#D4AF37] tracking-widest uppercase"><?php echo $displayRank; ?></span>
                             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_#007FFF]"></div>
                         </div>
                     </div>
@@ -372,7 +401,7 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="collection-gallery" class="relative min-h-screen py-24 px-6 bg-[#000814] overflow-hidden">
+    <!-- <section id="collection-gallery" class="relative min-h-screen py-24 px-6 bg-[#000814] overflow-hidden">
         <div class="container mx-auto max-w-7xl">
             <div class="mb-20 text-center lg:text-left">
                 <h2 class="text-[10px] tracking-[5px] text-blue-400 uppercase mb-4 opacity-70">Digital Heritage</h2>
@@ -468,6 +497,71 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section> -->
+    <section id="collection-gallery" class="relative min-h-screen py-24 px-6 bg-[#000814] overflow-hidden">
+        <div class="container mx-auto max-w-7xl">
+            <div class="mb-20 text-center lg:text-left">
+                <h2 class="text-[10px] tracking-[5px] text-blue-400 uppercase mb-4 opacity-70">Digital Heritage</h2>
+                <h3 class="serif text-5xl text-white font-light">Phòng Trưng Bày <span class="text-[#D4AF37]">Báu Vật</span></h3>
+            </div>
+
+            <div class="museum-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+                <?php if (empty($inventory)): ?>
+                    <p class="text-white/40 italic">Bạn chưa sở hữu báu vật nào.</p>
+                    <?php else:
+                    foreach ($inventory as $index => $item):
+                        // Tạo độ lệch (offset) cho layout giống thiết kế của bạn
+                        $marginTop = ($index % 3 == 0) ? 'lg:mt-20' : (($index % 3 == 2) ? 'lg:mt-40' : '');
+                    ?>
+                        <div class="pod-wrapper group <?php echo $marginTop; ?>">
+                            <div class="sapphire-pod relative aspect-[4/5] bg-black rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+                                <div class="reveal-mask absolute inset-0 bg-blue-900/40 backdrop-blur-3xl z-20 pointer-events-none"></div>
+
+                                <div class="pod-content relative h-full p-8 flex flex-col justify-between z-10">
+                                    <div class="flex justify-between items-start">
+                                        <span class="text-[10px] space-mono text-white/40 tracking-widest uppercase">
+                                            Rare Score: <?php echo $item['rare_score']; ?>/100
+                                        </span>
+                                        <div class="verify-circle w-4 h-4 rounded-full border border-cyan-400/50 flex items-center justify-center">
+                                            <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="plate-3d-container flex justify-center items-center py-10 transition-transform duration-500 group-hover:scale-110">
+                                        <div class="plate-image px-8 py-4 rounded-lg shadow-2xl border-2 border-black/10"
+                                            style="background: <?php echo $item['background_color']; ?>;">
+                                            <span class="text-3xl md:text-4xl font-bold tracking-tighter text-[#001A33] space-mono">
+                                                <?php echo $item['plate_number']; ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-end border-b border-white/10 pb-4">
+                                            <div>
+                                                <p class="text-xs text-white/60 font-semibold italic">Báu vật định danh</p>
+                                                <p class="text-[10px] text-white/30 font-light mt-1 uppercase tracking-tighter">
+                                                    Sở hữu: Đã xác thực • <?php echo $item['vehicle_type']; ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex gap-4">
+                                            <button title="Chứng thư báu vật" class="p-3 rounded-full border border-white/10 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all group/btn">
+                                                <i class="ri-file-shield-2-line text-white/60 group-hover/btn:text-cyan-400"></i>
+                                            </button>
+                                            <button title="Lịch sử sở hữu" class="p-3 rounded-full border border-white/10 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all group/btn">
+                                                <i class="ri-history-line text-white/60 group-hover/btn:text-cyan-400"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                <?php endforeach;
+                endif; ?>
             </div>
         </div>
     </section>
