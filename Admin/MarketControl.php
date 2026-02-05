@@ -607,7 +607,16 @@ $availablePlates = $auctionModel->getAvailablePlates();
             <div class="flex items-center gap-4 relative z-10">
                 <div id="search-container" class="relative group">
                     <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm"></i>
-                    <input type="text" placeholder="AI Intelligence Search..." class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-[11px] text-white w-40 focus:w-64 focus:bg-black/60 focus:border-cyan-500/50 transition-all duration-500 outline-none jetbrains">
+                    <input
+                        id="ai-search-input"
+                        type="text"
+                        placeholder="AI Intelligence Search..."
+                        autocomplete="off"
+                        class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-[11px] text-white w-40 focus:w-64 focus:bg-black/60 focus:border-cyan-500/50 transition-all duration-500 outline-none jetbrains">
+
+                    <div id="search-results" class="absolute top-full left-0 w-64 mt-2 bg-black/95 border border-white/10 rounded-xl overflow-hidden hidden z-50 backdrop-blur-xl">
+                        <div id="results-list"></div>
+                    </div>
                 </div>
                 <button id="new-auction-btn" onclick="openForge(event)" class="hidden lg:flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white text-[10px] font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-cyan-900/20 active:scale-95 jetbrains">
                     <i class="ri-add-circle-line text-sm"></i> NEW AUCTION
@@ -646,10 +655,15 @@ $availablePlates = $auctionModel->getAvailablePlates();
                 <div class="col-span-3 text-right">Authority Tools</div>
             </div>
 
+
             <div id="grid-container" class="max-h-[700px] overflow-y-auto custom-grid-scrollbar p-4 space-y-3 scroll-mt-10">
                 <?php
-                $auctionModel = new Auction();
-                $allAuctions = $auctionModel->getAllAuctionsDetail();
+                // Lấy từ khóa search từ URL (ví dụ: ?search=51K)
+                // Bước 1: Lấy từ khóa search từ URL (?search=51K...)
+                $searchKeyword = isset($_GET['search']) ? $_GET['search'] : null;
+
+                // Bước 2: Truyền từ khóa vào hàm (Hàm này bạn đã sửa ở bước trước để nhận $search)
+                $allAuctions = $auctionModel->getAllAuctionsDetail($searchKeyword);
 
                 foreach ($allAuctions as $auc):
                     // 1. Tính toán phần trăm tăng trưởng (Current vs Starting)
@@ -1137,7 +1151,65 @@ $availablePlates = $auctionModel->getAvailablePlates();
             });
         });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('ai-search-input');
+        const resultsBox = document.getElementById('search-results');
+        const resultsList = document.getElementById('results-list');
 
+        if (!searchInput) return;
+
+        // 1. Lắng nghe khi gõ chữ (Gợi ý nhanh)
+        searchInput.addEventListener('input', function() {
+            const q = this.value.trim();
+            if (q.length < 2) {
+                resultsBox.classList.add('hidden');
+                return;
+            }
+
+            fetch(`search_api.php?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let html = '';
+                        data.forEach((item) => {
+                            // Lưu ý: class grid-search-item để JS nhận diện
+                            html += `
+                        <div class="grid-search-item flex justify-between items-center p-3 hover:bg-cyan-500/20 border-b border-white/5 cursor-pointer transition-all" 
+                             onclick="window.location.href='?search=${item.plate_number}'">
+                            <div>
+                                <div class="text-cyan-400 font-bold text-[11px]">${item.plate_number}</div>
+                                <div class="text-[9px] text-white/40 uppercase">${item.category}</div>
+                            </div>
+                            <div class="text-white font-mono text-[10px]">${Number(item.starting_price).toLocaleString()}đ</div>
+                        </div>`;
+                        });
+                        resultsList.innerHTML = html;
+                        resultsBox.classList.remove('hidden');
+                    } else {
+                        resultsList.innerHTML = '<div class="p-3 text-[10px] text-white/30 text-center">Không tìm thấy</div>';
+                        resultsBox.classList.remove('hidden');
+                    }
+                });
+        });
+
+        // 2. Lắng nghe phím Enter (Quan trọng: Lọc Grid)
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const q = this.value.trim();
+                // Load lại trang và truyền tham số search vào URL
+                window.location.href = `?search=${encodeURIComponent(q)}`;
+            }
+        });
+
+        // Đóng khi click ngoài
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('search-container');
+            if (container && !container.contains(e.target)) {
+                resultsBox.classList.add('hidden');
+            }
+        });
+    });
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener("DOMContentLoaded", () => {
         // 1. Hiệu ứng Bid Flash giả lập (Mỗi 5 giây chọn ngẫu nhiên 1 dòng)
@@ -1321,7 +1393,7 @@ $availablePlates = $auctionModel->getAvailablePlates();
                 } else {
                     alert("Lỗi hệ thống, không thể thực hiện!");
                 }
-                        location.reload();
+                location.reload();
 
             })
             .catch(err => console.error("Error:", err));

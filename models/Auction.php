@@ -57,38 +57,85 @@ class Auction extends Db
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
-    public function getAllAuctionsDetail()
-    {
-        // Query lấy tất cả các phiên từ bảng auctions, kết nối với bảng plates
-        $sql = "SELECT a.*, p.plate_number, p.category, p.starting_price, p.status as plate_status, p.vehicle_type,
-        -- 1. Lấy giá cao nhất từ bảng bids, nếu chưa có ai thầu thì lấy giá khởi điểm
-        COALESCE((SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id), p.starting_price) as current_max_bid,
-        -- 2. Lấy thời gian của lượt thầu cuối cùng để tính toán Sniper
-        (SELECT bid_time FROM bids WHERE auction_id = a.id ORDER BY bid_time DESC LIMIT 1) as last_bid_time,
-        -- 3. Đếm tổng số lượt thầu cho mỗi phiên
-        (SELECT COUNT(*) FROM bids WHERE auction_id = a.id) as total_bids
-        FROM auctions a
-        JOIN plates p ON a.plate_id = p.id
-        ORDER BY 
-            -- Ưu tiên hiện phiên 'Đang đấu giá' lên đầu, sau đó đến 'Sắp đấu' và 'Đã bán'
-            (CASE WHEN p.status = 'Auctioning' THEN 1 
-                  WHEN p.status = 'Available' THEN 2 
-                  ELSE 3 END) ASC, 
-            a.end_time ASC";
+    // public function getAllAuctionsDetail()
+    // {
+    //     // Query lấy tất cả các phiên từ bảng auctions, kết nối với bảng plates
+    //     $sql = "SELECT a.*, p.plate_number, p.category, p.starting_price, p.status as plate_status, p.vehicle_type,
+    //     -- 1. Lấy giá cao nhất từ bảng bids, nếu chưa có ai thầu thì lấy giá khởi điểm
+    //     COALESCE((SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id), p.starting_price) as current_max_bid,
+    //     -- 2. Lấy thời gian của lượt thầu cuối cùng để tính toán Sniper
+    //     (SELECT bid_time FROM bids WHERE auction_id = a.id ORDER BY bid_time DESC LIMIT 1) as last_bid_time,
+    //     -- 3. Đếm tổng số lượt thầu cho mỗi phiên
+    //     (SELECT COUNT(*) FROM bids WHERE auction_id = a.id) as total_bids
+    //     FROM auctions a
+    //     JOIN plates p ON a.plate_id = p.id
+    //     ORDER BY 
+    //         -- Ưu tiên hiện phiên 'Đang đấu giá' lên đầu, sau đó đến 'Sắp đấu' và 'Đã bán'
+    //         (CASE WHEN p.status = 'Auctioning' THEN 1 
+    //               WHEN p.status = 'Available' THEN 2 
+    //               ELSE 3 END) ASC, 
+    //         a.end_time ASC";
 
-        $result = self::$connection->query($sql);
+    //     $result = self::$connection->query($sql);
+    //     $auctions = $result->fetch_all(MYSQLI_ASSOC);
+
+    //     // Trong Auction.php
+    //     foreach ($auctions as &$auc) {
+    //         // Chuyển end_time từ chuỗi (Y-m-d H:i:s) sang số giây (Timestamp)
+    //         $auc['display_end_time'] = strtotime($auc['end_time']);
+
+    //         if ($auc['last_bid_time']) {
+    //             $lastBidTs = strtotime($auc['last_bid_time']);
+    //             $originalEndTs = strtotime($auc['end_time']);
+
+    //             // Logic bù giờ Sniper
+    //             if (($originalEndTs - $lastBidTs) <= $auc['sniper_time']) {
+    //                 $auc['display_end_time'] = $lastBidTs + $auc['sniper_time'];
+    //             }
+    //         }
+    //     }
+    //     return $auctions;
+    // }
+    public function getAllAuctionsDetail($search = null)
+    {
+        $whereClause = "";
+        $params = [];
+        $types = "";
+
+        // Nếu có từ khóa search, lọc theo biển số hoặc loại xe
+        if (!empty($search)) {
+            $whereClause = " WHERE p.plate_number LIKE ? OR p.category LIKE ? ";
+            $searchTerm = "%$search%";
+            $params = [$searchTerm, $searchTerm];
+            $types = "ss";
+        }
+
+        $sql = "SELECT a.*, p.plate_number, p.category, p.starting_price, p.status as plate_status, p.vehicle_type,
+            COALESCE((SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id), p.starting_price) as current_max_bid,
+            (SELECT bid_time FROM bids WHERE auction_id = a.id ORDER BY bid_time DESC LIMIT 1) as last_bid_time,
+            (SELECT COUNT(*) FROM bids WHERE auction_id = a.id) as total_bids
+            FROM auctions a
+            JOIN plates p ON a.plate_id = p.id
+            $whereClause
+            ORDER BY 
+                (CASE WHEN p.status = 'Auctioning' THEN 1 
+                      WHEN p.status = 'Available' THEN 2 
+                      ELSE 3 END) ASC, 
+                a.end_time ASC";
+
+        $stmt = self::$connection->prepare($sql);
+        if (!empty($search)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
         $auctions = $result->fetch_all(MYSQLI_ASSOC);
 
-        // Trong Auction.php
         foreach ($auctions as &$auc) {
-            // Chuyển end_time từ chuỗi (Y-m-d H:i:s) sang số giây (Timestamp)
             $auc['display_end_time'] = strtotime($auc['end_time']);
-
             if ($auc['last_bid_time']) {
                 $lastBidTs = strtotime($auc['last_bid_time']);
                 $originalEndTs = strtotime($auc['end_time']);
-
-                // Logic bù giờ Sniper
                 if (($originalEndTs - $lastBidTs) <= $auc['sniper_time']) {
                     $auc['display_end_time'] = $lastBidTs + $auc['sniper_time'];
                 }
@@ -214,5 +261,20 @@ class Auction extends Db
             $stmtR->bind_param("si", $newEndTime, $auctionId);
             return $stmtR->execute();
         }
+    }
+    public function searchAuctions($query)
+    {
+        $searchTerm = "%" . $query . "%";
+        $sql = "SELECT a.*, p.plate_number, p.category, p.starting_price,
+            (SELECT MAX(bid_amount) FROM bids WHERE auction_id = a.id) as current_max_bid
+            FROM auctions a
+            JOIN plates p ON a.plate_id = p.id
+            WHERE p.plate_number LIKE ? OR p.category LIKE ?
+            LIMIT 5"; // Giới hạn 5 kết quả cho tìm kiếm nhanh
+
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("ss", $searchTerm, $searchTerm);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
