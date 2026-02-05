@@ -18,6 +18,11 @@ require_once dirname(__DIR__) . "/config.php";
 // 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
 require_once dirname(__DIR__) . "/models/db.php";
 require_once dirname(__DIR__) . "/models/Auction.php";
+require_once dirname(__DIR__) . "/models/Plate.php";
+
+// Thêm vào đoạn đầu file PHP
+$auctionModel = new Auction();
+$availablePlates = $auctionModel->getAvailablePlates();
 ?>
 
 <head>
@@ -694,7 +699,7 @@ require_once dirname(__DIR__) . "/models/Auction.php";
                             </div>
                         </div>
 
-                        <div class="col-span-2 flex items-center gap-3">
+                        <!-- <div class="col-span-2 flex items-center gap-3">
                             <div class="relative w-10 h-10">
                                 <svg class="w-full h-full -rotate-90">
                                     <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
@@ -708,11 +713,47 @@ require_once dirname(__DIR__) . "/models/Auction.php";
                                 data-end="<?php echo $auc['display_end_time']; ?>">
                                 --:--:--
                             </span>
+                        </div> -->
+                        <div class="col-span-2 flex items-center gap-3">
+                            <div class="relative w-10 h-10">
+                                <svg class="w-full h-full -rotate-90">
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent"
+                                        stroke-dasharray="100"
+                                        stroke-dashoffset="<?php echo ($auc['is_paused'] == 1) ? '0' : '30'; ?>"
+                                        class="<?php echo ($auc['is_paused'] == 1) ? 'text-amber-500' : $statusColor; ?> transition-all duration-1000"></circle>
+                                </svg>
+                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] <?php echo ($auc['is_paused'] == 1) ? 'text-amber-500' : $statusColor; ?>"></i>
+                            </div>
+
+                            <?php if ($auc['is_paused'] == 1): ?>
+                                <div class="flex flex-col">
+                                    <span class="text-amber-500 jetbrains text-[11px] font-bold uppercase tracking-tighter">
+                                        Paused
+                                    </span>
+                                    <span class="text-amber-500/70 jetbrains text-[10px] font-medium">
+                                        <?php
+                                        $r = $auc['remaining_seconds'];
+                                        $h = floor($r / 3600);
+                                        $m = floor(($r % 3600) / 60);
+                                        $s = $r % 60;
+                                        echo sprintf("%02d:%02d:%02d", $h, $m, $s);
+                                        ?>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <span class="countdown-timer <?php echo $statusColor; ?> jetbrains text-[11px] font-bold"
+                                    data-end="<?php echo $auc['display_end_time']; ?>">
+                                    --:--:--
+                                </span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="col-span-3 flex justify-end gap-2">
-                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
-                                <i class="ri-pause-line"></i>
+                            <button onclick="handlePause(this, <?php echo $auc['id']; ?>)"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center transition-all <?php echo ($auc['is_paused'] == 1) ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'; ?>">
+
+                                <i class="<?php echo ($auc['is_paused'] == 1) ? 'ri-play-fill' : 'ri-pause-line'; ?>"></i>
                             </button>
                             <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
                                 <i class="ri-time-fill"></i>
@@ -813,10 +854,26 @@ require_once dirname(__DIR__) . "/models/Auction.php";
                         <p class="text-[10px] text-white/20 jetbrains uppercase mt-1">Immediate Halt</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" onchange="toggleEmergencyHalt(this)" class="sr-only peer">
+                        <input type="checkbox"
+                            onchange="toggleEmergencyHalt(this, <?php echo $auc['id']; ?>)"
+                            class="sr-only peer"
+                            <?php echo ($auc['is_paused'] == 1) ? 'checked' : ''; ?>>
                         <div class="w-12 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/60 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
                     </label>
                 </div>
+                <!-- <div class="flex items-center justify-between p-5 bg-gradient-to-r from-white/5 to-transparent rounded-2xl border border-white/10">
+                    <div>
+                        <p class="jetbrains text-sm text-white font-bold">Tạm dừng phiên</p>
+                        <p class="text-[10px] text-white/20 jetbrains uppercase mt-1">Immediate Halt</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox"
+                            onchange="toggleEmergencyHalt(this, <?php echo $auc['id']; ?>)"
+                            class="sr-only peer"
+                            <?php echo ($auc['status'] === 'Paused') ? 'checked' : ''; ?>>
+                        <div class="w-12 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/60 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                    </label>
+                </div> -->
             </div>
 
             <div class="mt-auto pt-12">
@@ -900,9 +957,7 @@ require_once dirname(__DIR__) . "/models/Auction.php";
 
     <!-- ----------------------------- section 5 -----------------------------  -->
     <section id="auction-forge" class="fixed inset-0 z-[200] hidden flex items-center justify-center overflow-hidden">
-        <div id="forge-overlay" class="absolute inset-0 bg-[#000814]/90 backdrop-blur-3xl scale-0 rounded-full opacity-0 pointer-events-none transition-all duration-700"></div>
-
-        <div id="forge-container" class="relative w-[95%] max-w-5xl h-[85vh] bg-white/5 border border-white/10 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col opacity-0 translate-y-20 transition-all duration-500 overflow-hidden">
+        <div id="forge-container" class="relative w-[95%] max-w-5xl h-[85vh] bg-white/5 border border-white/10 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col opacity-0 translate-y-20 transition-all duration-500 overflow-hidden" style="background-color: #000814;">
 
             <div class="px-4 md:px-10 py-6 md:py-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
 
@@ -949,12 +1004,20 @@ require_once dirname(__DIR__) . "/models/Auction.php";
                         <div class="space-y-4">
                             <label class="text-[10px] text-white/40 jetbrains uppercase tracking-widest">Identify Asset</label>
                             <div class="relative">
-                                <input type="text" placeholder="Nhập biển số (Vd: 30L-999.99)" oninput="validatePlate(this)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white jetbrains focus:border-cyan-500/50 outline-none transition-all">
-                                <i class="ri-search-2-line absolute right-6 top-4 text-white/20"></i>
-                            </div>
-                            <div class="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-center gap-3">
-                                <i class="ri-magic-line text-emerald-400"></i>
-                                <p class="text-[10px] text-emerald-400 inter">Hệ thống phát hiện nhãn <span class="font-bold">"THẦN TÀI (79)"</span> - Tự động gắn tag Hot.</p>
+                                <select id="plate-selector" onchange="updateForgePreview(this)"
+                                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white jetbrains focus:border-cyan-500/50 outline-none transition-all appearance-none">
+                                    <option value="" class="bg-[#000814]">-- CHỌN BIỂN SỐ TỪ KHO --</option>
+
+                                    <?php foreach ($availablePlates as $plate): ?>
+                                        <option value="<?php echo $plate['id']; ?>"
+                                            data-number="<?php echo $plate['plate_number']; ?>"
+                                            data-price="<?php echo $plate['starting_price']; ?>"
+                                            class="bg-[#000814]">
+                                            <?php echo $plate['plate_number']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <i class="ri-arrow-down-s-line absolute right-6 top-4 text-white/20"></i>
                             </div>
                         </div>
                     </div>
@@ -1229,6 +1292,74 @@ require_once dirname(__DIR__) . "/models/Auction.php";
     // Kích hoạt khi trang web tải xong
     document.addEventListener('DOMContentLoaded', startGlobalCountdowns);
 
+    function handlePause(btn, auctionId) {
+        // Hiệu ứng bấm nút
+        btn.style.transform = "scale(0.9)";
+        setTimeout(() => btn.style.transform = "scale(1)", 100);
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+
+        fetch('toggle_pause_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Đổi icon và màu sắc trực tiếp trên nút
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('ri-pause-line')) {
+                        // Chuyển sang trạng thái PAUSED
+                        icon.className = 'ri-play-fill';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-amber-500/20 text-amber-500';
+                    } else {
+                        // Chuyển sang trạng thái ACTIVE
+                        icon.className = 'ri-pause-line';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white';
+                    }
+                } else {
+                    alert("Lỗi hệ thống, không thể thực hiện!");
+                }
+                        location.reload();
+
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    function handlePause(btn, auctionId) {
+        // Hiệu ứng bấm nút
+        btn.style.transform = "scale(0.9)";
+        setTimeout(() => btn.style.transform = "scale(1)", 100);
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+
+        fetch('toggle_pause_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Đổi icon và màu sắc trực tiếp trên nút
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('ri-pause-line')) {
+                        // Chuyển sang trạng thái PAUSED
+                        icon.className = 'ri-play-fill';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-amber-500/20 text-amber-500';
+                    } else {
+                        // Chuyển sang trạng thái ACTIVE
+                        icon.className = 'ri-pause-line';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white';
+                    }
+                } else {
+                    alert("Lỗi hệ thống, không thể thực hiện!");
+                }
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
     // ----------------------------- section 3 ----------------------------- //
     // ----------------------------- section 3 ----------------------------- //
     // function openIntervention(plateNumber) {
@@ -1404,6 +1535,39 @@ require_once dirname(__DIR__) . "/models/Auction.php";
             .catch(error => console.error('Error:', error));
     }
 
+    function toggleEmergencyHalt(checkbox, auctionId) {
+        const isPaused = checkbox.checked;
+
+        // Hiệu ứng Visual nhẹ
+        const container = checkbox.closest('div.flex');
+        if (isPaused) {
+            container.classList.add('opacity-80');
+        } else {
+            container.classList.remove('opacity-80');
+        }
+
+        // Gửi dữ liệu bằng FormData
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+        formData.append('paused', isPaused);
+
+        fetch('toggle_auction_status.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert("Lỗi: " + data.message);
+                    checkbox.checked = !isPaused; // Trả lại trạng thái cũ nếu lỗi
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                checkbox.checked = !isPaused;
+            });
+    }
+
     // ----------------------------- section 4 ----------------------------- //
     // ----------------------------- section 4 ----------------------------- //
     function toggleSentimentDrawer() {
@@ -1490,17 +1654,27 @@ require_once dirname(__DIR__) . "/models/Auction.php";
     }
 
     function moveStep(direction) {
+        // KIỂM TRA: Nếu đang ở bước 3 mà bấm CONTINUE (PUBLISH)
+        if (currentForgeStep === 3 && direction === 1) {
+            publishAuction(); // Gọi hàm gửi dữ liệu
+            return; // Dừng lại không chạy logic chuyển step nữa
+        }
+
         const prevStep = currentForgeStep;
         currentForgeStep += direction;
 
-        // Update Indicators
+        // Đảm bảo không đi quá giới hạn step (1-3)
+        if (currentForgeStep < 1) currentForgeStep = 1;
+        if (currentForgeStep > 3) currentForgeStep = 3;
+
+        // Update Indicators (Giữ nguyên logic của bạn)
         document.querySelectorAll('.step-item').forEach(item => {
             const step = parseInt(item.dataset.step);
             item.classList.toggle('active', step === currentForgeStep);
             item.style.opacity = step <= currentForgeStep ? "1" : "0.3";
         });
 
-        // Animate Stages
+        // Animate Stages (Giữ nguyên hiệu ứng GSAP của bạn)
         gsap.to(`#stage-${prevStep}`, {
             x: direction > 0 ? -100 : 100,
             opacity: 0,
@@ -1518,7 +1692,16 @@ require_once dirname(__DIR__) . "/models/Auction.php";
 
         // Update Buttons
         document.getElementById('prevBtn').style.visibility = currentForgeStep === 1 ? 'hidden' : 'visible';
-        document.getElementById('nextBtn').innerText = currentForgeStep === 3 ? 'PUBLISH AUCTION' : 'CONTINUE';
+
+        // Đổi chữ nút ở bước cuối
+        const nextBtn = document.getElementById('nextBtn');
+        if (currentForgeStep === 3) {
+            nextBtn.innerText = 'PUBLISH AUCTION';
+            nextBtn.classList.replace('bg-cyan-500', 'bg-emerald-500'); // Thêm hiệu ứng đổi màu cho nút chốt
+        } else {
+            nextBtn.innerText = 'CONTINUE';
+            nextBtn.classList.replace('bg-emerald-500', 'bg-cyan-500');
+        }
     }
 
     function checkAIPrice(input) {
@@ -1553,6 +1736,69 @@ require_once dirname(__DIR__) . "/models/Auction.php";
                 document.getElementById('auction-forge').classList.add('hidden');
             }
         });
+    }
+
+    function updateForgePreview(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const plateNumber = selectedOption.getAttribute('data-number');
+        const startingPrice = selectedOption.getAttribute('data-price');
+
+        // Cập nhật số trên biển 3D
+        const previewText = document.querySelector('#plate-preview-3d span');
+        if (plateNumber) {
+            previewText.innerText = plateNumber;
+            // Tự động điền giá khởi điểm vào Stage 2 nếu muốn
+            const priceInput = document.querySelector('#stage-2 input[type="number"]');
+            if (priceInput) priceInput.value = startingPrice;
+        } else {
+            previewText.innerText = "30L-XXX.XX";
+        }
+    }
+
+    function publishAuction() {
+        // 1. Lấy dữ liệu từ các input đã tạo ở các Stage
+        const plateId = document.getElementById('plate-selector').value; // ID từ select ở Stage 1
+        const startingPrice = document.querySelector('#stage-2 input[type="number"]').value;
+        const durationHours = 24; // Bạn có thể thêm 1 input chọn giờ ở Stage 3
+
+        if (!plateId) {
+            alert("Vui lòng quay lại Bước 1 để chọn biển số!");
+            moveStep(-2); // Quay lại bước 1
+            return;
+        }
+
+        // Hiệu ứng loading trên nút
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> FORGING...';
+
+        const formData = new FormData();
+        formData.append('action', 'create_auction');
+        formData.append('plate_id', plateId);
+        formData.append('starting_price', startingPrice);
+        formData.append('duration_hours', durationHours);
+
+        // Gửi đến file xử lý PHP
+        fetch('create_auction_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Chúc mừng! Phiên đấu giá đã được đưa lên hệ thống.");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + data.message);
+                    nextBtn.disabled = false;
+                    nextBtn.innerText = 'PUBLISH AUCTION';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi kết nối server!");
+                nextBtn.disabled = false;
+            });
     }
     // ----------------------------- section 5: OPTIMIZED RADAR ----------------------------- //
 

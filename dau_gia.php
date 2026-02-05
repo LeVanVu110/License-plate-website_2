@@ -27,7 +27,17 @@ if (!$currentAuction) {
 $startingPrice = $currentAuction['starting_price'];
 $currentPrice = $currentAuction['current_max_bid'] ?? $startingPrice;
 
-$endTime = strtotime($currentAuction['end_time']); // Chuyển "2026-01-31 16:16:44" thành con số giây
+// $endTime = strtotime($currentAuction['end_time']); 
+// Kiểm tra trạng thái Pause
+$isPaused = isset($currentAuction['is_paused']) && $currentAuction['is_paused'] == 1;
+$remainingSeconds = isset($currentAuction['remaining_seconds']) ? intval($currentAuction['remaining_seconds']) : 0;
+
+if ($isPaused) {
+    // Nếu đang dừng, ép thời gian kết thúc ảo để JS không chạy bậy
+    $endTime = time() + $remainingSeconds;
+} else {
+    $endTime = strtotime($currentAuction['end_time']);
+}
 $remainingSeconds = $endTime - time();
 // $endTime = time() + 10; // Ép thời gian kết thúc là thời điểm hiện tại + 10 giây
 // $remainingSeconds = 10; // Luôn luôn còn 10 giây
@@ -680,13 +690,26 @@ $bidCount = $res_count->fetch_assoc()['total'];
 
             <div class="portal-side right-side w-full lg:w-1/4 flex flex-col gap-6">
                 <div class="glass-console p-6 rounded-2xl border-r-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl text-right">
-                    <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-2 font-bold">Thời gian còn lại</p>
-                    <div class="flex justify-end items-center gap-2 mb-2">
-                        <?php if ($sniperActive > 0): ?>
-                            <span class="text-[8px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30 animate-pulse">SNIPER PROTECT: +<?php echo $sniperActive; ?>s</span>
+                    <p id="timer-label" class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-2 font-bold">
+                        <?php echo $isPaused ? "Hệ thống tạm dừng" : "Thời gian còn lại"; ?>
+                    </p>
+
+                    <div id="status-container" class="flex justify-end items-center gap-2 mb-2">
+                        <?php if ($isPaused): ?>
+                            <span class="status-tag text-[8px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded border border-red-500/30 animate-pulse uppercase">
+                                <i class="ri-pause-circle-fill"></i> SYSTEM HALTED
+                            </span>
                         <?php endif; ?>
                     </div>
-                    <div id="countdown-timer" class="digital-font text-5xl md:text-6xl text-cyan-400 font-bold">--:--</div>
+
+                    <div id="countdown-timer" class="digital-font text-5xl md:text-6xl <?php echo $isPaused ? 'text-amber-500' : 'text-cyan-400'; ?> font-bold">
+                        <?php
+                        $h = floor($remainingSeconds / 3600);
+                        $m = floor(($remainingSeconds % 3600) / 60);
+                        $s = $remainingSeconds % 60;
+                        echo sprintf("%02d:%02d:%02d", $h, $m, $s);
+                        ?>
+                    </div>
                 </div>
 
                 <div class="bid-control flex flex-col gap-4">
@@ -697,11 +720,16 @@ $bidCount = $res_count->fetch_assoc()['total'];
                             <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">Chọn mức giá phía dưới</span>
                         </div>
                     </button> -->
-                    <button id="bid-now-btn" class="relative group overflow-hidden py-6 rounded-2xl bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)] transition-all">
-                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
-                        <div class="relative z-10 flex flex-col items-center">
-                            <span class="text-[10px] text-white/70 uppercase tracking-widest mb-1">Xác nhận mức giá</span>
-                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">Chọn mức giá phía dưới</span>
+                    <button id="bid-now-btn"
+                        <?php echo $isPaused ? 'disabled' : ''; ?>
+                        class="relative group overflow-hidden py-6 rounded-2xl transition-all <?php echo $isPaused ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)]'; ?>">
+                        <div id="btn-content" class="relative z-10 flex flex-col items-center">
+                            <span id="btn-label" class="text-[10px] text-white/70 uppercase tracking-widest mb-1">
+                                <?php echo $isPaused ? "Hệ thống tạm dừng" : "Xác nhận mức giá"; ?>
+                            </span>
+                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">
+                                <?php echo $isPaused ? "STOPPED" : "Chọn mức giá phía dưới"; ?>
+                            </span>
                         </div>
                     </button>
 
@@ -863,7 +891,7 @@ $bidCount = $res_count->fetch_assoc()['total'];
 
                                 <div class="mb-6">
                                     <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
-                                        <span>Thời gian còn lại</span>
+                                        <span>Thời gian còn lạis</span>
                                         <span class="text-red-400 countdown-text" id="timer-<?php echo $item['id']; ?>">
                                             --:--:--
                                         </span>
@@ -882,6 +910,7 @@ $bidCount = $res_count->fetch_assoc()['total'];
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <div class="flex items-center justify-between mt-auto">
                                     <div>
@@ -1198,7 +1227,9 @@ $bidCount = $res_count->fetch_assoc()['total'];
         // });
     });
     // Logic Countdown
+    // Thêm biến trạng thái từ PHP
     let timeLeft = <?php echo $remainingSeconds; ?>;
+    let isPaused = <?php echo $isPaused ? 'true' : 'false'; ?>;
     const timerDisplay = document.getElementById('countdown-timer');
 
     function formatTime(seconds) {
@@ -1210,13 +1241,33 @@ $bidCount = $res_count->fetch_assoc()['total'];
     }
 
     const countdownInterval = setInterval(() => {
+        // Nếu đang Pause, không làm gì cả, chỉ đứng im chờ
+        if (isPaused) return;
+
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            timerDisplay.innerText = "HẾT GIỜ";
+            const timerDisplay = document.getElementById('countdown-timer');
+            if (timerDisplay) timerDisplay.innerText = "HẾT GIỜ";
             return;
         }
+
+        // Nếu không Pause, bắt đầu trừ giây và hiển thị
         timeLeft--;
-        timerDisplay.innerText = formatTime(timeLeft);
+
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+
+        const timerDisplay = document.getElementById('countdown-timer');
+        if (timerDisplay) {
+            timerDisplay.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+    }, 1000);
+    setInterval(function() {
+        if (isPaused || timeLeft <= 0) return; // Nếu đang dừng thì không trừ giây nữa
+
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
     }, 1000);
 
     // Hiệu ứng hạt Energy Particles (Cơ bản)
@@ -1343,14 +1394,47 @@ $bidCount = $res_count->fetch_assoc()['total'];
             }
         });
     });
+    // 2. Vòng lặp kiểm tra trạng thái từ Server (Mỗi 2 giây - Realtime)
     setInterval(function() {
-        fetch('get_current_price.php?id=<?php echo $auctionIdFromUrl; ?>')
-            .then(response => response.json())
+        // Bạn cần một file PHP nhỏ (get_status.php) để trả về json trạng thái
+        fetch('get_auction_status.php?id=<?php echo $auctionIdFromUrl; ?>')
+            .then(res => res.json())
             .then(data => {
-                currentPriceValue = data.new_price;
-                document.getElementById('current-price-display').innerText = currentPriceValue.toLocaleString() + ' VND';
+                // Cập nhật biến isPaused từ server
+                isPaused = (data.is_paused == 1);
+                timeLeft = data.remaining_seconds; // Đồng bộ lại thời gian cho chuẩn
+
+                // Điều khiển Giao diện
+                const btn = document.getElementById('bid-now-btn');
+                const btnLabel = document.getElementById('btn-label');
+                const timerDisplay = document.getElementById('countdown-timer');
+
+                if (isPaused) {
+                    // Trạng thái DỪNG
+                    btn.disabled = true;
+                    btn.classList.add('bg-gray-600', 'cursor-not-allowed', 'opacity-50');
+                    btn.classList.remove('bg-[#007FFF]', 'shadow-[0_0_30px_rgba(0,127,255,0.4)]');
+                    btnLabel.innerText = "Hệ thống tạm dừng";
+                    timerDisplay.classList.replace('text-cyan-400', 'text-amber-500');
+                } else {
+                    // Trạng thái CHẠY TIẾP
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-600', 'cursor-not-allowed', 'opacity-50');
+                    btn.classList.add('bg-[#007FFF]', 'shadow-[0_0_30px_rgba(0,127,255,0.4)]');
+                    btnLabel.innerText = "Xác nhận mức giá";
+                    timerDisplay.classList.replace('text-amber-500', 'text-cyan-400');
+                }
             });
-    }, 5000); // 5 giây cập nhật 1 lần
+    }, 2000);
+
+    function updateTimerDisplay(seconds) {
+        if (seconds < 0) return;
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        const display = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        document.getElementById('countdown-timer').innerText = display;
+    }
     // 5. Xử lý nút TRẢ GIÁ NGAY (Bấm cái này mới gửi dữ liệu đi)
     document.getElementById('bid-now-btn').addEventListener('click', async function() {
         if (pendingBid <= currentPriceValue) {
@@ -1480,8 +1564,10 @@ $bidCount = $res_count->fetch_assoc()['total'];
         const minutes = Math.floor((remainingSeconds % 3600) / 60);
         const seconds = remainingSeconds % 60;
 
-        document.getElementById('countdown').innerHTML =
-            `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+        const displayNode = document.getElementById('countdown');
+        if (displayNode) {
+            displayNode.innerHTML = `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+        }
 
         if (remainingSeconds <= 5) {
             document.getElementById('countdown').style.color = "#EF4444";

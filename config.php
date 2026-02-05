@@ -24,3 +24,5 @@ define( 'DB_CHARSET', 'utf8' );
 // define( 'PORT', '3306');
 // /** Database Charset to use in creating database tables. */
 // define( 'DB_CHARSET', 'utf8' );
+
+date_default_timezone_set('Asia/Ho_Chi_Minh');
