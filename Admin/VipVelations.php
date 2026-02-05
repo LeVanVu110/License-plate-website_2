@@ -350,7 +350,9 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
         /* Hiệu ứng viền vàng chạy khi hover dành riêng cho Gold */
         .member-card-wrapper[data-rank="gold"]:hover .member-card {
             border-color: #D4AF37 !important;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2) !important;
+            /* box-shadow: 0 0 30px rgba(212, 175, 55, 0.2) !important; */
+            background: rgba(255, 255, 255, 0.05);
+
         }
 
         .member-card-wrapper[data-rank="gold"]:hover .member-card::before {
@@ -372,7 +374,8 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
 
         .member-card-wrapper[data-rank="diamond"]:hover .member-card {
             border-color: #22d3ee !important;
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important;
+            /* box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important; */
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Hiệu ứng chữ vàng phát sáng nhẹ */
@@ -395,6 +398,55 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             25%,
             100% {
                 transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* Hiệu ứng viền bạch kim chạy khi hover dành riêng cho Platinum */
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card {
+            border-color: #E5E4E2 !important;
+            /* Màu bạch kim */
+            box-shadow: 0 0 30px rgba(229, 228, 226, 0.25) !important;
+            /* Đổ bóng ánh bạc sáng */
+            background: rgba(255, 255, 255, 0.05);
+            /* Tăng độ sáng nền một chút khi hover */
+        }
+
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card::before {
+            animation-duration: 1.2s;
+            /* Platinum thường tạo cảm giác nhanh và nhạy hơn Gold nên để 1.2s */
+            
+        }
+
+        /* Hiệu ứng ánh sáng kim loại (Shimmer) riêng cho Platinum */
+        .member-card-wrapper[data-rank="platinum"] .member-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Thêm lớp phản chiếu ánh sáng trắng khi hover để tăng tính kim loại */
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 45%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    transparent 55%);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            animation: shine-platinum 3s infinite;
+        }
+
+        @keyframes shine-platinum {
+            0% {
+                transform: translate(-100%, -100%) rotate(30deg);
+            }
+
+            100% {
+                transform: translate(100%, 100%) rotate(30deg);
             }
         }
 
@@ -820,6 +872,9 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                     <button onclick="filterMembers('diamond', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
                         DIAMOND CLUB
                     </button>
+                    <button onclick="filterMembers('platinum', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
+                        PLATINUM CLUB
+                    </button>
                 </div>
                 <div id="compare-mode-indicator" class="hidden items-center gap-3 bg-[#0891B2]/20 border border-[#0891B2]/50 px-4 py-2 rounded-full">
                     <span class="text-[10px] text-cyan-400 font-bold animate-pulse">COMPARE MODE ACTIVE</span>
@@ -900,6 +955,52 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                         <div class="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
                     </div>
                 </div>
+                <div class="member-card-wrapper cursor-pointer" data-rank="platinum" onclick="openVipEditor(this)">
+                    <div class="member-card group relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#E5E4E2]/20 rounded-3xl p-5">
+
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none"></div>
+
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="px-3 py-1 bg-[#E5E4E2]/10 border border-[#E5E4E2]/20 rounded-full">
+                                    <span class="text-[8px] text-[#E5E4E2] font-bold uppercase tracking-[2px]">Platinum Member</span>
+                                </div>
+                                <div class="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_#7c7c7c]"></div>
+                            </div>
+
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full border-2 border-[#E5E4E2]/30 overflow-hidden bg-[#111] shadow-[0_0_15px_rgba(229,228,226,0.1)]">
+                                    <img src="https://i.pravatar.cc/150?u=platinum1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-medium text-sm">Mr. Hoang Nam</h3>
+                                    <p class="text-white/40 text-[10px] font-mono">ID: #999000</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
+                                <div>
+                                    <p class="text-[8px] text-white/30 uppercase">Bidding Limit</p>
+                                    <p class="text-xs text-[#E5E4E2] font-bold mt-1">15.8B VND</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[8px] text-white/30 uppercase">Assets</p>
+                                    <p class="text-xs text-white font-bold mt-1">12 Plates</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
+                    </div>
+                </div>
+
+                <style>
+                    @keyframes shimmer {
+                        100% {
+                            transform: translateX(100%);
+                        }
+                    }
+                </style>
 
 
             </div>
@@ -1423,13 +1524,21 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
 
         // Đề xuất hạng
         if (amount >= 10000000000) { // 10 tỷ
-            rankIcon.className = "w-12 h-12 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]";
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)] bg-cyan-500/10";
             rankName.innerText = "DIAMOND MEMBER";
             rankName.classList.replace('text-white/20', 'text-cyan-500');
         } else if (amount >= 1000000000) { // 1 tỷ
-            rankIcon.className = "w-12 h-12 rounded-full border-2 border-slate-300 flex items-center justify-center text-slate-300";
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-[#E5E4E2] flex items-center justify-center text-[#E5E4E2] shadow-[0_0_10px_rgba(229,228,226,0.3)] bg-white/5";
             rankName.innerText = "PLATINUM MEMBER";
-            rankName.classList.replace('text-white/20', 'text-slate-300');
+            rankName.classList.replace('text-white/20', 'text-[#E5E4E2]');
+        } else if (amount >= 500000000) { // 500 triệu (Mức GOLD)
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.3)] bg-[#D4AF37]/10";
+            rankName.innerText = "GOLD MEMBER";
+            rankName.classList.replace('text-white/20', 'text-[#D4AF37]');
+        } else {
+            // Mặc định cho thành viên phổ thông
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center text-white/20";
+            rankName.innerText = "STANDARD MEMBER";
         }
     }
 
@@ -1531,6 +1640,8 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             btn.classList.add('bg-[#D4AF37]/20', 'border-[#D4AF37]/50', 'text-[#D4AF37]');
         } else if (rank === 'diamond') {
             btn.classList.add('bg-cyan-400/20', 'border-cyan-400/50', 'text-cyan-400');
+        } else if (rank === 'platinum') {
+            btn.classList.add('bg-slate-400/10', 'border-slate-400/50', 'text-slate-100', 'shadow-[0_0_10px_rgba(226,232,240,0.2)]');
         }
 
         // 3. Hiệu ứng lọc thẻ bằng GSAP
@@ -1568,6 +1679,10 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
         if (rank === 'gold') {
             badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
             badge.innerText = "GOLD MEMBER";
+        } else if (rank === 'platinum') {
+            // Sử dụng màu Slate-200 hoặc Zinc-300 để giả lập màu kim loại trắng (Platinum)
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#E5E4E2] text-[#E5E4E2] bg-[#E5E4E2]/10 shadow-[0_0_5px_rgba(229,228,226,0.3)]";
+            badge.innerText = "PLATINUM MEMBER";
         } else {
             badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
             badge.innerText = "DIAMOND CLUB";
