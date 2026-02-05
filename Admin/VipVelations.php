@@ -11,6 +11,13 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
     header("Location: login.php?error=access_denied");
     exit();
 }
+// Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+require_once dirname(__DIR__) . "/config.php";
+
+// 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+require_once dirname(__DIR__) . "/models/db.php";
+require_once dirname(__DIR__) . "/models/Customer.php";
+$customerModel = new Customer();
 ?>
 
 <head>
@@ -407,18 +414,18 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             /* Màu bạch kim */
             box-shadow: 0 0 30px rgba(229, 228, 226, 0.25) !important;
             /* Đổ bóng ánh bạc sáng */
-            background: rgba(255, 255, 255, 0.05);
             /* Tăng độ sáng nền một chút khi hover */
         }
 
         .member-card-wrapper[data-rank="platinum"]:hover .member-card::before {
             animation-duration: 1.2s;
             /* Platinum thường tạo cảm giác nhanh và nhạy hơn Gold nên để 1.2s */
-            
+
         }
 
         /* Hiệu ứng ánh sáng kim loại (Shimmer) riêng cho Platinum */
         .member-card-wrapper[data-rank="platinum"] .member-card {
+
             position: relative;
             overflow: hidden;
         }
@@ -993,6 +1000,14 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                         <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
                     </div>
                 </div>
+                    <?php
+
+                    $customers = $customerModel->get(); // Lấy danh sách từ DB
+
+                    foreach ($customers as $customer) {
+                        echo $customerModel->renderVipCard($customer);
+                    }
+                    ?>
 
                 <style>
                     @keyframes shimmer {
