@@ -152,4 +152,45 @@ class Customer extends Db
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+    public function getAuctionHistory($user_id)
+    {
+        // Lưu ý: Lấy current_price từ bảng p (plates)
+        // Lấy is_winning_bid để xác định Thắng/Thua
+        $sql = "SELECT 
+                p.plate_number, 
+                a.end_time, 
+                MAX(b.bid_amount) as user_max_bid,
+                p.current_price as final_price, 
+                MAX(b.is_winning_bid) as is_winner
+            FROM bids b
+            JOIN auctions a ON b.auction_id = a.id
+            JOIN plates p ON a.plate_id = p.id
+            WHERE b.customer_id = ? 
+              AND a.end_time <= NOW() -- Chỉ lấy các phiên đã kết thúc
+            GROUP BY a.id
+            ORDER BY a.end_time DESC";
+
+        $stmt = self::$connection->prepare($sql);
+
+        if (!$stmt) {
+            die("Lỗi SQL: " . self::$connection->error);
+        }
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    public function getTransactionHistory($user_id)
+    {
+        $sql = "SELECT t.*, p.plate_number 
+            FROM transactions t
+            LEFT JOIN plates p ON t.plate_id = p.id
+            WHERE t.customer_id = ? 
+            ORDER BY t.created_at DESC";
+
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }

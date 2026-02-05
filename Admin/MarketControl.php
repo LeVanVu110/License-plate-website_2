@@ -11,7 +11,15 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
     header("Location: login.php?error=access_denied");
     exit();
 }
+
+// Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+require_once dirname(__DIR__) . "/config.php";
+
+// 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+require_once dirname(__DIR__) . "/models/db.php";
+require_once dirname(__DIR__) . "/models/Auction.php";
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -634,186 +642,103 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             </div>
 
             <div id="grid-container" class="max-h-[700px] overflow-y-auto custom-grid-scrollbar p-4 space-y-3 scroll-mt-10">
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+                <?php
+                $auctionModel = new Auction();
+                $allAuctions = $auctionModel->getAllAuctionsDetail();
 
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                foreach ($allAuctions as $auc):
+                    // 1. Tính toán phần trăm tăng trưởng (Current vs Starting)
+                    $startingPrice = $auc['starting_price'];
+                    $currentPrice = $auc['current_max_bid'];
+                    $increasePercent = ($currentPrice > $startingPrice)
+                        ? round((($currentPrice - $startingPrice) / $startingPrice) * 100)
+                        : 0;
+
+                    // 2. Xác định màu sắc theo trạng thái
+                    $statusColor = 'text-amber-500'; // Mặc định là đang đấu
+                    if ($auc['plate_status'] == 'Sold') $statusColor = 'text-red-500';
+                    if ($auc['plate_status'] == 'Available') $statusColor = 'text-blue-500';
+                ?>
+
+                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden mb-4">
+                        <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                        <div class="col-span-3 flex items-center gap-1">
+                            <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                                <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
+                                    <span class="text-black font-bold jetbrains text-sm tracking-tighter">
+                                        <?php echo $auc['plate_number']; ?>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        <div class="col-span-2">
+                            <p class="text-cyan-400 font-bold jetbrains text-base rolling-number"
+                                data-value="<?php echo number_format($currentPrice, 0, '.', '.'); ?>">
+                                <?php echo number_format($currentPrice, 0, '.', '.'); ?>
+                            </p>
+                            <p class="text-[9px] text-emerald-400 space-mono">↑ +<?php echo $increasePercent; ?>% START</p>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
 
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                        <div class="col-span-2 flex items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <i class="ri-eye-line text-white/20 text-xs"></i>
+                                <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="ri-auction-line text-white/20 text-xs"></i>
+                                <span class="text-white/60 jetbrains text-[10px]">
+                                    <?php echo $auc['total_bids']; ?>
+                                </span>
                             </div>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                        <div class="col-span-2 flex items-center gap-3">
+                            <div class="relative w-10 h-10">
+                                <svg class="w-full h-full -rotate-90">
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent"
+                                        stroke-dasharray="100" stroke-dashoffset="30"
+                                        class="<?php echo $statusColor; ?> transition-all duration-1000"></circle>
+                                </svg>
+                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] <?php echo $statusColor; ?>"></i>
                             </div>
+                            <span class="countdown-timer <?php echo $statusColor; ?> jetbrains text-[11px] font-bold"
+                                data-end="<?php echo $auc['display_end_time']; ?>">
+                                --:--:--
+                            </span>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
+                        <div class="col-span-3 flex justify-end gap-2">
+                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                <i class="ri-pause-line"></i>
+                            </button>
+                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                <i class="ri-time-fill"></i>
+                            </button>
 
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
-                            </div>
-                        </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
-
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
+                            <?php if ($auc['plate_status'] == 'Auctioning'): ?>
+                                <!-- <button
+                                    class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                                    onclick="openIntervention('<?php echo $auc['plate_number']; ?>')">
+                                    BOOST
+                                </button> -->
+                                <button
+                                    class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                                    onclick="openIntervention(<?php echo $auc['id']; ?>, '<?php echo $auc['plate_number']; ?>')">
+                                    BOOST
+                                </button>
+                            <?php else: ?>
+                                <button class="px-4 h-8 rounded-lg bg-white/5 border border-white/10 text-white/40 text-[9px] jetbrains font-bold cursor-not-allowed">
+                                    CLOSED
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
+                <?php endforeach; ?>
 
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
                 <div class="flex justify-center items-center gap-4 mt-8 pb-10">
                     <button onclick="prevPage()" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:bg-cyan-500 hover:text-black transition-all duration-300">
                         <i class="ri-arrow-left-s-line"></i>
@@ -861,10 +786,15 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                         <label class="jetbrains text-[10px] text-white/30 uppercase tracking-widest">Gia hạn thời gian</label>
                         <span class="text-amber-500 jetbrains text-[11px] font-bold">+00:15:00</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-2">
+                    <!-- <div class="grid grid-cols-3 gap-2">
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+2 PHÚT</button>
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+5 PHÚT</button>
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+10 PHÚT</button>
+                    </div> -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="selectMinutes(this, 120)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+2 PHÚT</button>
+                        <button onclick="selectMinutes(this, 300)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+5 PHÚT</button>
+                        <button onclick="selectMinutes(this, 600)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+10 PHÚT</button>
                     </div>
                 </div>
 
@@ -898,7 +828,11 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
                     </button>
                 </div>
 
-                <button class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
+                <!-- <button onclick="pushToSystem()" class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
+                    <div class="sync-spinner w-4 h-4 border-2 border-white/20 border-t-white rounded-full hidden"></div>
+                    PUSH TO SYSTEM
+                </button> -->
+                <button onclick="pushToSystem()" class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
                     <div class="sync-spinner w-4 h-4 border-2 border-white/20 border-t-white rounded-full hidden"></div>
                     PUSH TO SYSTEM
                 </button>
@@ -1260,10 +1194,93 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
         renderPagination();
     });
 
+    function startGlobalCountdowns() {
+        setInterval(() => {
+            const now = Math.floor(Date.now() / 1000); // Thời gian hiện tại (timestamp giây)
+
+            document.querySelectorAll('.countdown-timer').forEach(timer => {
+                const endTime = parseInt(timer.getAttribute('data-end'));
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    timer.innerText = "ĐÃ KẾT THÚC";
+                    timer.classList.remove('text-amber-500');
+                    timer.classList.add('text-red-500');
+                    return;
+                }
+
+                // Tính toán giờ, phút, giây
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+
+                // Định dạng hiển thị 00:00:00
+                const displayTime = [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    seconds.toString().padStart(2, '0')
+                ].join(':');
+
+                timer.innerText = displayTime;
+            });
+        }, 1000); // Chạy lại mỗi 1 giây
+    }
+
+    // Kích hoạt khi trang web tải xong
+    document.addEventListener('DOMContentLoaded', startGlobalCountdowns);
+
     // ----------------------------- section 3 ----------------------------- //
     // ----------------------------- section 3 ----------------------------- //
-    function openIntervention(plateNumber) {
-        const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
+    // function openIntervention(plateNumber) {
+    //     const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
+    //     const overlay = document.getElementById('panel-overlay');
+    //     const plateText = document.getElementById('target-plate-display');
+    //     const mainGrid = document.getElementById('market-grid');
+
+    //     plateText.innerText = plateNumber;
+    //     panel.classList.add('active');
+    //     overlay.classList.remove('hidden');
+
+    //     gsap.to(overlay, {
+    //         opacity: 1,
+    //         duration: 0.5
+    //     });
+    //     gsap.to(mainGrid, {
+    //         x: -40,
+    //         filter: "blur(10px)",
+    //         opacity: 0.3,
+    //         duration: 0.7,
+    //         ease: "power3.out"
+    //     });
+    // }
+
+    // function closePanel() {
+    //     const panel = document.getElementById('intervention-panel');
+    //     const overlay = document.getElementById('panel-overlay');
+    //     const mainGrid = document.getElementById('market-grid');
+
+    //     panel.classList.remove('active');
+
+    //     gsap.to(overlay, {
+    //         opacity: 0,
+    //         duration: 0.4,
+    //         onComplete: () => overlay.classList.add('hidden')
+    //     });
+
+    //     gsap.to(mainGrid, {
+    //         x: 0,
+    //         filter: "blur(0px)",
+    //         opacity: 1,
+    //         duration: 0.6,
+    //         ease: "power3.inOut"
+    //     });
+    // }
+    let currentAuctionId = null; // Biến lưu trữ ID phiên đang chọn
+
+    function openIntervention(id, plateNumber) {
+        currentAuctionId = id; // Lưu ID lại để dùng khi bấm "PUSH TO SYSTEM"
+
+        const panel = document.getElementById('intervention-panel');
         const overlay = document.getElementById('panel-overlay');
         const plateText = document.getElementById('target-plate-display');
         const mainGrid = document.getElementById('market-grid');
@@ -1272,7 +1289,7 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
         panel.classList.add('active');
         overlay.classList.remove('hidden');
 
-        // Sử dụng GSAP để animate mượt mà
+        // Giữ nguyên hiệu ứng của bạn
         gsap.to(overlay, {
             opacity: 1,
             duration: 0.5
@@ -1287,12 +1304,14 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
     }
 
     function closePanel() {
+        currentAuctionId = null; // Reset ID khi đóng
         const panel = document.getElementById('intervention-panel');
         const overlay = document.getElementById('panel-overlay');
         const mainGrid = document.getElementById('market-grid');
 
         panel.classList.remove('active');
 
+        // Giữ nguyên hiệu ứng của bạn
         gsap.to(overlay, {
             opacity: 0,
             duration: 0.4,
@@ -1307,6 +1326,84 @@ if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles
             ease: "power3.inOut"
         });
     }
+    let pendingSeconds = 0; // Lưu số giây chờ để gửi
+
+    function selectMinutes(element, seconds) {
+        pendingSeconds = seconds;
+
+        // Reset màu tất cả các nút phút khác
+        document.querySelectorAll('.minute-btn').forEach(btn => {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/20');
+            btn.classList.add('border-white/10', 'bg-white/5');
+        });
+
+        // Highlight nút đang chọn
+        element.classList.remove('border-white/10', 'bg-white/5');
+        element.classList.add('border-cyan-500', 'bg-cyan-500/20');
+    }
+
+    function pushToSystem() {
+        if (!currentAuctionId || pendingSeconds === 0) {
+            alert("Vui lòng chọn số phút!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action', 'add_time');
+        formData.append('id', currentAuctionId);
+        formData.append('seconds', pendingSeconds);
+
+        fetch('update_auction.php', {
+                method: 'POST',
+                body: formData // Gửi trực tiếp formData
+            })
+            .then(response => response.text()) // Nhận text trước để kiểm tra
+            .then(text => {
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        alert("Gia hạn thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.message);
+                    }
+                } catch (e) {
+                    console.error("Phản hồi từ server bị lỗi (không phải JSON):", text);
+                    alert("Lỗi cấu trúc dữ liệu từ máy chủ!");
+                }
+            });
+    }
+
+    function addSniperTime(seconds) {
+        if (!currentAuctionId) {
+            alert("Không tìm thấy ID phiên đấu giá!");
+            return;
+        }
+
+        // Hiệu ứng loading nhẹ trên nút bấm hoặc console
+        console.log(`Đang cộng thêm ${seconds} giây cho phiên ${currentAuctionId}`);
+
+        // Gửi yêu cầu bằng Fetch API (AJAX)
+        fetch('update_auction.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `action=add_time&id=${currentAuctionId}&seconds=${seconds}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Đã gia hạn thời gian thành công!");
+                    // Cập nhật lại thời gian hiển thị trên Panel nếu cần
+                    location.reload(); // Hoặc viết hàm cập nhật UI realtime
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
     // ----------------------------- section 4 ----------------------------- //
     // ----------------------------- section 4 ----------------------------- //
     function toggleSentimentDrawer() {

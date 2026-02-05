@@ -1343,7 +1343,14 @@ $bidCount = $res_count->fetch_assoc()['total'];
             }
         });
     });
-
+    setInterval(function() {
+        fetch('get_current_price.php?id=<?php echo $auctionIdFromUrl; ?>')
+            .then(response => response.json())
+            .then(data => {
+                currentPriceValue = data.new_price;
+                document.getElementById('current-price-display').innerText = currentPriceValue.toLocaleString() + ' VND';
+            });
+    }, 5000); // 5 giây cập nhật 1 lần
     // 5. Xử lý nút TRẢ GIÁ NGAY (Bấm cái này mới gửi dữ liệu đi)
     document.getElementById('bid-now-btn').addEventListener('click', async function() {
         if (pendingBid <= currentPriceValue) {
@@ -1924,9 +1931,28 @@ $bidCount = $res_count->fetch_assoc()['total'];
         });
     });
 
+
     // ----------------------------- section 5 ----------------------------- //
 
+
     // ----------------------------- section 6 ----------------------------- //
+    function placeBid(auctionId, amount) {
+        fetch('handle_bid.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    auction_id: auctionId,
+                    bid_amount: amount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Đặt giá thành công!');
+                    // Load lại phần Sổ Cái để hiện dòng giao dịch mới
+                    $("#ledger-container").load(window.location.href + " #ledger-container");
+                }
+            });
+    }
 </script>
 
 </html>

@@ -58,8 +58,8 @@
                         <span class="text-white font-bold">1900 8888</span>
                     </li>
                     <li class="pt-4">
-                        <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg/1200px-Seal_of_the_Ministry_of_Industry_and_Trade_%28Vietnam%29.svg.png"alt="BCT"
-                            class="h-12 grayscale hover:grayscale-0 transition-all duration-500 cursor-help opacity-70 hover:opacity-100"> -->
+                        <img src="https://moit.gov.vn/upload/1002948/20210824/ThuAug17114747ICT2017_Banner_Big_f2217.png"alt="BCT"
+                            class="h-12 grayscale hover:grayscale-0 transition-all duration-500 cursor-help opacity-70 hover:opacity-100">
                     </li>
                 </ul>
             </div>

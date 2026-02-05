@@ -310,6 +310,24 @@ if ($cap >= 1000000000) {
             }
 
             /* Số tiền */
+            @keyframes scan {
+                0% {
+                    top: 0%;
+                }
+
+                100% {
+                    top: 100%;
+                }
+            }
+
+            .scanline {
+                animation: scan 4s linear infinite;
+                box-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+            }
+
+            .ledger-row:hover {
+                backdrop-filter: blur(10px);
+            }
         }
 
         /* ----------------------------- section 5 -----------------------------  */
@@ -593,7 +611,7 @@ if ($cap >= 1000000000) {
 
 
     <!-- ----------------------------- section 3 -----------------------------  -->
-    <section id="auction-chronology" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
+    <!-- <section id="auction-chronology" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
         <div class="container mx-auto max-w-6xl relative px-6">
 
             <div class="text-center mb-20">
@@ -671,10 +689,72 @@ if ($cap >= 1000000000) {
                 </div>
             </div>
         </div>
+    </section> -->
+    <?php
+    $history = $customerModel->getAuctionHistory($_SESSION['user_id']);
+    ?>
+
+    <section id="auction-chronology" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden">
+        <div class="container mx-auto max-w-6xl relative px-6">
+            <div class="text-center mb-20">
+                <h2 class="text-[10px] tracking-[5px] text-cyan-400 uppercase mb-4">The Timeless Axis</h2>
+                <h3 class="serif text-5xl text-white font-light">Hành Trình <span class="italic text-white/60">Di Sản</span></h3>
+            </div>
+
+            <div class="relative">
+                <div class="timeline-axis absolute left-4 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent transform md:-translate-x-1/2"></div>
+
+                <div class="space-y-24">
+                    <?php foreach ($history as $index => $item):
+                        $isWinner = $item['is_winner'] == 1;
+                        $isEven = $index % 2 == 0;
+                    ?>
+                        <div class="timeline-row flex flex-col md:flex-row items-center justify-between w-full relative">
+
+                            <div class="timeline-card-wrapper w-full md:w-[45%] <?php echo $isEven ? 'order-2 md:order-1' : 'md:invisible order-2'; ?>">
+                                <?php if ($isEven) renderCard($item, $isWinner); ?>
+                            </div>
+
+                            <div class="timeline-node absolute left-4 md:left-1/2 w-3 h-3 <?php echo $isWinner ? 'bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]' : 'bg-white/20'; ?> rounded-full transform -translate-x-1/2 z-10 hidden md:block"></div>
+
+                            <div class="timeline-card-wrapper w-full md:w-[45%] <?php echo !$isEven ? 'order-2' : 'md:invisible order-1'; ?>">
+                                <?php if (!$isEven) renderCard($item, $isWinner); ?>
+                            </div>
+
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
     </section>
 
+    <?php
+    // Hàm trợ năng để render card tránh lặp code
+    function renderCard($item, $isWinner)
+    {
+        $date = date('d M Y', strtotime($item['end_time']));
+        $typeClass = $isWinner ? 'triumph border-white/20 bg-gradient-to-br from-white/10' : 'memory border-white/5 bg-white/5 opacity-60';
+        $accentColor = $isWinner ? 'text-cyan-400' : 'text-white/20';
+        $label = $isWinner ? 'FINAL BID:' : 'MISSED AT:';
+        $icon = $isWinner ? 'ri-medal-fill text-[#C5A059]' : 'ri-rest-time-line text-white/20';
+    ?>
+        <div class="auction-card-chrono group relative p-6 border rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:opacity-100 <?php echo $typeClass; ?>">
+            <div class="relative z-10">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="inter-light text-[10px] text-white/50 tracking-widest uppercase"><?php echo $date; ?></span>
+                    <i class="<?php echo $icon; ?> text-xl"></i>
+                </div>
+                <h4 class="space-mono text-3xl text-white font-bold mb-2"><?php echo $item['plate_number']; ?></h4>
+                <div class="flex justify-between items-center mt-6">
+                    <span class="text-[10px] <?php echo $accentColor; ?> tracking-tighter uppercase"><?php echo $label; ?></span>
+                    <span class="space-mono text-white text-lg font-bold"><?php echo number_format($item['user_max_bid']); ?></span>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
     <!-- ----------------------------- section 4 -----------------------------  -->
-    <section id="ledger-trust" class="relative min-h-screen py-24 bg-[#000814] px-4 md:px-6">
+    <!-- <section id="ledger-trust" class="relative min-h-screen py-24 bg-[#000814] px-4 md:px-6">
         <div class="container mx-auto max-w-6xl">
             <div class="mb-12">
                 <h2 class="text-[10px] tracking-[5px] text-emerald-400 uppercase mb-4">Financial Vault</h2>
@@ -738,6 +818,80 @@ if ($cap >= 1000000000) {
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <?php
+    $transactions = $customerModel->getTransactionHistory($_SESSION['user_id']);
+    ?>
+
+    <section id="ledger-trust" class="relative min-h-screen py-24 bg-[#000814] px-4 md:px-6">
+        <div class="container mx-auto max-w-6xl">
+            <div class="mb-12">
+                <h2 class="text-[10px] tracking-[5px] text-emerald-400 uppercase mb-4">Financial Vault</h2>
+                <h3 class="serif text-4xl text-white font-light">Sổ Cái <span class="text-emerald-400 italic">Minh Bạch</span></h3>
+            </div>
+
+            <div class="ledger-container overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-xl relative">
+                <div class="scanline absolute top-0 left-0 w-full h-[2px] bg-emerald-400/30 z-20 pointer-events-none"></div>
+
+                <div class="hidden md:grid grid-cols-6 gap-4 p-6 border-b border-white/10 bg-white/[0.03] text-[10px] text-white/40 tracking-widest uppercase font-mono">
+                    <div>Mã Giao Dịch</div>
+                    <div>Đối Tượng</div>
+                    <div>Loại Phí</div>
+                    <div class="text-right">Số Tiền</div>
+                    <div class="text-center">Trạng Thái</div>
+                    <div class="text-right">Chứng Từ</div>
+                </div>
+
+                <div class="ledger-rows font-mono">
+                    <?php if (empty($transactions)): ?>
+                        <div class="p-20 text-center text-white/20 uppercase tracking-widest text-xs">Chưa có giao dịch phát sinh</div>
+                    <?php else: ?>
+                        <?php foreach ($transactions as $trans):
+                            // Định dạng màu sắc dựa trên số tiền và trạng thái
+                            $isPositive = $trans['amount'] > 0;
+                            $amountClass = $isPositive ? 'text-emerald-400' : 'text-white';
+                            $prefix = $isPositive ? '+' : '';
+
+                            // Định dạng badge trạng thái
+                            $statusHTML = '';
+                            switch ($trans['status']) {
+                                case 'Success':
+                                    $statusHTML = '<span class="px-3 py-1 rounded-full border border-emerald-400/30 text-emerald-400 text-[9px] uppercase tracking-tighter bg-emerald-400/5">Đã kết toán</span>';
+                                    break;
+                                case 'Pending':
+                                    $statusHTML = '<span class="px-3 py-1 rounded-full border border-amber-400/30 text-amber-400 text-[9px] uppercase tracking-tighter bg-amber-400/5">Đang xử lý</span>';
+                                    break;
+                                default:
+                                    $statusHTML = '<span class="px-3 py-1 rounded-full border border-white/20 text-white/40 text-[9px] uppercase tracking-tighter">Đã hoàn trả</span>';
+                            }
+                        ?>
+                            <div class="ledger-row group grid grid-cols-1 md:grid-cols-6 gap-4 p-6 border-b border-white/5 items-center transition-all duration-300 hover:bg-emerald-400/[0.03]">
+                                <div class="text-[11px] text-white/20 group-hover:text-white/60 transition-colors">
+                                    <?php echo substr($trans['transaction_code'], 0, 10); ?>...
+                                </div>
+                                <div class="text-sm text-white font-bold">
+                                    <?php echo $trans['plate_number'] ?? 'HỆ THỐNG'; ?>
+                                </div>
+                                <div class="text-[11px] text-white/40">
+                                    <?php echo $trans['type']; ?>
+                                </div>
+                                <div class="text-right <?php echo $amountClass; ?> font-bold">
+                                    <?php echo $prefix . number_format($trans['amount']); ?>
+                                </div>
+                                <div class="flex justify-center">
+                                    <?php echo $statusHTML; ?>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="download-receipt text-white/30 hover:text-white transition-colors" title="Tải chứng từ">
+                                        <i class="ri-file-download-line text-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
