@@ -639,9 +639,13 @@ $availablePlates = $auctionModel->getAvailablePlates();
             <p class="space-mono text-[10px] text-white/30 uppercase tracking-[3px]">Real-time Asset Monitoring</p>
         </div>
 
-        <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
+        <!-- <div class=" grid-row group grid grid-cols-12 flex items-center px-8 py-6 gap-3 bg-black/40 p-1 rounded-xl border border-white/10 mb-4">
             <button onclick="sortGrid('price')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
             <button onclick="sortGrid('time')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
+        </div> -->
+        <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
+            <button onclick="sortGrid('price')" class="sort-btn px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
+            <button onclick="sortGrid('time')" class="sort-btn px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
         </div>
         </div>
 
@@ -679,7 +683,7 @@ $availablePlates = $auctionModel->getAvailablePlates();
                     if ($auc['plate_status'] == 'Available') $statusColor = 'text-blue-500';
                 ?>
 
-                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden mb-4">
+                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden mb-4" >
                         <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
 
                         <div class="col-span-3 flex items-center gap-1">
@@ -1242,23 +1246,39 @@ $availablePlates = $auctionModel->getAvailablePlates();
         // 2. Logic sắp xếp (Sorting)
         window.sortGrid = (type) => {
             const container = document.getElementById('grid-container');
+            // Chỉ lấy các hàng grid-row, bỏ qua các div thông báo hoặc pagination
             const rows = Array.from(container.querySelectorAll('.grid-row'));
 
+            if (rows.length === 0) return;
+
             rows.sort((a, b) => {
+                let valA, valB;
                 if (type === 'price') {
-                    return b.dataset.price - a.dataset.price;
+                    valA = parseInt(a.dataset.price) || 0;
+                    valB = parseInt(b.dataset.price) || 0;
+                    return valB - valA; // Giá cao nhất lên đầu
                 } else {
-                    return a.dataset.time - b.dataset.time;
+                    valA = parseInt(a.dataset.time) || 0;
+                    valB = parseInt(b.dataset.time) || 0;
+                    return valA - valB; // Thời gian kết thúc sớm nhất lên đầu
                 }
             });
 
-            // Sử dụng GSAP để trượt các hàng
+            // Sử dụng GSAP Flip để tạo hiệu ứng đổi chỗ mượt mà
+            // Nếu bạn chưa nạp thư viện Flip, hãy thêm: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js">
+
             const state = Flip.getState(rows);
+
+            // Thay đổi thứ tự trong DOM
             rows.forEach(row => container.appendChild(row));
+
             Flip.from(state, {
                 duration: 0.8,
                 ease: "power3.inOut",
-                stagger: 0.05
+                stagger: 0.05,
+                onComplete: () => {
+                    console.log(`Sorted by ${type}`);
+                }
             });
         };
     });
@@ -1297,10 +1317,10 @@ $availablePlates = $auctionModel->getAvailablePlates();
             const btn = document.createElement('button');
             btn.innerText = i;
             btn.className = `w-10 h-10 rounded-xl border transition-all duration-300 jetbrains text-xs ${
-            i === currentPage 
-            ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.5)]' 
-            : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
-        }`;
+    i===currentPage
+    ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+    : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+    }`;
             btn.onclick = () => {
                 currentPage = i;
                 renderPagination();
@@ -1435,48 +1455,48 @@ $availablePlates = $auctionModel->getAvailablePlates();
     // ----------------------------- section 3 ----------------------------- //
     // ----------------------------- section 3 ----------------------------- //
     // function openIntervention(plateNumber) {
-    //     const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
-    //     const overlay = document.getElementById('panel-overlay');
-    //     const plateText = document.getElementById('target-plate-display');
-    //     const mainGrid = document.getElementById('market-grid');
+    // const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
+    // const overlay = document.getElementById('panel-overlay');
+    // const plateText = document.getElementById('target-plate-display');
+    // const mainGrid = document.getElementById('market-grid');
 
-    //     plateText.innerText = plateNumber;
-    //     panel.classList.add('active');
-    //     overlay.classList.remove('hidden');
+    // plateText.innerText = plateNumber;
+    // panel.classList.add('active');
+    // overlay.classList.remove('hidden');
 
-    //     gsap.to(overlay, {
-    //         opacity: 1,
-    //         duration: 0.5
-    //     });
-    //     gsap.to(mainGrid, {
-    //         x: -40,
-    //         filter: "blur(10px)",
-    //         opacity: 0.3,
-    //         duration: 0.7,
-    //         ease: "power3.out"
-    //     });
+    // gsap.to(overlay, {
+    // opacity: 1,
+    // duration: 0.5
+    // });
+    // gsap.to(mainGrid, {
+    // x: -40,
+    // filter: "blur(10px)",
+    // opacity: 0.3,
+    // duration: 0.7,
+    // ease: "power3.out"
+    // });
     // }
 
     // function closePanel() {
-    //     const panel = document.getElementById('intervention-panel');
-    //     const overlay = document.getElementById('panel-overlay');
-    //     const mainGrid = document.getElementById('market-grid');
+    // const panel = document.getElementById('intervention-panel');
+    // const overlay = document.getElementById('panel-overlay');
+    // const mainGrid = document.getElementById('market-grid');
 
-    //     panel.classList.remove('active');
+    // panel.classList.remove('active');
 
-    //     gsap.to(overlay, {
-    //         opacity: 0,
-    //         duration: 0.4,
-    //         onComplete: () => overlay.classList.add('hidden')
-    //     });
+    // gsap.to(overlay, {
+    // opacity: 0,
+    // duration: 0.4,
+    // onComplete: () => overlay.classList.add('hidden')
+    // });
 
-    //     gsap.to(mainGrid, {
-    //         x: 0,
-    //         filter: "blur(0px)",
-    //         opacity: 1,
-    //         duration: 0.6,
-    //         ease: "power3.inOut"
-    //     });
+    // gsap.to(mainGrid, {
+    // x: 0,
+    // filter: "blur(0px)",
+    // opacity: 1,
+    // duration: 0.6,
+    // ease: "power3.inOut"
+    // });
     // }
     let currentAuctionId = null; // Biến lưu trữ ID phiên đang chọn
 
