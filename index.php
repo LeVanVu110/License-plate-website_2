@@ -114,7 +114,7 @@
         /* Hiệu ứng khi hover vào nút bấm */
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 127, 255, 0.4);
+            /* box-shadow: 0 10px 20px rgba(0, 127, 255, 0.4); */
         }
 
         /* Mobile specific adjustments */
@@ -137,7 +137,7 @@
         }
 
         /* code update  */
-        
+
 
 
 
@@ -886,6 +886,12 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
+<?php
+$newsModel = new News();
+$datas = $newsModel->get();
+
+$featured = $datas['featured'];
+?>
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
@@ -922,20 +928,24 @@
             </div>
         </div>
     </section>
-
-    <section class="py-32 flex flex-col md:flex-row items-center justify-center gap-16 px-10 border-t border-white/5 bg-[#000D1A]">
-        <div class="w-full md:w-1/3 overflow-hidden rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000">
-            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000" class="w-full h-96 object-cover transform hover:scale-110 transition-transform duration-700">
-        </div>
-        <div class="md:w-1/2">
-            <span class="text-blue-500 text-[10px] tracking-[5px] uppercase">Heritage Journal</span>
-            <h2 class="serif text-white text-4xl mt-4 mb-8">Giải mã ý nghĩa biển số Ngũ Quý 9 <br> dưới góc độ đầu tư di sản.</h2>
-            <button class="discovery-btn group text-[10px] tracking-[4px] uppercase text-white px-10 py-4" onclick="window.location.href='detail_news.php'">
-                Khám phá chi tiết
-                <div class="flow-light"></div>
-            </button>
-        </div>
-    </section>
+    <?php
+    // Nếu không có bài viết nào, có thể ẩn section hoặc hiện mặc định
+    if ($featured):
+    ?>
+        <section class="py-32 flex flex-col md:flex-row items-center justify-center gap-16 px-10 border-t border-white/5 bg-[#000D1A]">
+            <div class="w-full md:w-1/3 overflow-hidden rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000">
+                <img src="<?= $featured['thumbnail'] ?>" class="w-full h-96 object-cover transform hover:scale-110 transition-transform duration-700">
+            </div>
+            <div class="md:w-1/2">
+                <span class="text-blue-500 text-[10px] tracking-[5px] uppercase">Heritage Journal</span>
+                <h2 class="serif text-white text-4xl mt-4 mb-8"><?= mb_strtoupper($featured['title'], 'UTF-8') ?></h2>
+                <button class="discovery-btn group text-[10px] tracking-[4px] uppercase text-white px-10 py-4" onclick="window.location.href='chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&id=<?= $featured['id'] ?>'">
+                    Khám phá chi tiết
+                    <div class="flow-light"></div>
+                </button>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="infinite-vault" class="relative py-16 md:py-24 bg-[#000D1A] overflow-hidden">
@@ -959,35 +969,45 @@
                         <div class="h-[1px] flex-1 bg-blue-500/20"></div>
                     </h4>
                     <div id="gallery-auto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 transition-all duration-500">
-                        <a href="chitiet_bienso_oto.php?plate=30K-999.99&price=2.500.000.000" class="block">
-                            <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
+                        <?php foreach ($data['cars'] as $car): ?>
+                            <a href="chitiet_bienso_oto.php?plate=<?= $car['plate_number'] ?>&price=<?= $car['current_price'] ?>" class="block mb-4">
+                                <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
 
-                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
-                                    <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
-                                </div>
-
-                                <div class="relative z-10 h-full flex flex-col justify-between">
-                                    <div class="flex justify-between items-start">
-                                        <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">Heritage Plate</span>
-                                        <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
+                                    <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
+                                        <img src="mercedes-benz-s-class-car-maybach-mercedes-benz-e-class-mercedes-benz-s-class-car-removebg-preview.png" class="w-4/5 grayscale invert" alt="Silhouette">
                                     </div>
 
-                                    <div class="plate-number text-center">
-                                        <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">30K - 999.99</h3>
-                                    </div>
-
-                                    <div class="flex justify-between items-end">
-                                        <div class="price">
-                                            <p class="text-xs md:text-lg font-bold text-blue-500">2.500.000.000đ</p>
+                                    <div class="relative z-10 h-full flex flex-col justify-between">
+                                        <div class="flex justify-between items-start">
+                                            <span class="text-[8px] md:text-[10px] tracking-[0.2em] text-blue-400 font-bold uppercase">
+                                                <?= ($car['category'] == 'Ngũ quý') ? 'Heritage Plate' : 'Luxury Plate' ?>
+                                            </span>
+                                            <i class="ri-steering-fill text-white/20 text-sm md:text-base"></i>
                                         </div>
-                                        <span class="text-[8px] md:text-[10px] text-white/30 italic">Ngũ Quý</span>
-                                    </div>
-                                </div>
 
-                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            </div>
-                        </a>
-                        <a href="chitiet_bienso_oto.php?plate=29K-888.88&price=7.500.000.000" class="block">
+                                        <div class="plate-number text-center">
+                                            <h3 class="text-3xl md:text-4xl lg:text-5xl font-mono text-white tracking-tighter">
+                                                <?= $car['plate_number'] ?>
+                                            </h3>
+                                        </div>
+
+                                        <div class="flex justify-between items-end">
+                                            <div class="price">
+                                                <p class="text-xs md:text-lg font-bold text-blue-500">
+                                                    <?= number_format($car['current_price'], 0, ',', '.') ?>đ
+                                                </p>
+                                            </div>
+                                            <span class="text-[8px] md:text-[10px] text-white/30 italic">
+                                                <?= $car['category'] ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                        <!-- <a href="chitiet_bienso_oto.php?plate=29K-888.88&price=7.500.000.000" class="block">
                             <div class="plate-card auto group relative aspect-[2/1] bg-white/5 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl p-6 md:p-8 overflow-hidden cursor-pointer transition-all hover:border-blue-500/50">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 transition-all duration-700 pointer-events-none flex items-center justify-center">
@@ -1042,7 +1062,7 @@
 
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
 
@@ -1052,7 +1072,7 @@
                         <div class="h-[1px] flex-1 bg-blue-500/20"></div>
                     </h4>
                     <div id="gallery-moto" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 transition-all duration-500">
-                        <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000&address=Hà nội" class="block">
+                        <!-- <a href="chitiet_bienso_xemay.php?plate=29E2-999.99&price=1.200.000.000&address=Hà nội" class="block">
                             <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
                                 <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
@@ -1072,70 +1092,42 @@
 
                                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                        </a>
-                        <a href="chitiet_bienso_xemay.php?plate=29G1-888.88&price=450.000.000&address=TP. HCM" class="block">
-                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+                        </a> -->
+                        <?php
+                        // Giả sử $data = $plateModel->get() đã được gọi ở phía trên
+                        foreach ($data['motorbikes'] as $moto):
+                            // Tách biển số (Vd: "29E2-999.99" thành ["29E2", "999.99"])
+                            $plateParts = explode('-', $moto['plate_number']);
+                            $topPart = $plateParts[0] ?? '';
+                            $bottomPart = $plateParts[1] ?? '';
+                        ?>
+                            <a href="chitiet_bienso_xemay.php?plate=<?= $moto['plate_number'] ?>&price=<?= number_format($moto['current_price'], 0, ',', '.') ?>&address=<?= urlencode($moto['address']) ?>" class="block">
+                                <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
 
-                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
-                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
-                                </div>
-
-                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
-
-                                    <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">29-G1</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">888.88</p>
+                                    <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
+                                        <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
                                     </div>
 
-                                    <p class="text-sm md:text-base font-bold text-white">450.000.000đ</p>
-                                </div>
+                                    <div class="relative z-10 h-full flex flex-col justify-between text-center">
+                                        <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">
+                                            <?= $moto['address'] ?>
+                                        </span>
 
-                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            </div>
-                        </a>
-                        <a href="chitiet_bienso_xemay.php?plate=59T2-555.55&price=650.000.000&address=TP. HCM" class="block">
-                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
+                                        <div class="plate-number-moto leading-tight py-2">
+                                            <p class="text-xl md:text-2xl font-mono text-white/90"><?= $topPart ?></p>
+                                            <p class="text-2xl md:text-3xl font-mono text-white tracking-widest"><?= $bottomPart ?></p>
+                                        </div>
 
-                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
-                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
-                                </div>
-
-                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">TP. HCM</span>
-
-                                    <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">59-T2</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">555.55</p>
+                                        <p class="text-sm md:text-base font-bold text-white">
+                                            <?= number_format($moto['current_price'], 0, ',', '.') ?>đ
+                                        </p>
                                     </div>
 
-                                    <p class="text-sm md:text-base font-bold text-white">650.000.000đ</p>
+                                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 </div>
+                            </a>
+                        <?php endforeach; ?>
 
-                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            </div>
-                        </a>
-                        <a href="chitiet_bienso_xemay.php?plate=36M1-688.88&price=185.000.000&address=Hà nội" class="block">
-                            <div class="plate-card moto group relative aspect-square bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 md:p-6 overflow-hidden transition-all hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(0,102,255,0.2)]">
-
-                                <div class="silhouette-bg absolute inset-0 opacity-5 group-hover:opacity-20 flex items-center justify-center pointer-events-none transition-all duration-700">
-                                    <img src="anh-mo-ta-removebg-preview.png" class="w-3/4 grayscale invert" alt="Moto">
-                                </div>
-
-                                <div class="relative z-10 h-full flex flex-col justify-between text-center">
-                                    <span class="text-[8px] tracking-[0.2em] text-gray-400 font-bold uppercase">hà nội</span>
-
-                                    <div class="plate-number-moto leading-tight py-2">
-                                        <p class="text-xl md:text-2xl font-mono text-white/90">36-M1</p>
-                                        <p class="text-2xl md:text-3xl font-mono text-white tracking-widest">688.88</p>
-                                    </div>
-
-                                    <p class="text-sm md:text-base font-bold text-white">185.000.000đ</p>
-                                </div>
-
-                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            </div>
-                        </a>
 
                     </div>
                 </div>
@@ -1204,7 +1196,33 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
-    <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
+    <?php
+    // 1. Lấy 5 giao dịch (bids) mới nhất để làm Marquee chạy ngang
+    $sql_marquee = "SELECT b.bid_amount, p.plate_number, c.full_name 
+                FROM bids b 
+                JOIN auctions a ON b.auction_id = a.id 
+                JOIN plates p ON a.plate_id = p.id 
+                JOIN customers c ON b.customer_id = c.id 
+                ORDER BY b.id DESC LIMIT 5"; // Sắp xếp theo ID giảm dần để lấy lượt mới nhất
+    $res_marquee = Db::$connection->query($sql_marquee);
+    // 2. Lấy 1 phiên đấu giá "Tiêu điểm" (Có giá cao nhất hiện tại)
+    $sql_spotlight = "SELECT a.id, p.plate_number, a.end_time, MAX(b.bid_amount) as current_max
+                  FROM auctions a
+                  JOIN plates p ON a.plate_id = p.id
+                  LEFT JOIN bids b ON a.id = b.auction_id
+                  WHERE a.end_time > NOW()
+                  GROUP BY a.id
+                  ORDER BY current_max DESC LIMIT 1";
+    $res_spotlight = Db::$connection->query($sql_spotlight);
+    $spotlight = $res_spotlight->fetch_assoc();
+
+    // 3. Lấy 3 biển số vừa được thêm vào hệ thống (Ký gửi mới nhất)
+    $sql_new_plates = "SELECT plate_number, starting_price, vehicle_type 
+                   FROM plates 
+                   ORDER BY id DESC LIMIT 3";
+    $res_new_plates = Db::$connection->query($sql_new_plates);
+    ?>
+    <!-- <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
         <div class="grainy-overlay"></div>
 
         <div class="absolute inset-0 pointer-events-none">
@@ -1309,6 +1327,72 @@
                         <i class="ri-bank-line text-2xl"></i>
                         <i class="ri-newspaper-line text-2xl"></i>
                         <i class="ri-government-line text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <section id="social-pulse" class="relative py-24 bg-[#F2F4F7] z-10 border-t border-white" style="padding-left: 45px;">
+        <div class="marquee-wrapper overflow-hidden mb-20">
+            <div class="marquee-content flex gap-8 whitespace-nowrap">
+                <?php while ($m = $res_marquee->fetch_assoc()): ?>
+                    <div class="transaction-card flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-sm border border-gray-100">
+                        <span class="customer-name font-bold text-[#001F3F]"><?php echo mb_substr($m['full_name'], 0, 3); ?>***</span>
+                        <span class="plate-number text-cyan-600 font-mono"><?php echo $m['plate_number']; ?></span>
+                        <span class="status-tag text-[10px]  text-green-600 px-2 py-1 rounded-md uppercase">Vừa trả giá</span>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="w-full lg:w-[60%] bg-[#001F3F] rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                    <?php if ($spotlight): ?>
+                        <div class="relative z-10">
+                            <h3 class="serif-title text-3xl mb-8 uppercase tracking-widest text-[#007FFF]">Phiên đấu giá tiêu điểm</h3>
+                            <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+                                <div class="plate-highlight bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20">
+                                    <span class="text-4xl md:text-5xl font-bold tracking-tighter serif-title"><?php echo $spotlight['plate_number']; ?></span>
+                                </div>
+
+                                <div class="countdown-timer flex gap-6 js-main-timer" data-endtime="<?php echo $spotlight['end_time']; ?>">
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold hour-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giờ</span>
+                                    </div>
+                                    <span class="text-4xl text-[#007FFF]">:</span>
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold min-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Phút</span>
+                                    </div>
+                                    <span class="text-4xl text-[#007FFF]">:</span>
+                                    <div class="time-block">
+                                        <span class="block text-4xl font-bold sec-val">00</span>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Giây</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="dau_gia.php?id=<?php echo $spotlight['id']; ?>" class="inline-block mt-10 px-10 py-4 bg-white text-[#001F3F] font-bold rounded-full hover:bg-[#007FFF] hover:text-white transition-all duration-500 shadow-xl">
+                                THAM GIA ĐẤU GIÁ NGAY
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    <i class="ri-hammer-line absolute right-[-20px] bottom-[-20px] text-[200px] text-white/5 rotate-12"></i>
+                </div>
+
+                <div class="w-full lg:w-[40%] bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white">
+                    <h3 class="sans-text font-bold tracking-[0.2em] text-[#001F3F] mb-8 text-sm uppercase">Ký gửi mới nhất</h3>
+                    <div class="space-y-6">
+                        <?php while ($p = $res_new_plates->fetch_assoc()): ?>
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                                <div>
+                                    <p class="text-sm font-bold text-[#001F3F]"><?php echo $p['plate_number']; ?></p>
+                                    <p class="text-[10px] text-gray-400">Mới cập nhật - <?php echo $p['vehicle_type']; ?></p>
+                                </div>
+                                <span class="text-[#007FFF] font-bold"><?php echo number_format($p['starting_price'] / 1000000000, 1); ?> Tỷ</span>
+                            </div>
+                        <?php endwhile; ?>
                     </div>
                 </div>
             </div>
@@ -1527,20 +1611,11 @@
     })();
     // update code 
     function searchPlate() {
-        // 1. Lấy giá trị từ ô input
-        const searchValue = document.getElementById('main-search-input').value.trim();
+        const input = document.getElementById('main-search-input');
+        const searchValue = input.value.trim();
 
-        if (searchValue !== "") {
-            // 2. Chuyển hướng trang kèm tham số tìm kiếm (query)
-            // Ví dụ: detail_oto_xemay.php?plate=30K88888
-            window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`;
-        } else {
-            // Nếu không nhập gì mà bấm nút thì rung nhẹ ô input để báo hiệu
-            const wrapper = document.querySelector('.crystal-search');
-            wrapper.classList.add('animate-shake');
-            setTimeout(() => wrapper.classList.remove('animate-shake'), 500);
-            alert("Vui lòng nhập dãy số bạn muốn tìm!");
-        }
+        // Chuyển hướng sang trang kết quả kèm theo từ khóa (có thể rỗng)
+        window.location.href = `detail_oto_xemay.php?plate=${encodeURIComponent(searchValue)}`;
     }
 
     // Thêm tính năng: Nhấn phím Enter cũng tìm kiếm luôn
@@ -1861,6 +1936,33 @@
             ease: "power4.out"
         });
     });
+
+    function initSpotlightTimer() {
+        const timerWrap = document.querySelector('.js-main-timer');
+        if (!timerWrap) return;
+
+        const endTime = new Date(timerWrap.getAttribute('data-endtime')).getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                clearInterval(x);
+                timerWrap.innerHTML = "PHIÊN ĐÃ KẾT THÚC";
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerWrap.querySelector('.hour-val').innerText = hours < 10 ? "0" + hours : hours;
+            timerWrap.querySelector('.min-val').innerText = minutes < 10 ? "0" + minutes : minutes;
+            timerWrap.querySelector('.sec-val').innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+    }
+    initSpotlightTimer();
 
     // ----------------------------- section 5 ----------------------------- //
     // Sử dụng IIFE để cô lập code và chạy ngay

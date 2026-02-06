@@ -1,5 +1,61 @@
     <!DOCTYPE html>
     <html lang="en">
+    <?php
+    session_start();
+
+    // Mảng các ID được phép vào vùng Admin
+    $admin_roles = [1, 2, 3, 4, 5];
+
+    if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles)) {
+        // Nếu không có quyền, đuổi về trang login hoặc báo lỗi
+        header("Location: login.php?error=access_denied");
+        exit();
+    }
+    // Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+    require_once dirname(__DIR__) . "/config.php";
+
+    // 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+    require_once dirname(__DIR__) . "/models/db.php";
+    require_once dirname(__DIR__) . "/models/Auction.php";
+    require_once dirname(__DIR__) . "/models/Plate.php";
+    $plateModel = new Plate();
+
+    // Ở đầu file VaultManager.php, đoạn xử lý POST
+    if (isset($_POST['save_plate'])) {
+        $id = !empty($_POST['plate_id']) ? intval($_POST['plate_id']) : 0;
+
+        $data = [
+            'plate_number'   => trim($_POST['plate_number']),
+            'starting_price' => $_POST['starting_price'],
+            'current_price'  => $_POST['starting_price'],
+            'category'       => $_POST['category'],
+            'vehicle_type'   => $_POST['vehicle_type'],
+            'address'        => $_POST['address'],
+            'status'         => 'Available'
+        ];
+
+        try {
+            if ($id > 0) {
+                $plateModel->update($id, $data);
+                $msg = "updated";
+            } else {
+                // Kiểm tra xem biển số đã tồn tại chưa trước khi thêm (Cách an toàn nhất)
+                $plateModel->create($data);
+                $msg = "success";
+            }
+            header("Location: VaultManager.php?status=$msg");
+            exit();
+        } catch (Exception $e) {
+            // Kiểm tra nếu lỗi là trùng khóa (Duplicate entry)
+            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                header("Location: VaultManager.php?error=duplicate&plate=" . $data['plate_number']);
+            } else {
+                header("Location: VaultManager.php?error=system");
+            }
+            exit();
+        }
+    }
+    ?>
 
     <head>
         <meta charset="UTF-8">
@@ -355,6 +411,57 @@
             }
 
             /* ----------------------------- section 5 -----------------------------  */
+            @keyframes elastic-slide {
+                0% {
+                    transform: translateX(100%);
+                }
+
+                100% {
+                    transform: translateX(0);
+                }
+            }
+
+            .side-panel-open {
+                animation: elastic-slide 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            }
+
+            .overlay-active {
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(8px);
+                z-index: 40;
+            }
+
+            .plate-morph {
+                transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .car-plate {
+                width: 180px;
+                height: 40px;
+            }
+
+            .moto-plate {
+                width: 100px;
+                height: 80px;
+            }
+
+            /* Skeleton Loading */
+            .skeleton {
+                background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+            }
+
+            @keyframes loading {
+                0% {
+                    background-position: 200% 0;
+                }
+
+                100% {
+                    background-position: -200% 0;
+                }
+            }
+
 
             /* ----------------------------- section 6 -----------------------------  */
         </style>
@@ -381,151 +488,157 @@
             </aside>
 
             <main class="flex-1 p-4 md:p-8 lg:p-12" style="width: 100%;">
+                <?php if (isset($_GET['error']) && $_GET['error'] === 'duplicate'): ?>
+                    <div class="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl flex items-center gap-3 text-red-400 animate-pulse">
+                        <i class="ri-error-warning-line text-xl"></i>
+                        <span>Lỗi: Biển số <b><?php echo htmlspecialchars($_GET['plate']); ?></b> đã tồn tại trong hệ thống!</span>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+                    <div class="mb-6 p-4 bg-green-500/10 border border-green-500/50 rounded-2xl flex items-center gap-3 text-green-400">
+                        <i class="ri-checkbox-circle-line text-xl"></i>
+                        <span>Đã thêm tài sản mới thành công!</span>
+                    </div>
+                <?php endif; ?>
 
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 bg-[#0a192f]/50 p-4 rounded-2xl border border-white/5 tops">
-                    <div class="flex items-center gap-4 w-full md:w-auto">
+                    <form method="GET" action="" class="flex items-center gap-4 w-full md:w-auto">
                         <div class="relative w-full md:w-80">
-                            <i class="ri-qr-scan-2-line absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400"></i>
-                            <input type="text" placeholder="Scan Barcode or Voice Command..." class="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-cyan-400 transition-all">
+                            <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400"></i>
+
+                            <input type="text"
+                                name="search"
+                                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
+                                placeholder="Scan Barcode or Search Plate..."
+                                class="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all">
                         </div>
-                        <button class="bg-white/5 p-3 rounded-xl hover:bg-white/10 transition-all"><i class="ri-mic-line"></i></button>
-                    </div>
+
+                        <button type="submit" class="bg-white/5 p-3 rounded-xl hover:bg-white/10 transition-all text-white">
+                            <i class="ri-mic-line"></i>
+                        </button>
+
+                        <?php if (isset($_GET['category'])): ?>
+                            <input type="hidden" name="category" value="<?php echo htmlspecialchars($_GET['category']); ?>">
+                        <?php endif; ?>
+                    </form>
                     <div class="flex gap-3 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                        <button onclick="filterVault('all', this)" class="filter-btn px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30 whitespace-nowrap active-filter">TẤT CẢ</button>
+                        <!-- <button onclick="filterVault('all', this)" class="filter-btn px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30 whitespace-nowrap active-filter">TẤT CẢ</button>
                         <button onclick="filterVault('bac', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO BẮC</button>
                         <button onclick="filterVault('trung', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO TRUNG</button>
-                        <button onclick="filterVault('nam', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO NAM</button>
+                        <button onclick="filterVault('nam', this)" class="filter-btn px-4 py-2 rounded-full bg-white/5 text-white/40 text-xs font-bold border border-white/10 whitespace-nowrap">KHO NAM</button> -->
+
                     </div>
+
+                    <button onclick="openVaultPanel()" class="flex items-center gap-3 bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.3)] group">
+                        <span class="text-xs font-bold uppercase tracking-widest">Add New Asset</span>
+                        <div class="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-transform">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
                 </div>
 
                 <div class="inventory-grid" id="inventory-container">
-                    <div class="vault-card-container" data-type="bac">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40 tracking-tighter">ASSET_ID: #888-88</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase breathe-cyan bg-cyan-500/20 text-cyan-400">In Vault</span>
-                            </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
-                                <div class="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
-                                    <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white transition-all shadow-glow">888.88</h3>
-                                </div>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col">
-                                    <span class="text-white/20 uppercase">Security Tier</span>
-                                    <span class="text-cyan-400 font-bold">ALPHA-9</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-white/20 uppercase">Last Sync</span>
-                                    <span class="text-white/60 block">23/01/2026</span>
-                                </div>
-                            </div>
+                    <!-- <div class="group relative bg-[#0a192f] border border-white/5 p-6 rounded-[2rem] hover:border-cyan-500/50 transition-all duration-500" onclick="openVaultPanel('51K-888.88')">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ri-car-fill text-white/20 group-hover:text-cyan-400 transition-colors"></i>
+                            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">LIVE</span>
                         </div>
-                    </div>
-                    <div class="vault-card-container" data-type="bac">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40">ASSET_ID: #555-55</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase bg-red-500/20 text-red-500 border border-red-500/30">Mismatch</span>
-                            </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-red-500/5 blur-3xl rounded-full"></div>
-                                <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white">555.55</h3>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col"><span class="text-white/20 uppercase">Tier</span><span class="text-red-500 font-bold">OMEGA</span></div>
-                                <div class="text-right"><span class="text-white/20 uppercase">Status</span><span class="text-white/60 block">Locked</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="vault-card-container" data-type="trung">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40 tracking-tighter">ASSET_ID: #888-88</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase breathe-cyan bg-cyan-500/20 text-cyan-400">In Vault</span>
-                            </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
-                                <div class="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
-                                    <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white transition-all shadow-glow">888.88</h3>
-                                </div>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col">
-                                    <span class="text-white/20 uppercase">Security Tier</span>
-                                    <span class="text-cyan-400 font-bold">ALPHA-9</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-white/20 uppercase">Last Sync</span>
-                                    <span class="text-white/60 block">23/01/2026</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="vault-card-container" data-type="trung">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40">ASSET_ID: #555-55</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase bg-red-500/20 text-red-500 border border-red-500/30">Mismatch</span>
-                            </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-red-500/5 blur-3xl rounded-full"></div>
-                                <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white">555.55</h3>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col"><span class="text-white/20 uppercase">Tier</span><span class="text-red-500 font-bold">OMEGA</span></div>
-                                <div class="text-right"><span class="text-white/20 uppercase">Status</span><span class="text-white/60 block">Locked</span></div>
+                        <div class="flex justify-center py-6">
+                            <div class="bg-white border-2 border-gray-300 rounded px-4 py-1 shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                                <span class="text-black font-bold text-xl tracking-tighter">51K-888.88</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="vault-card-container" data-type="nam">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40 tracking-tighter">ASSET_ID: #888-88</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase breathe-cyan bg-cyan-500/20 text-cyan-400">In Vault</span>
+
+                        <div class="mt-4 flex justify-between items-end">
+                            <div>
+                                <p class="text-[9px] text-white/30 uppercase">Current Bid</p>
+                                <p class="text-white font-bold">450.000.000đ</p>
                             </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
-                                <div class="relative z-10 transform group-hover:scale-110 transition-transform duration-500">
-                                    <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white transition-all shadow-glow">888.88</h3>
-                                </div>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col">
-                                    <span class="text-white/20 uppercase">Security Tier</span>
-                                    <span class="text-cyan-400 font-bold">ALPHA-9</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-white/20 uppercase">Last Sync</span>
-                                    <span class="text-white/60 block">23/01/2026</span>
-                                </div>
-                            </div>
+                            <button class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyan-500 transition-all">
+                                <i class="ri-pencil-line text-xs"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="vault-card-container" data-type="nam">
-                        <div class="glass-vault rounded-3xl p-5 group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                            <div class="laser-scan" style="background: var(--electric-red); box-shadow: 0 0 15px var(--electric-red);"></div>
-                            <div class="flex justify-between items-start mb-6">
-                                <span class="space-mono text-[10px] text-white/40">ASSET_ID: #555-55</span>
-                                <span class="px-2 py-1 rounded text-[9px] font-bold uppercase bg-red-500/20 text-red-500 border border-red-500/30">Mismatch</span>
-                            </div>
-                            <div class="relative py-8 flex justify-center items-center">
-                                <div class="absolute inset-0 bg-red-500/5 blur-3xl rounded-full"></div>
-                                <h3 class="space-mono text-3xl md:text-2xl font-bold tracking-widest text-white/20 group-hover:text-white">555.55</h3>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-                                <div class="flex flex-col"><span class="text-white/20 uppercase">Tier</span><span class="text-red-500 font-bold">OMEGA</span></div>
-                                <div class="text-right"><span class="text-white/20 uppercase">Status</span><span class="text-white/60 block">Locked</span></div>
+                    <div class="group relative bg-[#0a192f] border border-white/5 p-6 rounded-[2rem] hover:border-cyan-500/50 transition-all duration-500" onclick="openVaultPanel('59-AA 888.88')">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ri-motorbike-fill text-white/20 group-hover:text-cyan-400 transition-colors text-xl"></i>
+                            <span class="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">LIVE</span>
+                        </div>
+
+                        <div class="flex justify-center py-4">
+                            <div class="bg-white border-2 border-gray-300 rounded-lg px-4 py-2 shadow-lg transform group-hover:scale-110 transition-transform duration-500 flex flex-col items-center justify-center leading-none min-w-[100px]">
+                                <span class="text-black font-bold text-lg tracking-widest border-b border-gray-200 w-full text-center pb-1 mb-1">59-AA</span>
+                                <span class="text-black font-bold text-xl tracking-tighter">888.88</span>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="mt-4 flex justify-between items-end">
+                            <div>
+                                <p class="text-[9px] text-white/30 uppercase">Current Bid</p>
+                                <p class="text-white font-bold">85.000.000đ</p>
+                            </div>
+                            <button class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyan-500 transition-all" onclick="event.stopPropagation(); openVaultPanel('59-AA 888.88')">
+                                <i class="ri-pencil-line text-xs"></i>
+                            </button>
+                        </div>
+                    </div> -->
+                    <?php
+                    $plateModel = new Plate();
+
+                    // 1. Cấu hình phân trang
+                    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                    if ($page < 1) $page = 1;
+                    $perPage = 10; // Số lượng bản ghi mỗi trang
+
+                    // 2. Lấy dữ liệu ĐÃ PHÂN TRANG (Truyền các tham số lọc nếu có)
+                    // Giả sử các tham số filter lấy từ GET hoặc để trống
+                    $keyword = isset($_GET['search']) ? $_GET['search'] : '';
+                    $category = isset($_GET['category']) ? $_GET['category'] : '';
+
+                    $plates = $plateModel->getWithPagination($keyword, $category, null, $page, $perPage);
+
+                    // 3. Tính toán tổng số trang
+                    $totalRecords = $plateModel->getTotalPlates($keyword, $category);
+                    $totalPages = ceil($totalRecords / $perPage);
+
+                    // 4. Hiển thị danh sách biển số
+                    if (count($plates) > 0) {
+                        foreach ($plates as $plate) {
+                            echo $plateModel->renderPlateCard($plate);
+                        }
+                    } else {
+                        echo "<p class='text-white/50 col-span-full text-center py-10'>Không tìm thấy dữ liệu.</p>";
+                    }
+                    ?>
+
+                    <?php if ($totalPages > 1): ?>
+                        <div class="mt-12 flex justify-center items-center gap-4 col-span-full">
+                            <?php if ($page > 1): ?>
+                                <a href="?page=<?php echo $page - 1; ?>&search=<?php echo $keyword; ?>&category=<?php echo $category; ?>"
+                                    class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-cyan-500/20 transition-all">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <div class="flex gap-2">
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <a href="?page=<?php echo $i; ?>&search=<?php echo $keyword; ?>&category=<?php echo $category; ?>"
+                                        class="w-10 h-10 flex items-center justify-center rounded-xl border <?php echo ($i == $page) ? 'bg-cyan-500 border-cyan-500 text-white' : 'bg-white/5 border-white/10 text-white/50'; ?> hover:border-cyan-500 transition-all">
+                                        <?php echo $i; ?>
+                                    </a>
+                                <?php endfor; ?>
+                            </div>
+
+                            <?php if ($page < $totalPages): ?>
+                                <a href="?page=<?php echo $page + 1; ?>&search=<?php echo $keyword; ?>&category=<?php echo $category; ?>"
+                                    class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-cyan-500/20 transition-all">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
 
                 </div>
             </main>
@@ -533,6 +646,128 @@
 
         <div class="fab-scan lg:hidden">
             <i class="ri-qr-code-line"></i>
+        </div>
+
+
+
+
+
+
+        <div id="vault-overlay" class="fixed inset-0 hidden transition-opacity duration-500" onclick="closeVaultPanel()"></div>
+
+        <!-- <div id="vault-panel" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-[#020c1b] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-500 ease-out shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col">
+
+            <div class="p-8 border-b border-white/5 flex justify-between items-center">
+                <div>
+                    <h3 id="panel-title" class="text-xl font-bold text-white tracking-wide">Add Asset</h3>
+                    <p id="panel-subtitle" class="text-[10px] text-white/30 uppercase">Vault Registration</p>
+                </div>
+                <button onclick="closeVaultPanel()" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-8 space-y-8">
+                <div class="flex flex-col items-center gap-4 py-6 bg-black/40 rounded-[2rem] border border-white/5">
+                    <span class="text-[9px] text-white/20 uppercase tracking-[3px]">Visual Preview</span>
+                    <div id="plate-preview" class="plate-morph bg-white border-2 border-gray-300 rounded flex items-center justify-center car-plate">
+                        <span id="preview-text" class="text-black font-bold tracking-tighter">XX-XXX.XX</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-white/40 uppercase ml-2">Plate Number</label>
+                        <input type="text" id="input-plate" oninput="updatePreview()" placeholder="e.g. 51K-999.99" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="switchType('car')" id="btn-car" class="py-4 rounded-2xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase">Automobile</button>
+                        <button onclick="switchType('moto')" id="btn-moto" class="py-4 rounded-2xl border border-white/10 bg-white/5 text-white/40 text-xs font-bold uppercase">Motorcycle</button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-white/40 uppercase ml-2">Starting Price (VND)</label>
+                        <input type="number" placeholder="40,000,000" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 border-t border-white/5 bg-[#020c1b]">
+                <button id="save-btn" class="w-full py-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-2xl font-bold uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(8,145,178,0.3)]">
+                    Confirm Changes
+                </button>
+            </div>
+        </div> -->
+        <div id="vault-panel" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-[#020c1b] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-500 ease-out shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col">
+            <form method="POST" action="" class="flex flex-col h-full overflow-hidden">
+
+                <input type="hidden" name="plate_id" id="input-plate-id">
+
+                <div class="p-8 border-b border-white/5 flex justify-between items-center">
+                    <div>
+                        <h3 id="panel-title" class="text-xl font-bold text-white tracking-wide">Add Asset</h3>
+                        <p id="panel-subtitle" class="text-[10px] text-white/30 uppercase">Vault Registration</p>
+                    </div>
+                    <button type="button" onclick="closeVaultPanel()" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto  p-8 space-y-8 custom-scrollbar">
+                    <div class="flex flex-col items-center gap-4 py-6 bg-black/40 rounded-[2rem] border border-white/5">
+                        <span class="text-[9px] text-white/20 uppercase tracking-[3px]">Visual Preview</span>
+                        <div id="plate-preview" class="plate-morph bg-white border-2 border-gray-300 rounded flex items-center justify-center car-plate shadow-lg transition-all duration-300">
+                            <span id="preview-text" class="text-black font-bold tracking-tighter text-2xl">XX-XXX.XX</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-white/40 uppercase ml-2">Plate Number</label>
+                            <input type="text" name="plate_number" id="input-plate" oninput="updatePreview()" placeholder="e.g. 51K-999.99" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-white/40 uppercase ml-2">Vehicle Type</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button" onclick="switchType('Car')" id="btn-car" class="py-4 rounded-2xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase transition-all">Automobile</button>
+                                <button type="button" onclick="switchType('Motorbike')" id="btn-moto" class="py-4 rounded-2xl border border-white/10 bg-white/5 text-white/40 text-xs font-bold uppercase transition-all">Motorcycle</button>
+                            </div>
+                            <input type="hidden" name="vehicle_type" id="input-vehicle-type" value="Car">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-white/40 uppercase ml-2">Category</label>
+                            <select name="category" id="input-category" class="w-full bg-[#0a192f] border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all appearance-none">
+                                <option value="Ngũ quý">Ngũ quý</option>
+                                <option value="Tứ quý">Tứ quý</option>
+                                <option value="Lộc phát">Lộc phát</option>
+                                <option value="Số tiến">Số tiến</option>
+                                <option value="Thần tài">Thần tài</option>
+                                <option value="Sảnh tiến">Sảnh tiến</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-white/40 uppercase ml-2">Location</label>
+                            <input type="text" name="address" id="input-address" placeholder="e.g. TP. Hồ Chí Minh" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-white/40 uppercase ml-2">Starting Price</label>
+                            <input type="number" name="starting_price" id="input-price" placeholder="40000000" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white focus:border-cyan-500 outline-none transition-all" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-8 border-t border-white/5 bg-[#020c1b]">
+                    <button type="submit" name="save_plate" id="save-btn" class="w-full py-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-2xl font-bold uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(8,145,178,0.3)] flex items-center justify-center gap-2">
+                        <span>Confirm Changes</span>
+                        <i class="ri-check-double-line"></i>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
@@ -1359,6 +1594,160 @@
         });
 
         // ----------------------------- section 5 ----------------------------- //
+        // Đảm bảo biến này nằm ngoài cùng
+        let isDirty = false;
+
+        function openVaultPanel(plateData = null) {
+            const panel = document.getElementById('vault-panel');
+            const overlay = document.getElementById('vault-overlay');
+            const mainGrid = document.getElementById('inventory-container');
+            const title = document.getElementById('panel-title');
+            const formElement = document.querySelector('#vault-panel form');
+
+            // Các ô nhập liệu
+            const inputId = document.getElementById('input-plate-id');
+            const inputPlate = document.getElementById('input-plate');
+            const inputPrice = document.getElementById('input-price');
+            const inputAddress = document.getElementById('input-address');
+            const selectCategory = document.getElementById('input-category');
+            const selectType = document.getElementById('input-vehicle-type');
+
+            // 1. KHÓA CUỘN TRANG CHÍNH
+            document.body.style.overflow = 'hidden';
+
+            // 2. HIỆU ỨNG MỞ PANEL
+            overlay.classList.remove('hidden');
+            overlay.style.opacity = "1";
+            setTimeout(() => {
+                panel.style.transform = "translateX(0)";
+            }, 10);
+
+            // 3. HIỆU ỨNG LÀM MỜ NỀN
+            if (mainGrid) {
+                mainGrid.style.pointerEvents = "none";
+                mainGrid.style.transform = "scale(0.98)";
+                mainGrid.style.filter = "blur(4px)";
+                mainGrid.style.transition = "all 0.5s ease";
+            }
+
+            // 4. LOGIC ĐỔ DỮ LIỆU
+            if (plateData && typeof plateData === 'object') {
+                // --- CHẾ ĐỘ SỬA (EDIT) ---
+                title.innerText = "Edit Asset: " + plateData.plate_number;
+
+                // Gán ID vào input ẩn (BẮT BUỘC để PHP không tạo mới)
+                if (inputId) inputId.value = plateData.id;
+
+                // Gán giá trị vào các ô input
+                if (inputPlate) inputPlate.value = plateData.plate_number;
+                if (inputPrice) inputPrice.value = Math.floor(plateData.starting_price);
+                if (inputAddress) inputAddress.value = plateData.address || '';
+                if (selectCategory) selectCategory.value = plateData.category || 'Ngũ quý';
+
+                if (selectType) {
+                    selectType.value = plateData.vehicle_type;
+                    // Cập nhật giao diện nút bấm Car/Moto
+                    if (typeof switchType === "function") switchType(plateData.vehicle_type);
+                }
+
+                simulateSkeletonLoad();
+            } else {
+                // --- CHẾ ĐỘ THÊM MỚI (ADD) ---
+                title.innerText = "Add New Asset";
+
+                // Reset toàn bộ form
+                if (formElement) formElement.reset();
+
+                // XÓA TRẮNG ID (Để PHP hiểu là Insert)
+                if (inputId) inputId.value = "";
+
+                // Reset preview biển số về mặc định
+                document.getElementById('preview-text').innerText = "XX-XXX.XX";
+
+                // Mặc định chọn Car
+                if (typeof switchType === "function") switchType('Car');
+            }
+
+            // 5. CẬP NHẬT PREVIEW BIỂN SỐ
+            if (typeof updatePreview === "function") updatePreview();
+        }
+
+
+
+        function closeVaultPanel() {
+            // Nếu đang nhập dở thì hỏi, nếu không thì đóng luôn
+            if (isDirty) {
+                if (!confirm("Dữ liệu chưa được lưu, bạn có chắc muốn thoát?")) return;
+            }
+
+            const panel = document.getElementById('vault-panel');
+            const overlay = document.getElementById('vault-overlay');
+            const mainGrid = document.getElementById('inventory-container');
+
+            // 1. Đẩy panel ra ngoài
+            panel.style.transform = "translateX(100%)";
+
+            // 2. Đợi animation chạy xong rồi mới ẩn overlay (khoảng 500ms)
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+
+                // 3. QUAN TRỌNG: Trả lại quyền bấm (pointer-events) cho grid
+                if (mainGrid) {
+                    mainGrid.style.pointerEvents = "auto";
+                    mainGrid.style.transform = "scale(1)";
+                    mainGrid.style.filter = "none";
+                }
+            }, 500);
+
+            isDirty = false;
+        }
+
+        function switchType(type) {
+            const preview = document.getElementById('plate-preview');
+            const btnCar = document.getElementById('btn-car');
+            const btnMoto = document.getElementById('btn-moto');
+            const typeHidden = document.getElementById('input-vehicle-type');
+
+            typeHidden.value = type;
+
+            if (type === 'Car') {
+                // Style cho ô tô (ngang)
+                preview.className = "plate-morph bg-white border-2 border-gray-300 rounded flex items-center justify-center car-plate shadow-lg w-[200px] h-[45px]";
+                btnCar.className = "py-4 rounded-2xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase";
+                btnMoto.className = "py-4 rounded-2xl border border-white/10 bg-white/5 text-white/40 text-xs font-bold uppercase";
+            } else {
+                // Style cho xe máy (vuông)
+                preview.className = "plate-morph bg-white border-2 border-gray-300 rounded flex items-center justify-center moto-plate shadow-lg w-[120px] h-[80px] text-center";
+                btnMoto.className = "py-4 rounded-2xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase";
+                btnCar.className = "py-4 rounded-2xl border border-white/10 bg-white/5 text-white/40 text-xs font-bold uppercase";
+            }
+        }
+
+        function updatePreview() {
+            const val = document.getElementById('input-plate').value;
+            const previewText = document.getElementById('preview-text');
+            const type = document.getElementById('input-vehicle-type').value;
+
+            if (val) {
+                if (type === 'Motorbike' && val.includes('-')) {
+                    // Hiển thị kiểu 2 dòng cho xe máy nếu có dấu gạch ngang
+                    const parts = val.split('-');
+                    previewText.innerHTML = `<div class='flex flex-col'><span class='text-sm border-b'>${parts[0]}</span><span>${parts[1]}</span></div>`;
+                } else {
+                    previewText.innerText = val;
+                }
+            } else {
+                previewText.innerText = "XX-XXX.XX";
+            }
+            isDirty = true;
+        }
+
+        function simulateSkeletonLoad() {
+            // Hiển thị khung xương trong 1s trước khi hiện dữ liệu thực
+            const form = document.querySelector('.space-y-6');
+            form.classList.add('opacity-20');
+            setTimeout(() => form.classList.remove('opacity-20'), 800);
+        }
 
         // ----------------------------- section 6 ----------------------------- //
     </script>

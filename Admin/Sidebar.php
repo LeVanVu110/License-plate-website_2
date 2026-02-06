@@ -88,6 +88,7 @@
     </style>
 </head>
 <?php
+
 // 1. Lấy tên file hiện tại (ví dụ: MarketControl.php)
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -97,7 +98,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <aside id="obsidian-sidebar" class="fixed left-0 top-0 h-screen z-50 bg-[#020617]/80 backdrop-blur-2xl border-r border-white/5 transition-all duration-500 w-[260px] group">
 
-        <div class="p-6 mb-8 flex items-center gap-4" style="margin-top: 50px;">
+        <div class="p-6 mb-8 flex items-center gap-4" style="margin-top: 35px;">
             <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.5)]">
                 <i class="ri-gemstone-fill text-white text-xl"></i>
             </div>
@@ -151,7 +152,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
 
                 </div>
-                <span class="nav-label text-white/50">Financial Ledger</span>
+                <span class="nav-label text-white/50">Security Center</span>
+                <div class="active-indicator"></div>
+            </a>
+            <a href="News.php" class="nav-item group/item relative flex items-center gap-4 p-3 rounded-xl transition-all <?php echo ($current_page == 'News.php') ? 'active' : ''; ?>" style="text-decoration: none;">
+                <div class="nav-icon-box">
+                    <i class="ri-shield-keyhole-line text-xl text-white/50 group-hover/item:text-cyan-400"></i>
+
+                </div>
+                <span class="nav-label text-white/50">News Management</span>
                 <div class="active-indicator"></div>
             </a>
 
@@ -181,14 +190,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     <div class="absolute bottom-full left-0 mb-2 w-48 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/settings:opacity-100 group-hover/settings:visible transition-all duration-300 z-[100] overflow-hidden">
                         <div class="p-1 flex flex-col">
+                            <a href="../index.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-lg transition-all border-b border-white/5 mb-1">
+                                <i class="ri-home-4-line"></i>
+                                <span class="uppercase tracking-widest font-bold">Quay về Trang chủ</span>
+                            </a>
+
                             <a href="Settings.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-equalizer-line text-cyan-400"></i>
                                 <span class="uppercase tracking-widest font-bold">Cài đặt chung</span>
                             </a>
+
                             <a href="Notifications.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-notification-3-line text-amber-400"></i>
                                 <span class="uppercase tracking-widest font-bold">Thông báo</span>
                             </a>
+
                             <a href="Infrastructure.php" class="flex items-center gap-3 px-3 py-2 text-[10px] text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                 <i class="ri-node-tree text-purple-400"></i>
                                 <span class="uppercase tracking-widest font-bold font-mono">Infrastructure</span>
@@ -197,7 +213,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
 
-                <a href="/logout" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center w-full" title="Logout">
+                <a href="logout.php" class="flex-1 p-2 hover:bg-red-500/10 rounded-lg text-white/40 hover:text-red-400 transition-colors flex justify-center items-center w-full" title="Logout">
                     <i class="ri-logout-box-r-line"></i>
                 </a>
             </div>

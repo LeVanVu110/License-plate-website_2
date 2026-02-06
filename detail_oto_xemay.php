@@ -1,7 +1,22 @@
 <?php include "header.php"; ?>
 <?php
-$query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
+
+if (isset($_GET['plate']) != "") {
+    $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "tất cả";
+} else {
+    $query = "tất cả";
+}
+
+$plateModel = new Plate();
+$plateData = null;
+$searchTerm = $_GET['plate'] ?? null;
+$category = $_GET['cat'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
+
+// Gọi hàm với 3 tham số
+$data = $plateModel->getSearchData($searchTerm, $category, $maxPrice);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -308,7 +323,8 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
     <div id="radar-beam"></div>
 
     <header class="pt-20 pb-10 text-center px-6" style="background-color: #000814;">
-        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy 39 kết quả cho di sản "<?php echo $query; ?>"</p>
+        <p class="serif-italic text-blue-300/60 text-xl mb-2">Tìm thấy kết quả cho di sản "<?php echo $query; ?>" <?php echo $plateData ? $plateData['plate_number'] : ""; ?></p>
+        <title>Kết quả: <?php echo $plateData ? $plateData['plate_number'] : "Không tìm thấy"; ?></title>
         <div class="h-[1px] w-24 bg-blue-500/30 mx-auto"></div>
     </header>
 
@@ -323,136 +339,138 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
 
         <section id="auto-vault" class="vault-container active-tab pb-20">
             <h3 class="text-[10px] tracking-[5px] text-white/30 uppercase mb-10 flex items-center gap-4 p-5">
-                <i class="ri-steering-2-line "></i> Auto-Vault Allocation
+                <i class="ri-steering-2-line"></i>
+                "Kết quả tìm kiếm cho:"<?php echo count($data['cars']) ?>
             </h3>
+
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++):
-                    // 1. Giả định dữ liệu thực tế (Thay bằng biến từ Database của bạn)
-                    $plate_prefix = "30K";
-                    $plate_main = "999.99"; // Giả sử đây là biến $query của bạn
-                    $full_plate = $plate_prefix . "-" . $plate_main;
+                <?php if (!empty($data['cars'])): ?>
+                    <?php foreach ($data['cars'] as $plate):
+                        $detail_url = "chitiet_bienso_oto.php?plate=" . urlencode($plate['plate_number']) . "&id=" . $plate['id'];
+                    ?>
+                        <a href="<?php echo $detail_url; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.03]">
+                            <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                                VIP CAR
+                            </div>
 
-                    $price_raw = 2450000000;
-                    $location = "Hà Nội";
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">
+                                    <?php echo $plate['category']; ?>
+                                </span>
+                                <span class="text-[10px] text-white/40 italic"><?php echo $plate['status']; ?></span>
+                            </div>
 
-                    // 2. Tạo Link chuyển dữ liệu qua trang chi tiết
-                    // Bạn có thể đổi tên file thành chitiet_bienso_xeoto.php nếu cần tách riêng
-                    $detail_url = "chitiet_bienso_oto.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price_raw) . "&address=" . urlencode($location);
-                ?>
-                    <a href="<?php echo $detail_url; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.03]">
-                        <div class="absolute -right-4 -top-0 text-blue-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity">
-                            VƯỢNG TÀI
-                        </div>
+                            <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">
+                                <?php echo $plate['plate_number']; ?>
+                            </h2>
 
-                        <div class="flex justify-between items-start mb-8">
-                            <span class="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Tứ Quý</span>
-                            <i class="ri-bookmark-line text-white/20"></i>
-                        </div>
-
-                        <h2 class="plate-num space-mono text-4xl font-bold text-white mb-8">
-                            <?php echo $plate_prefix; ?>-<?php echo $plate_main; ?>
-                        </h2>
-
-                        <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">
-                                <?php echo number_format($price_raw, 0, ',', '.'); ?>
-                                <small class="text-[10px] text-white/40">VND</small>
-                            </span>
-                        </div>
-                    </a>
-                <?php endfor; ?>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white/40 text-xs tracking-wider">
+                                    <i class="ri-map-pin-line"></i> <?php echo $plate['address']; ?>
+                                </span>
+                                <span class="text-white/80 space-mono text-lg italic">
+                                    <?php echo number_format($plate['current_price'], 0, ',', '.'); ?>
+                                    <small class="text-[10px] text-white/40">VND</small>
+                                </span>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                        <p class="text-white/30 italic">Không tìm thấy biển số nào khớp với yêu cầu của bạn.</p>
+                        <a href="index.php" class="text-blue-500 text-xs uppercase tracking-widest mt-4 inline-block">Thử lại</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
 
         <section id="moto-vault" class="vault-container pb-20">
             <h3 class="text-[10px] tracking-[5px] text-white/30 uppercase mb-10 flex items-center gap-4 p-5">
-                <i class="ri-motorbike-line"></i> Moto-Vault Allocation
+                <i class="ri-motorbike-line"></i>Kết quả tìm kiếm cho: <?php echo count($data['motorbikes']) ?>
             </h3>
             <div class="discovery-grid grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <?php for ($i = 0; $i < 6; $i++):
-                    // Giả định dữ liệu (Bạn hãy thay thế bằng biến từ DB của bạn)
-                    $plate_base = "29G1";
-                    $plate_num = "888.88"; // Ví dụ lấy từ $query của bạn
-                    $full_plate = $plate_base . "-" . $plate_num;
-                    $price = "450000000";
-                    $address = "Hà Nội";
+                <?php if (!empty($data['motorbikes'])): ?>
+                    <?php foreach ($data['motorbikes'] as $plate):
+                        $detail_link = "chitiet_bienso_xemay.php?plate=" . urlencode($plate['plate_number']) . "&id=" . $plate['id'];
+                    ?>
+                        <a href="<?php echo $detail_link; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-transform hover:scale-[1.02]">
+                            <div class="absolute -right-0 -top-0 text-cyan-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity" style="top: 15px; right: 25px;">MOTO</div>
 
-                    // Tạo link với tham số URL (Sử dụng urlencode để tránh lỗi ký tự đặc biệt)
-                    $detail_link = "chitiet_bienso_xemay.php?plate=" . urlencode($full_plate) . "&price=" . urlencode($price) . "&address=" . urlencode($address);
-                ?>
-                    <a href="<?php echo $detail_link; ?>" class="treasure-card p-8 rounded-2xl relative group overflow-hidden block transition-transform hover:scale-[1.02]">
-                        <div class="absolute -right-0 -top-0 text-cyan-500/5 text-6xl font-black space-mono opacity-0 group-hover:opacity-100 transition-opacity"
-                            style="top: 15px; right: 25px;">ĐẠI CÁT</div>
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="bg-cyan-500/10 text-cyan-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">
+                                    <?php echo $plate['category']; ?>
+                                </span>
+                                <i class="ri-bookmark-line text-white/20"></i>
+                            </div>
 
-                        <div class="flex justify-between items-start mb-8">
-                            <span class="bg-cyan-500/10 text-cyan-400 text-[9px] px-3 py-1 rounded-full tracking-widest uppercase font-bold">Lộc Phát</span>
-                            <i class="ri-bookmark-line text-white/20"></i>
-                        </div>
+                            <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">
+                                <?php
+                                // Tách biển số để hiển thị kiểu biển vuông xe máy
+                                $parts = explode('-', $plate['plate_number']);
+                                echo $parts[0] . (isset($parts[1]) ? "<br>" . $parts[1] : "");
+                                ?>
+                            </h2>
 
-                        <h2 class="plate-num space-mono text-3xl font-bold text-white mb-8 text-center">
-                            <?php echo $plate_base; ?><br><?php echo $plate_num; ?>
-                        </h2>
-
-                        <div class="flex justify-end">
-                            <span class="text-white/80 space-mono text-lg italic">
-                                <?php echo number_format($price, 0, ',', '.'); ?>
-                                <small class="text-[10px] text-white/40">VND</small>
-                            </span>
-                        </div>
-                    </a>
-                <?php endfor; ?>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white/40 text-xs italic">
+                                    <i class="ri-map-pin-line"></i> <?php echo $plate['address']; ?>
+                                </span>
+                                <span class="text-white/80 space-mono text-lg italic">
+                                    <?php echo number_format($plate['current_price'], 0, ',', '.'); ?>
+                                    <small class="text-[10px] text-white/40">VND</small>
+                                </span>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                        <p class="text-white/30 italic">Không tìm thấy biển số nào khớp với yêu cầu của bạn.</p>
+                        <a href="index.php" class="text-blue-500 text-xs uppercase tracking-widest mt-4 inline-block">Thử lại</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
     </main>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <nav id="strategic-filter" class="sticky top-0 z-[80] w-full px-6 py-4 transition-all duration-500" style="background-color: #000814;">
-        <div class="max-w-[1400px] mx-auto">
-            <div class="glass-filter rounded-2xl md:rounded-full px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 border border-white/10 shadow-2xl">
+        <div class="max-w-[1400px] mx-auto ">
+            <div class="glass-filter rounded-2xl md:rounded-full px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 border border-white/10 shadow-2xl ">
 
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto">
                     <span class="text-[10px] tracking-widest text-white/40 uppercase mr-2 hidden lg:block">Phân loại:</span>
-                    <button class="filter-tag active" data-filter="all">Tất cả</button>
-                    <button class="filter-tag" data-filter="tiet-tien">Sảnh tiến</button>
-                    <button class="filter-tag" data-filter="tu-quy">Tứ quý</button>
-                    <button class="filter-tag" data-filter="loc-phat">Lộc phát</button>
-                </div>
-
-                <div class="flex items-center gap-5 border-x border-white/10 px-8 hidden xl:flex">
-                    <button class="element-btn kim" title="Hành Kim">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn moc" title="Hành Mộc">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn thuy" title="Hành Thủy">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn hoa" title="Hành Hỏa">
-                        <div class="dot"></div>
-                    </button>
-                    <button class="element-btn tho" title="Hành Thổ">
-                        <div class="dot"></div>
-                    </button>
+                    <?php
+                    $current_cat = $_GET['cat'] ?? 'all';
+                    $price_val = $_GET['max_price'] ?? 5000;
+                    ?>
+                    <button class="filter-tag <?php echo $current_cat == 'all' ? 'active' : ''; ?>" onclick="applyFilter('all')">Tất cả</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Sảnh tiến' ? 'active' : ''; ?>" onclick="applyFilter('Sảnh tiến')">Sảnh tiến</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Tứ quý' ? 'active' : ''; ?>" onclick="applyFilter('Tứ quý')">Tứ quý</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Lộc phát' ? 'active' : ''; ?>" onclick="applyFilter('Lộc phát')">Lộc phát</button>
+                    <button class="filter-tag <?php echo $current_cat == 'Ngũ quý' ? 'active' : ''; ?>" onclick="applyFilter('Ngũ quý')">Ngũ quý</button>
                 </div>
 
                 <div class="flex-1 max-w-xs px-4 hidden md:block">
                     <div class="flex justify-between mb-1">
-                        <span class="text-[9px] text-white/40 uppercase tracking-tighter">Budget Range</span>
-                        <span id="price-label" class="text-[10px] text-blue-400 space-mono">0 - 5B</span>
+                        <span class="text-[9px] text-white/40 uppercase tracking-tighter">Ngân sách (Tỷ)</span>
+                        <span id="price-label" class="text-[10px] text-blue-400 space-mono">0 - <?php echo ($price_val / 1000); ?>B</span>
                     </div>
-                    <input type="range" min="0" max="5000" value="5000" class="price-slider w-full cursor-pointer" id="price-range">
+                    <input type="range" min="0" max="5000" value="<?php echo $price_val; ?>"
+                        class="price-slider w-full cursor-pointer" id="price-range"
+                        oninput="updatePriceLabel(this.value)" onchange="applyPriceFilter(this.value)">
                 </div>
 
                 <div class="flex items-center gap-6">
                     <div class="text-right hidden sm:block">
-                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none">39</span>
+                        <span id="result-count" class="block text-blue-400 space-mono text-lg leading-none text-center">
+                            <?php echo (count($data['cars']) + count($data['motorbikes'])); ?>
+                        </span>
                         <span class="text-[8px] text-white/30 uppercase tracking-widest">Kết quả</span>
                     </div>
-                    <button class="bg-blue-600 hover:bg-white hover:text-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[2px] transition-all duration-500 flex items-center gap-2">
+                    <!-- <button class="bg-blue-600 hover:bg-white hover:text-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[2px] transition-all duration-500 flex items-center gap-2">
                         <i class="ri-equalizer-line"></i>
                         <span class="hidden sm:inline">LỌC CHUYÊN SÂU</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -475,7 +493,7 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                     <div class="flex flex-wrap gap-3">
                         <button class="filter-tag active">Tất cả</button>
                         <button class="filter-tag">Sảnh tiến</button>
-                        <button class="filter-tag">Tứ quý</button>
+                        <button class="filter-tag">Tứ quýs</button>
                         <button class="filter-tag">Lộc phát</button>
                     </div>
                 </div>
@@ -584,7 +602,9 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                         </div>
                     </div>
 
-                    <button class="w-full py-4 border border-blue-500/50 text-blue-400 text-[10px] tracking-[4px] font-bold uppercase hover:bg-blue-500 hover:text-white transition-all">Xem danh sách mở rộng</button>
+                    <button onclick="expandDiscovery()" class="w-full py-4 border border-blue-500/50 text-blue-400 text-[10px] tracking-[4px] font-bold uppercase hover:bg-blue-500 hover:text-white transition-all">
+                        Xem danh sách mở rộng
+                    </button>
                 </div>
 
                 <div class="flip-card-container h-[450px] perspective-1000">
@@ -831,6 +851,26 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
         backdrop.addEventListener('click', closeMobileFilter);
     });
 
+    function applyFilter(category) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (category === 'all') {
+            urlParams.delete('cat');
+        } else {
+            urlParams.set('cat', category);
+        }
+        window.location.href = "?" + urlParams.toString();
+    }
+
+    function updatePriceLabel(val) {
+        document.getElementById('price-label').innerText = `0 - ${val/1000}B`;
+    }
+
+    function applyPriceFilter(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('max_price', val);
+        window.location.href = "?" + urlParams.toString();
+    }
+
     // ----------------------------- section 3 ----------------------------- //
     // 1. Hàm Teleport Biển số từ Section 1 xuống Section 3
     function previewPlate(element, plateNumber, price, fengshui) {
@@ -1045,6 +1085,71 @@ $query = isset($_GET['plate']) ? htmlspecialchars($_GET['plate']) : "888.88";
                 scrub: true
             }
         });
+        // Thêm vào trong phần script GSAP của bạn
+        gsap.to("#morphing-text", {
+            scrollTrigger: {
+                trigger: "#acquisition-hub",
+                start: "top center",
+            },
+            onStart: () => {
+                const phrases = ["Tìm thấy báu vật?", "Sở hữu di sản?", "Định danh đẳng cấp?"];
+                let i = 0;
+                setInterval(() => {
+                    gsap.to("#morphing-text", {
+                        opacity: 0,
+                        y: -10,
+                        duration: 0.5,
+                        onComplete: () => {
+                            i = (i + 1) % phrases.length;
+                            document.getElementById("morphing-text").innerText = phrases[i];
+                            gsap.to("#morphing-text", {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.5
+                            });
+                        }
+                    });
+                }, 3000);
+            }
+        });
+    });
+
+    async function expandDiscovery() {
+        // 1. Cuộn mượt mà lên khu vực bộ lọc (Strategic Filter)
+        const filterSection = document.getElementById('strategic-filter');
+        if (filterSection) {
+            filterSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // 2. Cập nhật trạng thái nút "Tất cả" trên thanh Filter
+        const allBtn = document.querySelector('.filter-tag[data-filter-val="all"]');
+        if (allBtn) {
+            document.querySelectorAll('.filter-tag').forEach(btn => btn.classList.remove('active'));
+            allBtn.classList.add('active');
+        }
+
+        // 3. Reset thanh kéo giá về mức cao nhất (5 tỷ)
+        const priceSlider = document.getElementById('price-range');
+        if (priceSlider) {
+            priceSlider.value = 5000;
+            if (typeof updatePriceLabel === 'function') updatePriceLabel(5000);
+        }
+
+        // 4. Gọi hàm cập nhật dữ liệu (AJAX) để lấy toàn bộ danh sách
+        // Chúng ta truyền 'all' vào để lấy tất cả không điều kiện
+        if (typeof updateFilters === 'function') {
+            // Đợi 500ms để cuộn xong rồi mới hiện hiệu ứng render cho đẹp
+            setTimeout(() => {
+                updateFilters('all');
+            }, 500);
+        }
+    }
+    document.getElementById('magnetic-btn').addEventListener('click', () => {
+        // Ví dụ: Mở khung chat hoặc Form yêu cầu
+        alert("Hệ thống Heritage Hunter đã sẵn sàng. Vui lòng để lại số điện thoại, Quản gia sẽ liên hệ ngay!");
     });
 
     // ----------------------------- section 5 ----------------------------- //

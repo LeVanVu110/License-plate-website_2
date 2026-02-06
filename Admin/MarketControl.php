@@ -1,5 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+session_start();
+
+// Mảng các ID được phép vào vùng Admin
+$admin_roles = [1, 2, 3, 4, 5];
+
+if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles)) {
+    // Nếu không có quyền, đuổi về trang login hoặc báo lỗi
+    header("Location: login.php?error=access_denied");
+    exit();
+}
+
+// Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+require_once dirname(__DIR__) . "/config.php";
+
+// 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+require_once dirname(__DIR__) . "/models/db.php";
+require_once dirname(__DIR__) . "/models/Auction.php";
+require_once dirname(__DIR__) . "/models/Plate.php";
+
+// Thêm vào đoạn đầu file PHP
+$auctionModel = new Auction();
+$availablePlates = $auctionModel->getAvailablePlates();
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -583,7 +607,16 @@
             <div class="flex items-center gap-4 relative z-10">
                 <div id="search-container" class="relative group">
                     <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm"></i>
-                    <input type="text" placeholder="AI Intelligence Search..." class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-[11px] text-white w-40 focus:w-64 focus:bg-black/60 focus:border-cyan-500/50 transition-all duration-500 outline-none jetbrains">
+                    <input
+                        id="ai-search-input"
+                        type="text"
+                        placeholder="AI Intelligence Search..."
+                        autocomplete="off"
+                        class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-[11px] text-white w-40 focus:w-64 focus:bg-black/60 focus:border-cyan-500/50 transition-all duration-500 outline-none jetbrains">
+
+                    <div id="search-results" class="absolute top-full left-0 w-64 mt-2 bg-black/95 border border-white/10 rounded-xl overflow-hidden hidden z-50 backdrop-blur-xl">
+                        <div id="results-list"></div>
+                    </div>
                 </div>
                 <button id="new-auction-btn" onclick="openForge(event)" class="hidden lg:flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white text-[10px] font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-cyan-900/20 active:scale-95 jetbrains">
                     <i class="ri-add-circle-line text-sm"></i> NEW AUCTION
@@ -606,9 +639,13 @@
             <p class="space-mono text-[10px] text-white/30 uppercase tracking-[3px]">Real-time Asset Monitoring</p>
         </div>
 
-        <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
+        <!-- <div class=" grid-row group grid grid-cols-12 flex items-center px-8 py-6 gap-3 bg-black/40 p-1 rounded-xl border border-white/10 mb-4">
             <button onclick="sortGrid('price')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
             <button onclick="sortGrid('time')" class="px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
+        </div> -->
+        <div class="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/10">
+            <button onclick="sortGrid('price')" class="sort-btn px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY PRICE</button>
+            <button onclick="sortGrid('time')" class="sort-btn px-4 py-2 rounded-lg jetbrains text-[10px] text-white/60 hover:text-cyan-400 hover:bg-white/5 transition-all">SORT BY TIME</button>
         </div>
         </div>
 
@@ -622,187 +659,145 @@
                 <div class="col-span-3 text-right">Authority Tools</div>
             </div>
 
+
             <div id="grid-container" class="max-h-[700px] overflow-y-auto custom-grid-scrollbar p-4 space-y-3 scroll-mt-10">
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+                <?php
+                // Lấy từ khóa search từ URL (ví dụ: ?search=51K)
+                // Bước 1: Lấy từ khóa search từ URL (?search=51K...)
+                $searchKeyword = isset($_GET['search']) ? $_GET['search'] : null;
 
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                // Bước 2: Truyền từ khóa vào hàm (Hàm này bạn đã sửa ở bước trước để nhận $search)
+                $allAuctions = $auctionModel->getAllAuctionsDetail($searchKeyword);
+
+                foreach ($allAuctions as $auc):
+                    // 1. Tính toán phần trăm tăng trưởng (Current vs Starting)
+                    $startingPrice = $auc['starting_price'];
+                    $currentPrice = $auc['current_max_bid'];
+                    $increasePercent = ($currentPrice > $startingPrice)
+                        ? round((($currentPrice - $startingPrice) / $startingPrice) * 100)
+                        : 0;
+
+                    // 2. Xác định màu sắc theo trạng thái
+                    $statusColor = 'text-amber-500'; // Mặc định là đang đấu
+                    if ($auc['plate_status'] == 'Sold') $statusColor = 'text-red-500';
+                    if ($auc['plate_status'] == 'Available') $statusColor = 'text-blue-500';
+                ?>
+
+                    <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden mb-4" >
+                        <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
+
+                        <div class="col-span-3 flex items-center gap-1">
+                            <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
+                                <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
+                                    <span class="text-black font-bold jetbrains text-sm tracking-tighter">
+                                        <?php echo $auc['plate_number']; ?>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                        <div class="col-span-2">
+                            <p class="text-cyan-400 font-bold jetbrains text-base rolling-number"
+                                data-value="<?php echo number_format($currentPrice, 0, '.', '.'); ?>">
+                                <?php echo number_format($currentPrice, 0, '.', '.'); ?>
+                            </p>
+                            <p class="text-[9px] text-emerald-400 space-mono">↑ +<?php echo $increasePercent; ?>% START</p>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
 
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                        <div class="col-span-2 flex items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <i class="ri-eye-line text-white/20 text-xs"></i>
+                                <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="ri-auction-line text-white/20 text-xs"></i>
+                                <span class="text-white/60 jetbrains text-[10px]">
+                                    <?php echo $auc['total_bids']; ?>
+                                </span>
                             </div>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                        <!-- <div class="col-span-2 flex items-center gap-3">
+                            <div class="relative w-10 h-10">
+                                <svg class="w-full h-full -rotate-90">
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent"
+                                        stroke-dasharray="100" stroke-dashoffset="30"
+                                        class="<?php echo $statusColor; ?> transition-all duration-1000"></circle>
+                                </svg>
+                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] <?php echo $statusColor; ?>"></i>
                             </div>
-                        </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
-                    </div>
-
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
-                <div class="grid-row group grid grid-cols-12 items-center px-8 py-6 bg-[#0A0A0A]/60 backdrop-blur-md border border-white/5 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden" onclick="openIntervention('30L-888.88')">
-                    <div class="bid-flash-overlay absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full pointer-events-none"></div>
-
-                    <div class="col-span-3 flex items-center gap-1">
-                        <div class="bg-gradient-to-br from-gray-300 to-gray-500 p-[1px] rounded-lg shadow-lg shadow-black">
-                            <div class="bg-white px-2 py-1.5 rounded-[7px] border border-black/20">
-                                <span class="text-black font-bold jetbrains text-sm tracking-tighter">30L-888.88</span>
+                            <span class="countdown-timer <?php echo $statusColor; ?> jetbrains text-[11px] font-bold"
+                                data-end="<?php echo $auc['display_end_time']; ?>">
+                                --:--:--
+                            </span>
+                        </div> -->
+                        <div class="col-span-2 flex items-center gap-3">
+                            <div class="relative w-10 h-10">
+                                <svg class="w-full h-full -rotate-90">
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent"
+                                        stroke-dasharray="100"
+                                        stroke-dashoffset="<?php echo ($auc['is_paused'] == 1) ? '0' : '30'; ?>"
+                                        class="<?php echo ($auc['is_paused'] == 1) ? 'text-amber-500' : $statusColor; ?> transition-all duration-1000"></circle>
+                                </svg>
+                                <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] <?php echo ($auc['is_paused'] == 1) ? 'text-amber-500' : $statusColor; ?>"></i>
                             </div>
+
+                            <?php if ($auc['is_paused'] == 1): ?>
+                                <div class="flex flex-col">
+                                    <span class="text-amber-500 jetbrains text-[11px] font-bold uppercase tracking-tighter">
+                                        Paused
+                                    </span>
+                                    <span class="text-amber-500/70 jetbrains text-[10px] font-medium">
+                                        <?php
+                                        $r = $auc['remaining_seconds'];
+                                        $h = floor($r / 3600);
+                                        $m = floor(($r % 3600) / 60);
+                                        $s = $r % 60;
+                                        echo sprintf("%02d:%02d:%02d", $h, $m, $s);
+                                        ?>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <span class="countdown-timer <?php echo $statusColor; ?> jetbrains text-[11px] font-bold"
+                                    data-end="<?php echo $auc['display_end_time']; ?>">
+                                    --:--:--
+                                </span>
+                            <?php endif; ?>
                         </div>
-                        <!-- <i class="ri-vip-diamond-line text-cyan-400 text-lg"></i> -->
+
+                        <div class="col-span-3 flex justify-end gap-2">
+                            <button onclick="handlePause(this, <?php echo $auc['id']; ?>)"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center transition-all <?php echo ($auc['is_paused'] == 1) ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'; ?>">
+
+                                <i class="<?php echo ($auc['is_paused'] == 1) ? 'ri-play-fill' : 'ri-pause-line'; ?>"></i>
+                            </button>
+                            <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
+                                <i class="ri-time-fill"></i>
+                            </button>
+
+                            <?php if ($auc['plate_status'] == 'Auctioning'): ?>
+                                <!-- <button
+                                    class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                                    onclick="openIntervention('<?php echo $auc['plate_number']; ?>')">
+                                    BOOST
+                                </button> -->
+                                <button
+                                    class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                                    onclick="openIntervention(<?php echo $auc['id']; ?>, '<?php echo $auc['plate_number']; ?>')">
+                                    BOOST
+                                </button>
+                            <?php else: ?>
+                                <button class="px-4 h-8 rounded-lg bg-white/5 border border-white/10 text-white/40 text-[9px] jetbrains font-bold cursor-not-allowed">
+                                    CLOSED
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
-                    <div class="col-span-2">
-                        <p class="text-cyan-400 font-bold jetbrains text-base rolling-number" data-value="850.000.000">850.000.000</p>
-                        <p class="text-[9px] text-emerald-400 space-mono">↑ +120% START</p>
-                    </div>
+                <?php endforeach; ?>
 
-                    <div class="col-span-2 flex items-center gap-4">
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-eye-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">1.2k</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <i class="ri-auction-line text-white/20 text-xs"></i>
-                            <span class="text-white/60 jetbrains text-[10px]">42</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex items-center gap-3">
-                        <div class="relative w-10 h-10">
-                            <svg class="w-full h-full -rotate-90">
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" class="text-white/5"></circle>
-                                <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="transparent" stroke-dasharray="100" stroke-dashoffset="30" class="text-amber-500 transition-all duration-1000"></circle>
-                            </svg>
-                            <i class="ri-time-line absolute inset-0 flex items-center justify-center text-[10px] text-amber-500"></i>
-                        </div>
-                        <span class="text-amber-500 jetbrains text-[11px] font-bold">12:45:02</span>
-                    </div>
-
-                    <div class="col-span-3 flex justify-end gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-pause-line"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"><i class="ri-time-fill"></i></button>
-                        <button class="px-4 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] jetbrains font-bold hover:bg-cyan-500 hover:text-black transition-all">BOOST</button>
-                    </div>
-                </div>
                 <div class="flex justify-center items-center gap-4 mt-8 pb-10">
                     <button onclick="prevPage()" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:bg-cyan-500 hover:text-black transition-all duration-300">
                         <i class="ri-arrow-left-s-line"></i>
@@ -850,10 +845,15 @@
                         <label class="jetbrains text-[10px] text-white/30 uppercase tracking-widest">Gia hạn thời gian</label>
                         <span class="text-amber-500 jetbrains text-[11px] font-bold">+00:15:00</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-2">
+                    <!-- <div class="grid grid-cols-3 gap-2">
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+2 PHÚT</button>
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+5 PHÚT</button>
                         <button class="py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all">+10 PHÚT</button>
+                    </div> -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="selectMinutes(this, 120)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+2 PHÚT</button>
+                        <button onclick="selectMinutes(this, 300)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+5 PHÚT</button>
+                        <button onclick="selectMinutes(this, 600)" class="minute-btn py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white jetbrains hover:bg-cyan-500/20 transition-all">+10 PHÚT</button>
                     </div>
                 </div>
 
@@ -872,10 +872,26 @@
                         <p class="text-[10px] text-white/20 jetbrains uppercase mt-1">Immediate Halt</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" onchange="toggleEmergencyHalt(this)" class="sr-only peer">
+                        <input type="checkbox"
+                            onchange="toggleEmergencyHalt(this, <?php echo $auc['id']; ?>)"
+                            class="sr-only peer"
+                            <?php echo ($auc['is_paused'] == 1) ? 'checked' : ''; ?>>
                         <div class="w-12 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/60 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
                     </label>
                 </div>
+                <!-- <div class="flex items-center justify-between p-5 bg-gradient-to-r from-white/5 to-transparent rounded-2xl border border-white/10">
+                    <div>
+                        <p class="jetbrains text-sm text-white font-bold">Tạm dừng phiên</p>
+                        <p class="text-[10px] text-white/20 jetbrains uppercase mt-1">Immediate Halt</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox"
+                            onchange="toggleEmergencyHalt(this, <?php echo $auc['id']; ?>)"
+                            class="sr-only peer"
+                            <?php echo ($auc['status'] === 'Paused') ? 'checked' : ''; ?>>
+                        <div class="w-12 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/60 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                    </label>
+                </div> -->
             </div>
 
             <div class="mt-auto pt-12">
@@ -887,7 +903,11 @@
                     </button>
                 </div>
 
-                <button class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
+                <!-- <button onclick="pushToSystem()" class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
+                    <div class="sync-spinner w-4 h-4 border-2 border-white/20 border-t-white rounded-full hidden"></div>
+                    PUSH TO SYSTEM
+                </button> -->
+                <button onclick="pushToSystem()" class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl text-white jetbrains text-[11px] font-bold tracking-[3px] flex items-center justify-center gap-3">
                     <div class="sync-spinner w-4 h-4 border-2 border-white/20 border-t-white rounded-full hidden"></div>
                     PUSH TO SYSTEM
                 </button>
@@ -955,9 +975,7 @@
 
     <!-- ----------------------------- section 5 -----------------------------  -->
     <section id="auction-forge" class="fixed inset-0 z-[200] hidden flex items-center justify-center overflow-hidden">
-        <div id="forge-overlay" class="absolute inset-0 bg-[#000814]/90 backdrop-blur-3xl scale-0 rounded-full opacity-0 pointer-events-none transition-all duration-700"></div>
-
-        <div id="forge-container" class="relative w-[95%] max-w-5xl h-[85vh] bg-white/5 border border-white/10 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col opacity-0 translate-y-20 transition-all duration-500 overflow-hidden">
+        <div id="forge-container" class="relative w-[95%] max-w-5xl h-[85vh] bg-white/5 border border-white/10 rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col opacity-0 translate-y-20 transition-all duration-500 overflow-hidden" style="background-color: #000814;">
 
             <div class="px-4 md:px-10 py-6 md:py-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
 
@@ -1004,12 +1022,20 @@
                         <div class="space-y-4">
                             <label class="text-[10px] text-white/40 jetbrains uppercase tracking-widest">Identify Asset</label>
                             <div class="relative">
-                                <input type="text" placeholder="Nhập biển số (Vd: 30L-999.99)" oninput="validatePlate(this)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white jetbrains focus:border-cyan-500/50 outline-none transition-all">
-                                <i class="ri-search-2-line absolute right-6 top-4 text-white/20"></i>
-                            </div>
-                            <div class="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-center gap-3">
-                                <i class="ri-magic-line text-emerald-400"></i>
-                                <p class="text-[10px] text-emerald-400 inter">Hệ thống phát hiện nhãn <span class="font-bold">"THẦN TÀI (79)"</span> - Tự động gắn tag Hot.</p>
+                                <select id="plate-selector" onchange="updateForgePreview(this)"
+                                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white jetbrains focus:border-cyan-500/50 outline-none transition-all appearance-none">
+                                    <option value="" class="bg-[#000814]">-- CHỌN BIỂN SỐ TỪ KHO --</option>
+
+                                    <?php foreach ($availablePlates as $plate): ?>
+                                        <option value="<?php echo $plate['id']; ?>"
+                                            data-number="<?php echo $plate['plate_number']; ?>"
+                                            data-price="<?php echo $plate['starting_price']; ?>"
+                                            class="bg-[#000814]">
+                                            <?php echo $plate['plate_number']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <i class="ri-arrow-down-s-line absolute right-6 top-4 text-white/20"></i>
                             </div>
                         </div>
                     </div>
@@ -1129,7 +1155,65 @@
             });
         });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('ai-search-input');
+        const resultsBox = document.getElementById('search-results');
+        const resultsList = document.getElementById('results-list');
 
+        if (!searchInput) return;
+
+        // 1. Lắng nghe khi gõ chữ (Gợi ý nhanh)
+        searchInput.addEventListener('input', function() {
+            const q = this.value.trim();
+            if (q.length < 2) {
+                resultsBox.classList.add('hidden');
+                return;
+            }
+
+            fetch(`search_api.php?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let html = '';
+                        data.forEach((item) => {
+                            // Lưu ý: class grid-search-item để JS nhận diện
+                            html += `
+                        <div class="grid-search-item flex justify-between items-center p-3 hover:bg-cyan-500/20 border-b border-white/5 cursor-pointer transition-all" 
+                             onclick="window.location.href='?search=${item.plate_number}'">
+                            <div>
+                                <div class="text-cyan-400 font-bold text-[11px]">${item.plate_number}</div>
+                                <div class="text-[9px] text-white/40 uppercase">${item.category}</div>
+                            </div>
+                            <div class="text-white font-mono text-[10px]">${Number(item.starting_price).toLocaleString()}đ</div>
+                        </div>`;
+                        });
+                        resultsList.innerHTML = html;
+                        resultsBox.classList.remove('hidden');
+                    } else {
+                        resultsList.innerHTML = '<div class="p-3 text-[10px] text-white/30 text-center">Không tìm thấy</div>';
+                        resultsBox.classList.remove('hidden');
+                    }
+                });
+        });
+
+        // 2. Lắng nghe phím Enter (Quan trọng: Lọc Grid)
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const q = this.value.trim();
+                // Load lại trang và truyền tham số search vào URL
+                window.location.href = `?search=${encodeURIComponent(q)}`;
+            }
+        });
+
+        // Đóng khi click ngoài
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('search-container');
+            if (container && !container.contains(e.target)) {
+                resultsBox.classList.add('hidden');
+            }
+        });
+    });
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener("DOMContentLoaded", () => {
         // 1. Hiệu ứng Bid Flash giả lập (Mỗi 5 giây chọn ngẫu nhiên 1 dòng)
@@ -1162,23 +1246,39 @@
         // 2. Logic sắp xếp (Sorting)
         window.sortGrid = (type) => {
             const container = document.getElementById('grid-container');
+            // Chỉ lấy các hàng grid-row, bỏ qua các div thông báo hoặc pagination
             const rows = Array.from(container.querySelectorAll('.grid-row'));
 
+            if (rows.length === 0) return;
+
             rows.sort((a, b) => {
+                let valA, valB;
                 if (type === 'price') {
-                    return b.dataset.price - a.dataset.price;
+                    valA = parseInt(a.dataset.price) || 0;
+                    valB = parseInt(b.dataset.price) || 0;
+                    return valB - valA; // Giá cao nhất lên đầu
                 } else {
-                    return a.dataset.time - b.dataset.time;
+                    valA = parseInt(a.dataset.time) || 0;
+                    valB = parseInt(b.dataset.time) || 0;
+                    return valA - valB; // Thời gian kết thúc sớm nhất lên đầu
                 }
             });
 
-            // Sử dụng GSAP để trượt các hàng
+            // Sử dụng GSAP Flip để tạo hiệu ứng đổi chỗ mượt mà
+            // Nếu bạn chưa nạp thư viện Flip, hãy thêm: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js">
+
             const state = Flip.getState(rows);
+
+            // Thay đổi thứ tự trong DOM
             rows.forEach(row => container.appendChild(row));
+
             Flip.from(state, {
                 duration: 0.8,
                 ease: "power3.inOut",
-                stagger: 0.05
+                stagger: 0.05,
+                onComplete: () => {
+                    console.log(`Sorted by ${type}`);
+                }
             });
         };
     });
@@ -1217,10 +1317,10 @@
             const btn = document.createElement('button');
             btn.innerText = i;
             btn.className = `w-10 h-10 rounded-xl border transition-all duration-300 jetbrains text-xs ${
-            i === currentPage 
-            ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.5)]' 
-            : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
-        }`;
+    i===currentPage
+    ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+    : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+    }`;
             btn.onclick = () => {
                 currentPage = i;
                 renderPagination();
@@ -1249,10 +1349,161 @@
         renderPagination();
     });
 
+    function startGlobalCountdowns() {
+        setInterval(() => {
+            const now = Math.floor(Date.now() / 1000); // Thời gian hiện tại (timestamp giây)
+
+            document.querySelectorAll('.countdown-timer').forEach(timer => {
+                const endTime = parseInt(timer.getAttribute('data-end'));
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    timer.innerText = "ĐÃ KẾT THÚC";
+                    timer.classList.remove('text-amber-500');
+                    timer.classList.add('text-red-500');
+                    return;
+                }
+
+                // Tính toán giờ, phút, giây
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+
+                // Định dạng hiển thị 00:00:00
+                const displayTime = [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    seconds.toString().padStart(2, '0')
+                ].join(':');
+
+                timer.innerText = displayTime;
+            });
+        }, 1000); // Chạy lại mỗi 1 giây
+    }
+
+    // Kích hoạt khi trang web tải xong
+    document.addEventListener('DOMContentLoaded', startGlobalCountdowns);
+
+    function handlePause(btn, auctionId) {
+        // Hiệu ứng bấm nút
+        btn.style.transform = "scale(0.9)";
+        setTimeout(() => btn.style.transform = "scale(1)", 100);
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+
+        fetch('toggle_pause_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Đổi icon và màu sắc trực tiếp trên nút
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('ri-pause-line')) {
+                        // Chuyển sang trạng thái PAUSED
+                        icon.className = 'ri-play-fill';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-amber-500/20 text-amber-500';
+                    } else {
+                        // Chuyển sang trạng thái ACTIVE
+                        icon.className = 'ri-pause-line';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white';
+                    }
+                } else {
+                    alert("Lỗi hệ thống, không thể thực hiện!");
+                }
+                location.reload();
+
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    function handlePause(btn, auctionId) {
+        // Hiệu ứng bấm nút
+        btn.style.transform = "scale(0.9)";
+        setTimeout(() => btn.style.transform = "scale(1)", 100);
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+
+        fetch('toggle_pause_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Đổi icon và màu sắc trực tiếp trên nút
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('ri-pause-line')) {
+                        // Chuyển sang trạng thái PAUSED
+                        icon.className = 'ri-play-fill';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-amber-500/20 text-amber-500';
+                    } else {
+                        // Chuyển sang trạng thái ACTIVE
+                        icon.className = 'ri-pause-line';
+                        btn.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white';
+                    }
+                } else {
+                    alert("Lỗi hệ thống, không thể thực hiện!");
+                }
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
     // ----------------------------- section 3 ----------------------------- //
     // ----------------------------- section 3 ----------------------------- //
-    function openIntervention(plateNumber) {
-        const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
+    // function openIntervention(plateNumber) {
+    // const panel = document.getElementById('intervention-panel'); // Giờ đây là thẻ section
+    // const overlay = document.getElementById('panel-overlay');
+    // const plateText = document.getElementById('target-plate-display');
+    // const mainGrid = document.getElementById('market-grid');
+
+    // plateText.innerText = plateNumber;
+    // panel.classList.add('active');
+    // overlay.classList.remove('hidden');
+
+    // gsap.to(overlay, {
+    // opacity: 1,
+    // duration: 0.5
+    // });
+    // gsap.to(mainGrid, {
+    // x: -40,
+    // filter: "blur(10px)",
+    // opacity: 0.3,
+    // duration: 0.7,
+    // ease: "power3.out"
+    // });
+    // }
+
+    // function closePanel() {
+    // const panel = document.getElementById('intervention-panel');
+    // const overlay = document.getElementById('panel-overlay');
+    // const mainGrid = document.getElementById('market-grid');
+
+    // panel.classList.remove('active');
+
+    // gsap.to(overlay, {
+    // opacity: 0,
+    // duration: 0.4,
+    // onComplete: () => overlay.classList.add('hidden')
+    // });
+
+    // gsap.to(mainGrid, {
+    // x: 0,
+    // filter: "blur(0px)",
+    // opacity: 1,
+    // duration: 0.6,
+    // ease: "power3.inOut"
+    // });
+    // }
+    let currentAuctionId = null; // Biến lưu trữ ID phiên đang chọn
+
+    function openIntervention(id, plateNumber) {
+        currentAuctionId = id; // Lưu ID lại để dùng khi bấm "PUSH TO SYSTEM"
+
+        const panel = document.getElementById('intervention-panel');
         const overlay = document.getElementById('panel-overlay');
         const plateText = document.getElementById('target-plate-display');
         const mainGrid = document.getElementById('market-grid');
@@ -1261,7 +1512,7 @@
         panel.classList.add('active');
         overlay.classList.remove('hidden');
 
-        // Sử dụng GSAP để animate mượt mà
+        // Giữ nguyên hiệu ứng của bạn
         gsap.to(overlay, {
             opacity: 1,
             duration: 0.5
@@ -1276,12 +1527,14 @@
     }
 
     function closePanel() {
+        currentAuctionId = null; // Reset ID khi đóng
         const panel = document.getElementById('intervention-panel');
         const overlay = document.getElementById('panel-overlay');
         const mainGrid = document.getElementById('market-grid');
 
         panel.classList.remove('active');
 
+        // Giữ nguyên hiệu ứng của bạn
         gsap.to(overlay, {
             opacity: 0,
             duration: 0.4,
@@ -1296,6 +1549,117 @@
             ease: "power3.inOut"
         });
     }
+    let pendingSeconds = 0; // Lưu số giây chờ để gửi
+
+    function selectMinutes(element, seconds) {
+        pendingSeconds = seconds;
+
+        // Reset màu tất cả các nút phút khác
+        document.querySelectorAll('.minute-btn').forEach(btn => {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/20');
+            btn.classList.add('border-white/10', 'bg-white/5');
+        });
+
+        // Highlight nút đang chọn
+        element.classList.remove('border-white/10', 'bg-white/5');
+        element.classList.add('border-cyan-500', 'bg-cyan-500/20');
+    }
+
+    function pushToSystem() {
+        if (!currentAuctionId || pendingSeconds === 0) {
+            alert("Vui lòng chọn số phút!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action', 'add_time');
+        formData.append('id', currentAuctionId);
+        formData.append('seconds', pendingSeconds);
+
+        fetch('update_auction.php', {
+                method: 'POST',
+                body: formData // Gửi trực tiếp formData
+            })
+            .then(response => response.text()) // Nhận text trước để kiểm tra
+            .then(text => {
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        alert("Gia hạn thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.message);
+                    }
+                } catch (e) {
+                    console.error("Phản hồi từ server bị lỗi (không phải JSON):", text);
+                    alert("Lỗi cấu trúc dữ liệu từ máy chủ!");
+                }
+            });
+    }
+
+    function addSniperTime(seconds) {
+        if (!currentAuctionId) {
+            alert("Không tìm thấy ID phiên đấu giá!");
+            return;
+        }
+
+        // Hiệu ứng loading nhẹ trên nút bấm hoặc console
+        console.log(`Đang cộng thêm ${seconds} giây cho phiên ${currentAuctionId}`);
+
+        // Gửi yêu cầu bằng Fetch API (AJAX)
+        fetch('update_auction.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `action=add_time&id=${currentAuctionId}&seconds=${seconds}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Đã gia hạn thời gian thành công!");
+                    // Cập nhật lại thời gian hiển thị trên Panel nếu cần
+                    location.reload(); // Hoặc viết hàm cập nhật UI realtime
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function toggleEmergencyHalt(checkbox, auctionId) {
+        const isPaused = checkbox.checked;
+
+        // Hiệu ứng Visual nhẹ
+        const container = checkbox.closest('div.flex');
+        if (isPaused) {
+            container.classList.add('opacity-80');
+        } else {
+            container.classList.remove('opacity-80');
+        }
+
+        // Gửi dữ liệu bằng FormData
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+        formData.append('paused', isPaused);
+
+        fetch('toggle_auction_status.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert("Lỗi: " + data.message);
+                    checkbox.checked = !isPaused; // Trả lại trạng thái cũ nếu lỗi
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                checkbox.checked = !isPaused;
+            });
+    }
+
     // ----------------------------- section 4 ----------------------------- //
     // ----------------------------- section 4 ----------------------------- //
     function toggleSentimentDrawer() {
@@ -1382,17 +1746,27 @@
     }
 
     function moveStep(direction) {
+        // KIỂM TRA: Nếu đang ở bước 3 mà bấm CONTINUE (PUBLISH)
+        if (currentForgeStep === 3 && direction === 1) {
+            publishAuction(); // Gọi hàm gửi dữ liệu
+            return; // Dừng lại không chạy logic chuyển step nữa
+        }
+
         const prevStep = currentForgeStep;
         currentForgeStep += direction;
 
-        // Update Indicators
+        // Đảm bảo không đi quá giới hạn step (1-3)
+        if (currentForgeStep < 1) currentForgeStep = 1;
+        if (currentForgeStep > 3) currentForgeStep = 3;
+
+        // Update Indicators (Giữ nguyên logic của bạn)
         document.querySelectorAll('.step-item').forEach(item => {
             const step = parseInt(item.dataset.step);
             item.classList.toggle('active', step === currentForgeStep);
             item.style.opacity = step <= currentForgeStep ? "1" : "0.3";
         });
 
-        // Animate Stages
+        // Animate Stages (Giữ nguyên hiệu ứng GSAP của bạn)
         gsap.to(`#stage-${prevStep}`, {
             x: direction > 0 ? -100 : 100,
             opacity: 0,
@@ -1410,7 +1784,16 @@
 
         // Update Buttons
         document.getElementById('prevBtn').style.visibility = currentForgeStep === 1 ? 'hidden' : 'visible';
-        document.getElementById('nextBtn').innerText = currentForgeStep === 3 ? 'PUBLISH AUCTION' : 'CONTINUE';
+
+        // Đổi chữ nút ở bước cuối
+        const nextBtn = document.getElementById('nextBtn');
+        if (currentForgeStep === 3) {
+            nextBtn.innerText = 'PUBLISH AUCTION';
+            nextBtn.classList.replace('bg-cyan-500', 'bg-emerald-500'); // Thêm hiệu ứng đổi màu cho nút chốt
+        } else {
+            nextBtn.innerText = 'CONTINUE';
+            nextBtn.classList.replace('bg-emerald-500', 'bg-cyan-500');
+        }
     }
 
     function checkAIPrice(input) {
@@ -1445,6 +1828,69 @@
                 document.getElementById('auction-forge').classList.add('hidden');
             }
         });
+    }
+
+    function updateForgePreview(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const plateNumber = selectedOption.getAttribute('data-number');
+        const startingPrice = selectedOption.getAttribute('data-price');
+
+        // Cập nhật số trên biển 3D
+        const previewText = document.querySelector('#plate-preview-3d span');
+        if (plateNumber) {
+            previewText.innerText = plateNumber;
+            // Tự động điền giá khởi điểm vào Stage 2 nếu muốn
+            const priceInput = document.querySelector('#stage-2 input[type="number"]');
+            if (priceInput) priceInput.value = startingPrice;
+        } else {
+            previewText.innerText = "30L-XXX.XX";
+        }
+    }
+
+    function publishAuction() {
+        // 1. Lấy dữ liệu từ các input đã tạo ở các Stage
+        const plateId = document.getElementById('plate-selector').value; // ID từ select ở Stage 1
+        const startingPrice = document.querySelector('#stage-2 input[type="number"]').value;
+        const durationHours = 24; // Bạn có thể thêm 1 input chọn giờ ở Stage 3
+
+        if (!plateId) {
+            alert("Vui lòng quay lại Bước 1 để chọn biển số!");
+            moveStep(-2); // Quay lại bước 1
+            return;
+        }
+
+        // Hiệu ứng loading trên nút
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> FORGING...';
+
+        const formData = new FormData();
+        formData.append('action', 'create_auction');
+        formData.append('plate_id', plateId);
+        formData.append('starting_price', startingPrice);
+        formData.append('duration_hours', durationHours);
+
+        // Gửi đến file xử lý PHP
+        fetch('create_auction_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Chúc mừng! Phiên đấu giá đã được đưa lên hệ thống.");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + data.message);
+                    nextBtn.disabled = false;
+                    nextBtn.innerText = 'PUBLISH AUCTION';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi kết nối server!");
+                nextBtn.disabled = false;
+            });
     }
     // ----------------------------- section 5: OPTIMIZED RADAR ----------------------------- //
 

@@ -1,5 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+session_start();
+
+// Mảng các ID được phép vào vùng Admin
+$admin_roles = [1, 2, 3, 4, 5];
+
+if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles)) {
+    // Nếu không có quyền, đuổi về trang login hoặc báo lỗi
+    header("Location: login.php?error=access_denied");
+    exit();
+}
+// Sử dụng đường dẫn tương đối để tránh lỗi trên Linux Server của InfinityFree
+require_once dirname(__DIR__) . "/config.php";
+
+// 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
+require_once dirname(__DIR__) . "/models/db.php";
+require_once dirname(__DIR__) . "/models/Customer.php";
+$customerModel = new Customer();
+// 2. XỬ LÝ AJAX POST TẠI ĐÂY (PHẢI ĐẶT TRƯỚC MỌI THẺ HTML)
+// TÌM ĐOẠN XỬ LÝ AJAX POST Ở ĐẦU FILE VipVelations.php VÀ THAY BẰNG:
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
+    ob_clean();
+    header('Content-Type: application/json');
+
+    try {
+        $action = $_POST['action_type'];
+        if ($action == 'delete_customer') {
+            $id = $_POST['customer_id'];
+            if ($customerModel->delete($id)) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Lỗi DB hoặc ràng buộc dữ liệu']);
+            }
+            exit; // Ngắt để không load phần HTML bên dưới
+        }
+
+        // 1. LOGIC SỬA (GIỮ NGUYÊN CỦA BẠN)
+        if ($action == 'save_customer') {
+            $id = $_POST['id'] ?? null;
+            $data = [
+                'full_name'    => $_POST['full_name'],
+                'email'        => $_POST['email'],
+                'phone_number' => $_POST['phone'], // Bạn đang dùng phone_number ở Model
+                'rank'         => $_POST['rank'],
+                'bidding_limit' => $_POST['bidding_limit'],
+                'avatar'       => $_POST['avatar']
+            ];
+            $result = $customerModel->update($id, $data);
+        } else if ($action == 'portal_onboard') {
+            $finalAvatar = '';
+
+            // 1. Nhận dữ liệu
+            $email = !empty($_POST['email']) ? trim($_POST['email']) : null;
+            $phone = !empty($_POST['phone_number']) ? trim($_POST['phone_number']) : null;
+
+            // 2. Xử lý Đường dẫn File vật lý bằng __DIR__
+            // __DIR__ là: D:\xampp\htdocs\License-plate-website_2\Admin
+            // dirname(__DIR__) sẽ là: D:\xampp\htdocs\License-plate-website_2
+            $baseDir = dirname(__DIR__);
+            $uploadFolder = DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'avatars' . DIRECTORY_SEPARATOR;
+            $absolutePath = $baseDir . $uploadFolder;
+
+            // Kiểm tra và tạo thư mục nếu chưa tồn tại
+            if (!is_dir($absolutePath)) {
+                mkdir($absolutePath, 0777, true);
+            }
+
+            // Ưu tiên 1: Nếu có file upload thực tế
+            if (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] == 0) {
+                $fileName = time() . '_' . basename($_FILES['avatar_file']['name']);
+                $targetFile = $absolutePath . $fileName;
+
+                if (move_uploaded_file($_FILES['avatar_file']['tmp_name'], $targetFile)) {
+                    // Lưu vào DB đường dẫn tương đối để hiển thị trên web
+                    $finalAvatar = 'assets/uploads/avatars/' . $fileName;
+                }
+            }
+            // Ưu tiên 2: Nếu không có file upload, lấy link ảnh mẫu (preset) hoặc mặc định
+            else {
+                $finalAvatar = !empty($_POST['avatar']) ? $_POST['avatar'] : 'https://i.pravatar.cc/150?u=' . time();
+            }
+
+            // 3. Chuẩn bị mảng data cho Model
+            $data = [
+                'full_name'     => $_POST['full_name'],
+                'email'         => $email,
+                'phone_number'  => $phone,
+                'rank'          => ucfirst(strtolower($_POST['rank'])),
+                'total_spent'   => (float)$_POST['deposit'],
+                'bidding_limit' => (float)$_POST['deposit'] * 2,
+                'avatar'        => $finalAvatar, // Đảm bảo cột trong DB tên là 'avatar'
+                'password'      => '123456'
+            ];
+
+            // 4. Gọi hàm add trong model
+            $result = $customerModel->add($data);
+
+            if ($result) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Lỗi SQL: Không thể thêm dữ liệu vào Database']);
+            }
+            exit();
+        }
+
+        echo json_encode(['success' => $result]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit();
+}
+
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -338,13 +452,26 @@
         /* Hiệu ứng viền vàng chạy khi hover dành riêng cho Gold */
         .member-card-wrapper[data-rank="gold"]:hover .member-card {
             border-color: #D4AF37 !important;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2) !important;
+            /* box-shadow: 0 0 30px rgba(212, 175, 55, 0.2) !important; */
+            background: rgba(255, 255, 255, 0.05);
+
         }
 
         .member-card-wrapper[data-rank="gold"]:hover .member-card::before {
             animation-duration: 1.5s;
             /* Khi hover thì ánh sáng quét nhanh hơn như một phản hồi */
         }
+
+        /* Hiệu ứng hover cho thẻ thành viên nói chung (dùng cho ALL) */
+        .member-card-wrapper:hover .member-card {
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.05) !important;
+            transform: translateY(-5px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+
 
         .member-card-wrapper {
             width: 100%;
@@ -360,7 +487,10 @@
 
         .member-card-wrapper[data-rank="diamond"]:hover .member-card {
             border-color: #22d3ee !important;
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important;
+            /* border-color: #f06915 !important; */
+
+            /* box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important; */
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Hiệu ứng chữ vàng phát sáng nhẹ */
@@ -386,6 +516,55 @@
             }
         }
 
+        /* Hiệu ứng viền bạch kim chạy khi hover dành riêng cho Platinum */
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card {
+            border-color: #E5E4E2 !important;
+            /* Màu bạch kim */
+            box-shadow: 0 0 30px rgba(229, 228, 226, 0.25) !important;
+            /* Đổ bóng ánh bạc sáng */
+            /* Tăng độ sáng nền một chút khi hover */
+        }
+
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card::before {
+            animation-duration: 1.2s;
+            /* Platinum thường tạo cảm giác nhanh và nhạy hơn Gold nên để 1.2s */
+
+        }
+
+        /* Hiệu ứng ánh sáng kim loại (Shimmer) riêng cho Platinum */
+        .member-card-wrapper[data-rank="platinum"] .member-card {
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Thêm lớp phản chiếu ánh sáng trắng khi hover để tăng tính kim loại */
+        .member-card-wrapper[data-rank="platinum"]:hover .member-card::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 45%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    transparent 55%);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            animation: shine-platinum 3s infinite;
+        }
+
+        @keyframes shine-platinum {
+            0% {
+                transform: translate(-100%, -100%) rotate(30deg);
+            }
+
+            100% {
+                transform: translate(100%, 100%) rotate(30deg);
+            }
+        }
+
         /* --- Cấu hình chung cho lớp giả tạo ánh sáng --- */
         .member-card::before {
             content: '';
@@ -403,6 +582,7 @@
         /* --- HIỆU ỨNG CHO HẠNG GOLD (VÀNG CHAMPAGNE) --- */
         .member-card-wrapper[data-rank="gold"] .member-card::before {
             background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.4), rgba(241, 196, 15, 0.6), transparent);
+
             animation: shine-gold 5s infinite;
         }
 
@@ -696,11 +876,10 @@
                             <input type="text" id="deep-search" autocomplete="off" placeholder="Search..."
                                 class="bg-white/5 border border-white/10 rounded-lg md:rounded-xl py-2 pl-9 pr-3 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-[#0891B2] w-full md:w-[180px] lg:w-[240px] transition-all">
 
-                            <div id="search-suggestions" class="absolute top-[120%] left-[-50px] md:left-0 right-0 w-[250px] md:w-full rounded-xl overflow-hidden shadow-2xl">
-                                <div class="p-2 text-[9px] text-white/40 border-b border-white/5 uppercase font-bold bg-black">Suggested</div>
-                                <div class="suggestion-item p-3 cursor-pointer flex items-center gap-3 bg-black hover:bg-white/5" onclick="selectVIP('David Le')">
-                                    <div class="w-7 h-7 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px] text-cyan-400">DL</div>
-                                    <span class="text-[11px] text-white">David Le (Diamond)</span>
+                            <div id="search-suggestions" class="absolute top-[120%] left-[-50px] md:left-0 right-0 w-[250px] md:w-full rounded-xl overflow-hidden shadow-2xl hidden z-50">
+                                <div class="p-2 text-[9px] text-white/40 border-b border-white/5 uppercase font-bold bg-black">Intelligence Results</div>
+
+                                <div id="suggestions-list" class="max-h-[300px] overflow-y-auto custom-scrollbar bg-black">
                                 </div>
                             </div>
                         </div>
@@ -737,11 +916,19 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                                             <div class="space-y-6 portal-field">
-                                                <div class="group">
-                                                    <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Identification</label>
-                                                    <input type="text" oninput="checkDuplicate(this.value)" placeholder="Phone or Email..." class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
-                                                    <div id="duplicate-warning" class="hidden items-center gap-2 mt-2 text-rose-500 animate-bounce">
-                                                        <i class="ri-error-warning-line"></i> <span class="text-[10px] font-bold">EXISTING VIP DETECTED</span>
+                                                <div class="group mb-6">
+                                                    <label class="text-[9px] text-white/30 uppercase block mb-2">Customer Full Name</label>
+                                                    <input type="text" id="portal-fullname" placeholder="Nhập họ và tên..." class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
+                                                </div>
+
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="group">
+                                                        <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Email Address</label>
+                                                        <input type="email" id="portal-email" placeholder="example@gmail.com" class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
+                                                    </div>
+                                                    <div class="group">
+                                                        <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Phone Number</label>
+                                                        <input type="text" id="portal-phone" placeholder="09xxxxxxx" class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
                                                     </div>
                                                 </div>
 
@@ -753,6 +940,29 @@
                                             </div>
 
                                             <div class="space-y-6 portal-field">
+                                                <div class="p-6 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group">
+                                                    <label class="text-[9px] text-white/30 uppercase block mb-4">Identity Visualization (Avatar)</label>
+                                                    <div class="flex items-center gap-6">
+                                                        <div class="relative">
+                                                            <img id="avatar-preview" src="https://i.pravatar.cc/150?u=new" class="w-20 h-20 rounded-full border-2 border-[#D4AF37] object-cover shadow-lg shadow-[#D4AF37]/20">
+                                                            <label for="avatar-upload" class="absolute bottom-0 right-0 w-7 h-7 bg-[#D4AF37] rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-md">
+                                                                <i class="ri-camera-line text-black text-xs"></i>
+                                                                <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="previewUpload(this)">
+                                                            </label>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <p class="text-[10px] text-white/40 mb-3 italic">Chọn nhận diện nhanh:</p>
+                                                            <div class="flex gap-2">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=1" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=2" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=3" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <div onclick="document.getElementById('avatar-upload').click()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/10">
+                                                                    <i class="ri-add-line text-white/50"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
                                                     <label class="text-[9px] text-white/30 uppercase block mb-4">Predicted Rank</label>
                                                     <div id="rank-display" class="flex items-center gap-4">
@@ -779,7 +989,7 @@
                                                 <input type="checkbox" id="welcome-invite" class="accent-[#D4AF37]">
                                                 <label for="welcome-invite" class="text-[10px] text-white/60 uppercase tracking-widest cursor-pointer">Send Welcome Invitation</label>
                                             </div>
-                                            <button class="w-full md:w-auto px-10 py-4 bg-[#D4AF37] text-black font-black text-xs uppercase tracking-[4px] rounded-xl hover:bg-[#F1C40F] transition-all shadow-lg shadow-[#D4AF37]/20">
+                                            <button onclick="finalizePortalRegistration()" class="w-full md:w-auto px-10 py-4 bg-[#D4AF37] text-black font-black text-xs uppercase tracking-[4px] rounded-xl hover:bg-[#F1C40F] transition-all shadow-lg shadow-[#D4AF37]/20">
                                                 Finalize Registration
                                             </button>
                                         </div>
@@ -799,7 +1009,8 @@
 
             <div class="flex flex-wrap items-center justify-between mb-10 gap-4 relative z-20">
                 <div class="flex gap-2" id="member-filters">
-                    <button onclick="filterMembers('all', this)" class="filter-btn active px-4 py-2 bg-[#F1C40F]/20 border border-[#F1C40F]/50 rounded-full text-[10px] font-bold text-[#F1C40F] transition-all">
+                    <button onclick="filterMembers('all', this)"
+                        class="filter-btn active px-4 py-2 bg-white/10 border border-white/40 rounded-full text-[10px] font-bold text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                         ALL MEMBERS
                     </button>
                     <button onclick="filterMembers('gold', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-all">
@@ -807,6 +1018,10 @@
                     </button>
                     <button onclick="filterMembers('diamond', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
                         DIAMOND CLUB
+                    </button>
+                    <button onclick="filterMembers('platinum', this)"
+                        class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#E5E4E2] hover:border-[#E5E4E2]/50 hover:bg-[#E5E4E2]/5 transition-all">
+                        PLATINUM CLUB
                     </button>
                 </div>
                 <div id="compare-mode-indicator" class="hidden items-center gap-3 bg-[#0891B2]/20 border border-[#0891B2]/50 px-4 py-2 rounded-full">
@@ -816,92 +1031,84 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="member-masonry">
+                <?php
 
-                <div class="member-card-wrapper cursor-pointer" data-rank="diamond" onclick="openVipEditor(this)">
-                    <div class="member-card group relative bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-5 hover:border-cyan-400 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+                // 1. Cấu hình phân trang
+                $limit = 8; // Số lượng khách hàng mỗi trang
+                $page = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+                $keyword = isset($_GET['search']) ? $_GET['search'] : null;
 
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
-                                <span class="text-[6px] text-cyan-400 font-bold uppercase tracking-[2px]">Diamond Club</span>
-                            </div>
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
-                        </div>
+                // 2. Lấy dữ liệu theo trang và từ khóa
+                $customers = $customerModel->get($keyword, $page, $limit);
+                $totalRecords = $customerModel->countTotal($keyword);
+                $totalPages = ceil($totalRecords / $limit);
 
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full border-2 border-cyan-500/50 overflow-hidden shadow-inner">
-                                <img src="https://i.pravatar.cc/150?u=diamond1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="VIP Avatar">
-                            </div>
-                            <div>
-                                <h3 class="text-white font-medium text-sm tracking-wide">Mr. Hoang Nguyen</h3>
-                                <p class="text-white/40 text-[10px] font-mono mt-1">ID: #888899</p>
-                            </div>
-                        </div>
+                // 3. Xử lý Search AJAX (Nếu có)
+                if (isset($_GET['search']) && isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                    $results = $customerModel->get($_GET['search'], 1, 20);
+                    echo json_encode($results);
+                    exit;
+                }
 
-                        <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
-                            <div>
-                                <p class="text-[8px] text-white/30 uppercase tracking-widest">Bidding Limit</p>
-                                <p class="text-xs text-cyan-400 font-bold mt-1">25.0B VND</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[8px] text-white/30 uppercase tracking-widest">Assets</p>
-                                <p class="text-xs text-white font-bold mt-1">12 Plates</p>
-                            </div>
-                        </div>
-
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
-                            style="background-image: radial-gradient(#0891B2 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
-                    </div>
-                </div>
-                <div class="member-card-wrapper cursor-pointer" data-rank="gold" onclick="openVipEditor(this)">
-                    <div class="member-card group relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#D4AF37]/20 rounded-3xl p-5">
-
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
-                                    <span class="text-[8px] text-[#D4AF37] font-bold uppercase tracking-[2px]">Gold Member</span>
-                                </div>
-                                <div class="w-2 h-2 bg-amber-500 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
-                            </div>
-
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 rounded-full border-2 border-[#D4AF37]/30 overflow-hidden bg-[#111]">
-                                    <img src="https://i.pravatar.cc/150?u=gold2" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                                </div>
-                                <div>
-                                    <h3 class="text-white font-medium text-sm">Ms. Linh Dan</h3>
-                                    <p class="text-white/40 text-[10px] font-mono">ID: #777888</p>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
-                                <div>
-                                    <p class="text-[8px] text-white/30 uppercase">Bidding Limit</p>
-                                    <p class="text-xs text-[#D4AF37] font-bold mt-1">5.2B VND</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[8px] text-white/30 uppercase">Assets</p>
-                                    <p class="text-xs text-white font-bold mt-1">4 Plates</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
-                    </div>
-                </div>
+                ?>
+                <?php if (count($customers) > 0): ?>
+                    <?php foreach ($customers as $customer): ?>
+                        <?= $customerModel->renderVipCard($customer); ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-white/30 col-span-full text-center py-10">No members found.</p>
+                <?php endif; ?>
 
 
+                <style>
+                    @keyframes shimmer {
+                        100% {
+                            transform: translateX(100%);
+                        }
+                    }
+                </style>
             </div>
+            <div class="mt-12 flex justify-center items-center gap-2 ">
+                <?php if ($page > 1): ?>
+                    <a href="?p=<?= $page - 1 ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <a href="?p=<?= $i ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl border transition-all <?= $i == $page ? 'bg-cyan-500 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $totalPages): ?>
+                    <a href="?p=<?= $page + 1 ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            <p class="text-center text-white/20 text-[10px] mt-4 uppercase tracking-[2px]">
+                Showing <?= count($customers) ?> of <?= $totalRecords ?> Elite Members
+            </p>
         </section>
-        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+        <!-- <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
             <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
 
             <div id="editor-container" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
 
+                <input type="hidden" id="editor-customer-id" value="">
+                <input type="hidden" id="editor-rank-value" value="">
+                <input type="hidden" id="editor-avatar-url" value="">
                 <div class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
                     <div class="flex items-center gap-2 md:gap-4">
                         <div id="editor-rank-badge" class="px-2 py-1 rounded-full text-[3px] md:text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
                         <h2 class="text-white/40 font-mono text-[8px] md:text-[10px] tracking-widest uppercase truncate max-w-[120px] md:max-w-none">
-                            Intelligence / <span id="editor-client-id" class="text-white">8888</span>
+                            Intelligence / <span id="editor-client-id" class="text-white">NEW</span>
                         </h2>
                     </div>
                     <div class="flex items-center gap-2 md:gap-3">
@@ -913,30 +1120,33 @@
                 </div>
 
                 <div class="flex flex-col md:flex-row flex-1 overflow-y-auto custom-scrollbar">
-
                     <div class="w-full md:w-1/4 p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col items-center gap-4 md:gap-6">
                         <div class="relative group cursor-pointer">
                             <div class="w-24 h-24 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-[#D4AF37]/30 overflow-hidden relative">
-                                <img id="editor-avatar" src="https://i.pravatar.cc/150?u=gold2" class="w-full h-full object-cover grayscale transition-all">
+                                <img id="editor-avatar" src="https://i.pravatar.cc/150" class="w-full h-full object-cover grayscale transition-all">
                             </div>
                         </div>
                         <div class="text-left md:text-center">
-                            <h3 id="editor-name" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
-                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Loyalty Score: 850</p>
+                            <h3 id="editor-name-display" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
+                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Status: Active</p>
                         </div>
                     </div>
 
-                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-32 md:pb-8">
+                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-48 md:pb-40">
                         <div class="space-y-6 md:space-y-8">
                             <h4 class="text-[9px] md:text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
                             <div class="space-y-4">
                                 <div class="input-field-group">
                                     <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
-                                    <input type="text" value="Hoàng Nguyễn" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                                    <input type="text" id="editor-full-name" placeholder="Enter name..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Email Secure</label>
+                                    <input type="email" id="editor-email" placeholder="email@example.com" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
                                 </div>
                                 <div class="input-field-group">
                                     <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
-                                    <input type="text" value="+84 999 888" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                                    <input type="text" id="editor-phone" placeholder="+84..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
                                 </div>
                             </div>
                         </div>
@@ -945,10 +1155,10 @@
                             <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
                             <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
                                 <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
-                                <input type="range" class="w-full accent-[#D4AF37]" min="0" max="100" value="50">
+                                <input type="range" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000" oninput="updateLimitText(this.value)">
                                 <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
                                     <span>0</span>
-                                    <span id="limit-val">5.0B VND</span>
+                                    <span id="editor-limit-text">0B VND</span>
                                 </div>
                             </div>
                         </div>
@@ -956,13 +1166,101 @@
                 </div>
 
                 <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center z-10">
-                    <button class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend</button>
+                    <button class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
                     <div class="flex gap-2 md:gap-4">
                         <button onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
-                        <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px]">Save</button>
+                        <button type="button" onclick="deleteCustomerFromEditor()" class="px-4 py-2 md:px-6 md:py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[8px] md:text-[10px] font-bold uppercase rounded-lg border border-red-500/20 transition-all">
+                            DELETE CUSTOMER
+                        </button>
+                        <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px] hover:bg-white transition-all">Save Matrix</button>
                     </div>
                 </div>
             </div>
+        </div> -->
+        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+            <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
+            <form id="vip-editor-form" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
+
+                <input type="hidden" id="editor-customer-id" name="customer_id" value="">
+                <input type="hidden" id="editor-rank-value" name="rank" value="">
+                <input type="hidden" id="editor-avatar-url" name="avatar_url" value="">
+                <input type="hidden" name="action_type" id="form-action-type" value="update_customer">
+
+                <div class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
+                    <div class="flex items-center gap-2 md:gap-4">
+                        <div id="editor-rank-badge" class="px-2 py-1 rounded-full text-[3px] md:text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
+                        <h2 class="text-white/40 font-mono text-[8px] md:text-[10px] tracking-widest uppercase truncate max-w-[120px] md:max-w-none">
+                            Intelligence / <span id="editor-client-id" class="text-white">NEW</span>
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <button type="button" onclick="toggleEditMode()" id="edit-mode-btn" class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-[8px] md:text-[10px] uppercase font-bold transition-all">
+                            <i class="ri-pencil-line"></i> <span class="hidden sm:inline">Enter Edit Mode</span>
+                        </button>
+                        <button type="button" onclick="closeVipEditor()" class="p-1 text-white/20 hover:text-white transition-colors">
+                            <i class="ri-close-circle-line text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row flex-1 overflow-y-auto custom-scrollbar">
+                    <div class="w-full md:w-1/4 p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col items-center gap-4 md:gap-6">
+                        <div class="relative group cursor-pointer">
+                            <div class="w-24 h-24 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-[#D4AF37]/30 overflow-hidden relative">
+                                <img id="editor-avatar" src="https://i.pravatar.cc/150" class="w-full h-full object-cover grayscale transition-all">
+                            </div>
+                        </div>
+                        <div class="text-left md:text-center">
+                            <h3 id="editor-name-display" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
+                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Status: Active</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-48 md:pb-40">
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
+                            <div class="space-y-4">
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
+                                    <input type="text" id="editor-full-name" name="full_name" placeholder="Enter name..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Email Secure</label>
+                                    <input type="email" id="editor-email" name="email" placeholder="email@example.com" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
+                                    <input type="text" id="editor-phone" name="phone_number" placeholder="+84..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
+                            <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
+                                <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
+                                <input type="range" name="bidding_limit" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000" oninput="updateLimitText(this.value)">
+                                <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
+                                    <span>0</span>
+                                    <span id="editor-limit-text">0B VND</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center z-10">
+                    <button type="button" class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
+                    <div class="flex gap-2 md:gap-4">
+                        <button type="button" onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
+                        <button type="button" onclick="deleteCustomerFromEditor()" class="px-4 py-2 md:px-6 md:py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[8px] md:text-[10px] font-bold uppercase rounded-lg border border-red-500/20 transition-all">
+                            DELETE CUSTOMER
+                        </button>
+                        <button type="button" onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px] hover:bg-white transition-all">Save Matrix</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
@@ -1303,16 +1601,122 @@
                 suggestionsBox.style.display = 'none';
             }
         });
+        document.addEventListener('click', function(e) {
+            const searchContainer = document.querySelector('.relative.group'); // Thẻ cha của ô search
+            if (!searchContainer.contains(e.target)) {
+                document.getElementById('search-suggestions').classList.add('hidden');
+            }
+        });
 
-        function selectVIP(name) {
+        function selectVIP(id) {
             const searchInput = document.getElementById('deep-search');
             const suggestionsBox = document.getElementById('search-suggestions');
 
-            searchInput.value = name;
-            suggestionsBox.style.display = 'none';
-            console.log("Đã chọn thượng khách:", name);
-        }
+            // 1. Tìm thẻ Card (Wrapper) của khách hàng này trên giao diện
+            const targetWrapper = document.querySelector(`.member-card-wrapper[data-id="${id}"]`);
 
+            if (targetWrapper) {
+                // 2. Cuộn màn hình tới vị trí thẻ đó mượt mà
+                targetWrapper.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                // 3. Tìm thẻ card bên trong và kích hoạt sự kiện click để mở Modal Editor
+                const card = targetWrapper.querySelector('.member-card');
+                if (card) {
+                    card.click(); // Gọi hàm openVipEditor(card) mà bạn đã viết trước đó
+                }
+
+                // 4. Xóa nội dung search và ẩn gợi ý
+                searchInput.value = '';
+                suggestionsBox.classList.add('hidden');
+            } else {
+                // Trường hợp khách hàng không có trong danh sách hiện tại (đang bị lọc bởi Rank)
+                console.log("Không tìm thấy thẻ trên view hiện tại. Đang mở trực tiếp...");
+                // Nếu bạn muốn mở luôn dù không thấy thẻ, hãy gọi hàm open trực tiếp nếu có dữ liệu
+            }
+        }
+        document.getElementById('deep-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Chặn reload trang ngay lập tức
+
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const suggestionsContainer = document.getElementById('search-suggestions');
+                const allCards = document.querySelectorAll('.member-card-wrapper');
+                const allFilterBtns = document.querySelectorAll('.filter-btn');
+
+                // 1. Ẩn bảng gợi ý
+                if (suggestionsContainer) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+
+                // 2. Nếu ô search trống -> Quay về chế độ xem tất cả
+                if (searchTerm === "") {
+                    filterMembers('all', document.querySelector('.filter-btn[onclick*="all"]'));
+                    return;
+                }
+
+                // 3. Reset các nút filter rank về trạng thái "All" để người dùng không bị rối
+                allFilterBtns.forEach(btn => btn.classList.remove('active', 'bg-[#F1C40F]/20', 'text-[#F1C40F]'));
+                const allBtn = document.querySelector('.filter-btn[onclick*="all"]');
+                if (allBtn) allBtn.classList.add('active');
+
+                // 4. Thực hiện lọc thẻ
+                let matchCount = 0;
+                allCards.forEach(wrapper => {
+                    // Kiểm tra an toàn dữ liệu data-customer
+                    const rawData = wrapper.getAttribute('data-customer');
+                    if (!rawData) return;
+
+                    const customerData = JSON.parse(rawData);
+                    const fullName = (customerData.full_name || '').toLowerCase();
+                    const phone = (customerData.phone_number || '').toLowerCase();
+                    const id = (customerData.id || '').toString();
+
+                    // Tìm kiếm theo Tên, Số điện thoại hoặc ID
+                    if (fullName.includes(searchTerm) || phone.includes(searchTerm) || id.includes(searchTerm)) {
+                        wrapper.style.display = 'block';
+                        matchCount++;
+
+                        // Hiệu ứng GSAP: Thẻ hiện ra mượt mà
+                        gsap.fromTo(wrapper, {
+                            opacity: 0,
+                            y: 20,
+                            scale: 0.95
+                        }, {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 0.4,
+                            ease: "back.out(1.7)"
+                        });
+                    } else {
+                        wrapper.style.display = 'none';
+                    }
+                });
+
+                // 5. Xử lý khi không tìm thấy kết quả
+                if (matchCount === 0) {
+                    // Có thể hiện một thông báo nhỏ (Toast) thay vì chỉ log console
+                    console.log("No Matrix match found for: " + searchTerm);
+
+                    // Tùy chọn: Hiển thị thông báo "Không tìm thấy" vào container chính
+                    const container = document.querySelector('.grid-cols-1'); // ID container của bạn
+                    if (container && !document.getElementById('no-result-msg')) {
+                        const msg = document.createElement('div');
+                        msg.id = 'no-result-msg';
+                        msg.className = 'col-span-full text-center py-10 text-white/20 uppercase tracking-widest';
+                        msg.innerText = 'No Intelligence Found';
+                        container.appendChild(msg);
+                    }
+                } else {
+                    // Xóa thông báo "Không tìm thấy" nếu có kết quả
+                    const msg = document.getElementById('no-result-msg');
+                    if (msg) msg.remove();
+                }
+            }
+        });
         // 4. Liquid Metal Hover Effect chân trang
         const headerContainer = document.querySelector('.header-container');
         const track = document.getElementById('liquid-track');
@@ -1411,13 +1815,21 @@
 
         // Đề xuất hạng
         if (amount >= 10000000000) { // 10 tỷ
-            rankIcon.className = "w-12 h-12 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]";
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-cyan-500 flex items-center justify-center text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)] bg-cyan-500/10";
             rankName.innerText = "DIAMOND MEMBER";
             rankName.classList.replace('text-white/20', 'text-cyan-500');
         } else if (amount >= 1000000000) { // 1 tỷ
-            rankIcon.className = "w-12 h-12 rounded-full border-2 border-slate-300 flex items-center justify-center text-slate-300";
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-[#E5E4E2] flex items-center justify-center text-[#E5E4E2] shadow-[0_0_10px_rgba(229,228,226,0.3)] bg-white/5";
             rankName.innerText = "PLATINUM MEMBER";
-            rankName.classList.replace('text-white/20', 'text-slate-300');
+            rankName.classList.replace('text-white/20', 'text-[#E5E4E2]');
+        } else if (amount >= 500000000) { // 500 triệu (Mức GOLD)
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.3)] bg-[#D4AF37]/10";
+            rankName.innerText = "GOLD MEMBER";
+            rankName.classList.replace('text-white/20', 'text-[#D4AF37]');
+        } else {
+            // Mặc định cho thành viên phổ thông
+            rankIcon.className = "w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center text-white/20";
+            rankName.innerText = "STANDARD MEMBER";
         }
     }
 
@@ -1439,6 +1851,120 @@
         if (number >= 1000000000) return (number / 1000000000).toFixed(1) + " Tỷ";
         if (number >= 1000000) return (number / 1000000).toFixed(0) + " Triệu";
         return number.toLocaleString('vi-VN');
+    }
+    async function finalizePortalRegistration() {
+        // 1. Lấy phần tử
+        const nameInput = document.getElementById('portal-fullname');
+        const emailInput = document.getElementById('portal-email');
+        const phoneInput = document.getElementById('portal-phone');
+        const depositInput = document.getElementById('deposit-input');
+        const rankDisplay = document.getElementById('rank-name');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarUploadInput = document.getElementById('avatar-upload');
+
+        if (!nameInput || !emailInput || !phoneInput || !depositInput) {
+            alert("Lỗi hệ thống: Không tìm thấy các ô nhập liệu!");
+            return;
+        }
+
+        // 2. Lấy giá trị thực tế
+        const fullName = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const deposit = depositInput.value;
+        const rankName = rankDisplay ? rankDisplay.innerText : "Gold";
+
+        // 3. Kiểm tra nhập liệu
+        if (!fullName || !deposit || (!email && !phone)) {
+            alert("Vui lòng điền Họ tên, Số tiền và ít nhất Email hoặc Số điện thoại!");
+            return;
+        }
+
+        // 4. Hiệu ứng nút bấm (Sử dụng event.target an toàn hơn)
+        const btn = event.currentTarget;
+        const originalText = btn.innerText;
+        btn.innerText = "INITIALIZING...";
+        btn.disabled = true;
+
+        // 5. Chuẩn bị FormData (PHẢI KHỞI TẠO TRƯỚC KHI APPEND)
+        const formData = new FormData();
+        formData.append('action_type', 'portal_onboard');
+        formData.append('full_name', fullName);
+        formData.append('email', email);
+        formData.append('phone_number', phone);
+        formData.append('deposit', deposit);
+        formData.append('rank', rankName.replace(' MEMBER', '').trim());
+
+        // XỬ LÝ AVATAR (Gửi đúng tên cột 'avatar' cho DB)
+        if (avatarUploadInput && avatarUploadInput.files[0]) {
+            // Nếu có file thực tế được chọn từ máy tính
+            formData.append('avatar_file', avatarUploadInput.files[0]);
+        } else if (avatarPreview) {
+            // Nếu dùng ảnh mẫu (preset), gửi URL của ảnh đó
+            formData.append('avatar', avatarPreview.src);
+        }
+
+        // 6. Gửi dữ liệu
+        try {
+            const response = await fetch('VipVelations.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Kiểm tra xem server có trả về JSON hợp lệ không
+            const text = await response.text();
+            let res;
+            try {
+                res = JSON.parse(text);
+            } catch (e) {
+                console.error("Server response was not JSON:", text);
+                throw new Error("Dữ liệu phản hồi từ server không hợp lệ!");
+            }
+
+            if (res.success) {
+                alert("Matrix Integrated: Thêm VIP mới thành công!");
+                location.reload();
+            } else {
+                alert("Lỗi: " + (res.message || "Không thể thêm khách hàng"));
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+            alert("Lỗi kết nối máy chủ: " + err.message);
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+    // Hàm chọn ảnh từ danh sách gợi ý
+    function selectPresetAvatar(src) {
+        const preview = document.getElementById('avatar-preview');
+        preview.src = src;
+
+        // Hiệu ứng GSAP nhẹ khi đổi ảnh
+        gsap.fromTo(preview, {
+            scale: 0.8,
+            opacity: 0.5
+        }, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.4
+        });
+    }
+
+    // Hàm preview ảnh khi người dùng upload từ máy tính
+    function previewUpload(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+                gsap.from("#avatar-preview", {
+                    filter: "brightness(2)",
+                    duration: 0.5
+                });
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     // ----------------------------- section 2 ----------------------------- //
@@ -1519,6 +2045,8 @@
             btn.classList.add('bg-[#D4AF37]/20', 'border-[#D4AF37]/50', 'text-[#D4AF37]');
         } else if (rank === 'diamond') {
             btn.classList.add('bg-cyan-400/20', 'border-cyan-400/50', 'text-cyan-400');
+        } else if (rank === 'platinum') {
+            btn.classList.add('bg-slate-400/10', 'border-slate-400/50', 'text-slate-100', 'shadow-[0_0_10px_rgba(226,232,240,0.2)]');
         }
 
         // 3. Hiệu ứng lọc thẻ bằng GSAP
@@ -1543,117 +2071,363 @@
             }
         });
     }
-    // scrip dưới section 2 
     let isEditMode = false;
 
     function openVipEditor(cardElement) {
-        const overlay = document.getElementById('vip-editor-overlay');
-        const container = document.getElementById('editor-container');
-        const bg = document.getElementById('editor-bg');
-        const rank = cardElement.getAttribute('data-rank');
-        const badge = document.getElementById('editor-rank-badge');
-        // Đổi màu badge trong Editor tùy theo hạng của thẻ vừa bấm
-        if (rank === 'gold') {
-            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
-            badge.innerText = "GOLD MEMBER";
-        } else {
-            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
-            badge.innerText = "DIAMOND CLUB";
+        const customerData = JSON.parse(cardElement.getAttribute('data-customer'));
+        const rank = cardElement.getAttribute('data-rank').toLowerCase();
+
+        // 1. Gán ID và Dữ liệu vào Form
+        const idInput = document.getElementById('editor-customer-id');
+        const rankInput = document.getElementById('editor-rank-value');
+        if (rankInput) rankInput.value = rank;
+        if (idInput) idInput.value = customerData.id;
+
+        const nameDisplay = document.getElementById('editor-name-display');
+        if (nameDisplay) nameDisplay.innerText = customerData.full_name;
+
+        document.getElementById('editor-client-id').innerText = customerData.id.toString().padStart(6, '0');
+
+        document.getElementById('editor-full-name').value = customerData.full_name;
+        document.getElementById('editor-phone').value = customerData.phone_number || '';
+        document.getElementById('editor-email').value = customerData.email || '';
+
+        const editorAvatar = document.getElementById('editor-avatar');
+        if (editorAvatar) {
+            editorAvatar.src = customerData.avatar ? customerData.avatar : `https://i.pravatar.cc/150?u=${customerData.id}`;
         }
 
-        // Reset Edit Mode
-        isEditMode = false;
-        document.getElementById('edit-mode-btn').innerHTML = `<i class="ri-pencil-line"></i> Enter Edit Mode`;
-        document.querySelectorAll('.vip-input').forEach(input => input.readOnly = true);
+        // 2. Financial Matrix
+        const limit = parseFloat(customerData.bidding_limit) || 0;
+        const limitRange = document.getElementById('editor-limit-range');
+        const limitText = document.getElementById('editor-limit-text');
+        if (limitRange) limitRange.value = limit;
+        if (limitText) limitText.innerText = (limit / 1000000000).toFixed(1) + 'B VND';
 
-        // Lấy vị trí thẻ gốc để tạo hiệu ứng phóng to từ tâm
+        // 3. Cập nhật Rank Badge
+        updateBadgeStyle(rank);
+
+        // --- PHẦN SỬA CHÍNH ĐỂ HẾT ĐEN MÀN HÌNH ---
+        const overlay = document.getElementById('vip-editor-overlay');
+        const bg = document.getElementById('editor-bg');
+
+        // Thay đổi từ editor-container sang vip-editor-form
+        const formContainer = document.getElementById('vip-editor-form');
+
         const rect = cardElement.getBoundingClientRect();
 
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
 
-        // GSAP Animation
-        const tl = gsap.timeline();
-
-        tl.to(bg, {
+        gsap.timeline()
+            .to(bg, {
                 opacity: 1,
                 duration: 0.4
             })
-            .fromTo(container, {
+            .fromTo(formContainer, { // Nhắm mục tiêu vào formContainer
                 x: rect.left - (window.innerWidth / 2 - rect.width / 2),
                 y: rect.top - (window.innerHeight / 2 - rect.height / 2),
                 scale: 0.2,
-                opacity: 0,
-                borderRadius: "50px"
+                opacity: 0
             }, {
                 x: 0,
                 y: 0,
                 scale: 1,
                 opacity: 1,
                 duration: 0.6,
-                ease: "expo.out",
-                borderRadius: "40px"
+                ease: "expo.out"
             });
-
-        // Haptic feedback
-        if (window.navigator.vibrate) window.navigator.vibrate([10, 30, 10]);
     }
 
     function toggleEditMode() {
-        isEditMode = !isEditMode;
+        isEditMode ? disableEditMode() : enableEditMode();
         const btn = document.getElementById('edit-mode-btn');
         const inputs = document.querySelectorAll('.vip-input');
         const container = document.getElementById('editor-container');
 
+        // 1. Lấy Rank hiện tại (chuyển về chữ thường để so sánh)
+        const currentRank = document.getElementById('editor-rank-value').value.toLowerCase();
+
+        // 2. Định nghĩa màu theo Rank
+        const rankColors = {
+            gold: {
+                hex: '#D4AF37',
+                rgba: 'rgba(212, 175, 55, 0.3)'
+            },
+            platinum: {
+                hex: '#E5E4E2',
+                rgba: 'rgba(229, 228, 226, 0.3)'
+            },
+            diamond: {
+                hex: '#b9f2ff',
+                rgba: 'rgba(185, 242, 255, 0.3)'
+            }
+        };
+
+        // Lấy màu tương ứng, nếu không khớp thì mặc định lấy màu Gold
+        const activeColor = rankColors[currentRank] || rankColors.gold;
+
         if (isEditMode) {
             btn.innerHTML = `<i class="ri-save-line text-emerald-400"></i> <span class="text-emerald-400">Viewing (Edit Active)</span>`;
-            container.classList.add('border-[#D4AF37]');
+
+            // 3. Đổi màu viền theo Rank
+            container.style.borderColor = activeColor.hex;
+
             inputs.forEach(input => {
                 input.readOnly = false;
                 input.classList.add('bg-white/5', 'px-2');
+                // Đổi màu gạch chân input khi focus (tùy chọn)
+                input.style.borderBottomColor = activeColor.hex;
             });
-            // Hiệu ứng Neon Gold viền
+
+            // 4. Hiệu ứng Neon theo màu của Rank đó
             gsap.to(container, {
-                boxShadow: "0 0 50px rgba(212, 175, 55, 0.2)",
+                boxShadow: `0 0 50px ${activeColor.rgba}`,
                 duration: 0.5
             });
+
         } else {
-            closeVipEditor(); // Hoặc xử lý lưu
+            // Khi tắt Edit Mode, trả lại trạng thái cũ
+            container.style.borderColor = "rgba(255,255,255,0.1)";
+            gsap.to(container, {
+                boxShadow: "none",
+                duration: 0.3
+            });
+            // Xử lý đóng hoặc lưu...
+        }
+    }
+
+    function disableEditMode() {
+        isEditMode = false;
+        const btn = document.getElementById('edit-mode-btn');
+        btn.innerHTML = `<i class="ri-pencil-line"></i> Enter Edit Mode`;
+        btn.classList.remove('bg-white', 'text-black');
+        document.querySelectorAll('.vip-input').forEach(i => i.readOnly = true);
+    }
+
+    function enableEditMode() {
+        isEditMode = true;
+        const btn = document.getElementById('edit-mode-btn');
+        btn.innerHTML = `<i class="ri-check-line"></i> Editing Mode`;
+        btn.classList.add('bg-white', 'text-black');
+        document.querySelectorAll('.vip-input').forEach(i => i.readOnly = false);
+    }
+    // --- HÀM 2: MỞ ĐỂ ADD (Dùng cho nút "Add New Member") ---
+    function openAddModal() {
+        // Xóa ID để biết là ADD
+        document.getElementById('editor-customer-id').value = "";
+
+        // Reset form trắng
+        document.getElementById('editor-client-id').innerText = "NEW";
+        document.getElementById('editor-name-display').innerText = "NEW CLIENT";
+        document.getElementById('editor-full-name').value = "";
+        document.getElementById('editor-email').value = "";
+        document.getElementById('editor-phone').value = "";
+        document.getElementById('editor-limit-range').value = 0;
+        updateLimitText(0);
+        document.getElementById('editor-avatar').src = "https://i.pravatar.cc/150?u=new";
+
+        // Mở là cho phép nhập luôn
+        enableEditMode();
+
+        // Mở từ giữa màn hình
+        showEditorAnimation();
+    }
+
+    function showEditorAnimation(rect = null) {
+        const overlay = document.getElementById('vip-editor-overlay');
+        const container = document.getElementById('editor-container');
+        const bg = document.getElementById('editor-bg');
+
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        const tl = gsap.timeline();
+        tl.to(bg, {
+            opacity: 1,
+            duration: 0.4
+        });
+
+        if (rect) {
+            tl.fromTo(container, {
+                x: rect.left - (window.innerWidth / 2 - rect.width / 2),
+                y: rect.top - (window.innerHeight / 2 - rect.height / 2),
+                scale: 0.2,
+                opacity: 0
+            }, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                duration: 0.6,
+                ease: "expo.out"
+            });
+        } else {
+            tl.fromTo(container, {
+                scale: 0.5,
+                opacity: 0
+            }, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.5
+            });
+        }
+    }
+
+    function updateLimitText(val) {
+        document.getElementById('editor-limit-text').innerText = (val / 1000000000).toFixed(1) + 'B VND';
+    }
+
+    function updateBadgeStyle(rank) {
+        const badge = document.getElementById('editor-rank-badge');
+        if (!badge) return;
+
+        if (rank === 'gold') {
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
+            badge.innerText = "GOLD MEMBER";
+        } else if (rank === 'platinum') {
+            // Màu BẠC (Slate/Zinc)
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-slate-300 text-slate-300 bg-slate-300/10 shadow-[0_0_5px_rgba(203,213,225,0.3)]";
+            badge.innerText = "PLATINUM MEMBER";
+        } else {
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
+            badge.innerText = "DIAMOND CLUB";
         }
     }
 
     function closeVipEditor() {
         const container = document.getElementById('editor-container');
         const bg = document.getElementById('editor-bg');
+        const overlay = document.getElementById('vip-editor-overlay');
+        const btn = document.getElementById('edit-mode-btn');
+        const inputs = document.querySelectorAll('.vip-input');
 
+        // 1. ĐƯA MỌI THỨ VỀ TRẠNG THÁI XEM (Viewing Mode)
+        isEditMode = false;
+
+        // Reset nút bấm về trạng thái ban đầu
+        if (btn) {
+            btn.innerHTML = `<i class="ri-pencil-line"></i> <span>Enter Edit Mode</span>`;
+            btn.classList.remove('bg-emerald-500/20'); // Nếu bạn có thêm class màu
+        }
+
+        // Reset các ô input về ReadOnly
+        inputs.forEach(input => {
+            input.readOnly = true;
+            input.classList.remove('bg-white/5', 'px-2');
+            input.style.borderBottomColor = "rgba(255,255,255,0.1)";
+        });
+
+        // 2. HIỆU ỨNG GSAP ĐỂ ĐÓNG
+        // Thu nhỏ container và xóa bỏ Shadow (Neon)
         gsap.to(container, {
             scale: 0.8,
             opacity: 0,
+            boxShadow: "none", // Xóa hiệu ứng Neon ngay khi đóng
+            borderColor: "rgba(255,255,255,0.1)", // Trả về màu viền mặc định
             duration: 0.4,
             ease: "power2.in"
         });
+
         gsap.to(bg, {
             opacity: 0,
             duration: 0.4,
             onComplete: () => {
-                document.getElementById('vip-editor-overlay').classList.add('hidden');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+
+                // Xóa style inline để không bị lỗi màu cho lần mở sau
+                container.style.transform = "";
             }
         });
     }
 
+    // HÀM LƯU DỮ LIỆU (AJAX)
     function saveAndEncrypt() {
-        // Rung "Double Click" (Phần mô tả 4)
-        if (window.navigator.vibrate) window.navigator.vibrate([50, 100, 50]);
+        const id = document.getElementById('editor-customer-id').value;
+        const formData = new FormData();
 
-        // Hiệu ứng mã hóa giả lập
-        const btn = event.currentTarget;
-        btn.innerText = "ENCRYPTING...";
-        setTimeout(() => {
-            alert("VIP Profile Secured & Re-encrypted on Server.");
-            closeVipEditor();
-        }, 1500);
+        formData.append('action_type', 'save_customer');
+        formData.append('id', id);
+        formData.append('full_name', document.getElementById('editor-full-name').value);
+        formData.append('email', document.getElementById('editor-email').value);
+        formData.append('phone', document.getElementById('editor-phone').value);
+        formData.append('rank', document.getElementById('editor-rank-value').value);
+        formData.append('bidding_limit', document.getElementById('editor-limit-range').value);
+        formData.append('avatar', document.getElementById('editor-avatar').src);
+
+        fetch('VipVelations.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Mã lỗi HTTP: " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert("Matrix Intelligence Synchronized!");
+                    location.reload();
+                } else {
+                    alert("Lỗi database: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi: Không thể đọc JSON. Có thể PHP bị lỗi cú pháp hoặc in dư thẻ HTML.");
+            });
+
+
     }
 
+    function deleteCustomerFromEditor() {
+        // SỬA TẠI ĐÂY: Đổi 'edit-customer-id' thành 'editor-customer-id'
+        const idField = document.getElementById('editor-customer-id');
+
+        if (!idField) {
+            alert("Lỗi: Không tìm thấy thẻ chứa ID khách hàng!");
+            return;
+        }
+
+        const customerId = idField.value;
+
+        if (!customerId) {
+            alert("Không có ID khách hàng để xóa!");
+            return;
+        }
+
+        if (confirm('BẠN CÓ CHẮC CHẮN MUỐN XÓA? Dữ liệu sẽ biến mất vĩnh viễn!')) {
+            const formData = new FormData();
+            formData.append('action_type', 'delete_customer');
+            formData.append('customer_id', customerId);
+
+            fetch('VipVelations.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa dòng tương ứng trong bảng (tr)
+                        const row = document.querySelector(`tr[data-id="${customerId}"]`);
+                        if (row) {
+                            gsap.to(row, {
+                                x: -50,
+                                opacity: 0,
+                                duration: 0.4,
+                                onComplete: () => row.remove()
+                            });
+                        }
+                        closeVipEditor();
+                        alert('Xóa thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(err => console.error("Lỗi kết nối:", err));
+        }
+    }
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
         // 1. Hiệu ứng Biometric Scan khi vào section

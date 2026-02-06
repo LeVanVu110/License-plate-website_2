@@ -63,6 +63,46 @@
             }
         }
 
+        /* Thông Báo  */
+        /* Toast Notification Style */
+        #toast-container {
+            position: fixed;
+            top: 110px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border-left: 4px solid #22d3ee;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            display: flex;
+            items-center: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: #22d3ee;
+            font-size: 1.2rem;
+        }
+
+        .toast-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
         /* ----------------------------- section 2 -----------------------------  */
         .glass-module {
             background: linear-gradient(135deg, rgba(0, 26, 51, 0.4), rgba(0, 15, 26, 0.8));
@@ -117,6 +157,13 @@
             background-image:
                 radial-gradient(circle at 2px 2px, rgba(34, 211, 238, 0.1) 1px, transparent 0);
             background-size: 40px 40px;
+        }
+
+        .module-card {
+            opacity: 0;
+            /* Mặc định ẩn để GSAP làm hiệu ứng hiện hồn */
+            transform: translateY(30px);
+            transition: background 0.3s ease;
         }
 
         /* Mobile Adjustments */
@@ -174,6 +221,21 @@
             animation: master-pulse 2s infinite ease-in-out;
         }
 
+        #virtual-pdf {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 2px solid #22d3ee;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+            color: #000;
+        }
+
+        #virtual-pdf::before {
+            content: "📄";
+            font-size: 50px;
+        }
+
         /* Mobile Swiper Layout */
         @media (max-width: 768px) {
             #power-cards-container {
@@ -204,6 +266,7 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
+    <div id="toast-container"></div>
     <section id="quantum-portal" class="relative min-h-screen bg-[#000814] overflow-hidden flex items-center justify-center">
 
         <canvas id="starfield-canvas" class="absolute inset-0 z-0"></canvas>
@@ -226,9 +289,14 @@
 
                 <div class="relative z-20 w-full px-8 text-center">
                     <div class="input-wrapper relative">
-                        <input type="text" id="plate-input" maxlength="10" placeholder="NHẬP BIỂN SỐ..."
+                        <input type="text"
+                            id="plate-input"
+                            maxlength="10"
+                            placeholder="NHẬP BIỂN SỐ..."
+                            pattern="[0-9]{2}[A-Z]{1}-[0-9]{3}\.[0-9]{2}"
+                            oninput="this.value = this.value.toUpperCase()"
                             class="w-full bg-transparent border-b-2 border-cyan-500/30 py-4 text-center text-3xl md:text-5xl font-mono text-cyan-400 focus:outline-none placeholder:text-cyan-900 tracking-widest uppercase">
-
+                        <p id="error-msg" class="text-red-500 text-xs mt-2 hidden">Vui lòng nhập đúng định dạng (VD: 51K-888.88)</p>
                         <div id="laser-line" class="absolute left-0 right-0 h-[2px] bg-cyan-400 shadow-[0_0_15px_#22d3ee] opacity-0 pointer-events-none"></div>
                     </div>
 
@@ -244,7 +312,7 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section id="neural-analysis" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden flex items-center justify-center">
+    <!-- <section id="neural-analysis" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden flex items-center justify-center">
 
         <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
             <div class="neural-grid-pattern absolute inset-0"></div>
@@ -344,6 +412,95 @@
                 </defs>
             </svg>
         </div>
+    </section> -->
+    <section id="neural-analysis" class="relative min-h-screen py-24 bg-[#000814] overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <div class="neural-grid-pattern absolute inset-0"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-32">
+
+                <div class="analysis-modules left-modules flex flex-col gap-8 order-2 lg:order-1 w-full lg:w-1/3">
+                    <div class="module-card glass-module group p-6 rounded-2xl border border-cyan-500/20 relative overflow-hidden">
+                        <div class="scanline"></div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                                <i class="ri-compass-3-line"></i>
+                            </div>
+                            <h3 class="text-white font-bold tracking-wider uppercase">Phong Thủy Học</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-white/40">Quẻ dịch:</span>
+                                <span id="fengshui-result" class="text-cyan-300 font-bold">---</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-white/40">Ngũ hành:</span>
+                                <span id="ngu-hanh" class="text-cyan-300">---</span>
+                            </div>
+                            <div class="h-[4px] w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                <div id="fengshui-bar" class="h-full bg-cyan-500 w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-card glass-module group p-6 rounded-2xl border border-cyan-500/20 relative overflow-hidden">
+                        <div class="scanline"></div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                                <i class="ri-stock-line"></i>
+                            </div>
+                            <h3 class="text-white font-bold tracking-wider uppercase">Giá trị thị trường</h3>
+                        </div>
+                        <p class="text-[10px] text-white/40 mb-2">SO SÁNH 2.4M DỮ LIỆU</p>
+                        <div id="market-status" class="text-2xl font-mono text-cyan-400 font-bold italic">ANALYZING...</div>
+                    </div>
+                </div>
+
+                <div class="valuation-core relative z-20 order-1 lg:order-2">
+                    <div id="core-pulse" class="absolute inset-0 bg-cyan-500/20 rounded-full blur-[80px] scale-0"></div>
+
+                    <div class="main-plate-3d bg-[#F0F0F0] p-6 rounded-2xl border-4 border-[#CCCCCC] shadow-2xl mb-8 relative">
+                        <span class="absolute top-2 left-4 text-black/20 font-bold">VN</span>
+                        <h2 id="analyzing-plate" class="text-black text-4xl md:text-6xl font-black tracking-tighter text-center py-4 font-mono">
+                            00A-000.00
+                        </h2>
+                    </div>
+
+                    <div class="total-valuation text-center">
+                        <p class="text-cyan-500/50 uppercase tracking-[5px] text-[10px] mb-2 font-mono">Định giá sơ bộ</p>
+                        <div class="flex items-baseline justify-center gap-2">
+                            <span id="value-counter" class="text-cyan-400 text-6xl md:text-8xl font-black font-mono">0</span>
+                            <span class="text-cyan-400 text-2xl font-bold uppercase">Triệu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-modules right-modules order-3 w-full lg:w-1/3">
+                    <div class="module-card glass-module group p-8 rounded-2xl border border-cyan-500/20 relative overflow-hidden">
+                        <div class="scanline"></div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                                <i class="ri-line-chart-line"></i>
+                            </div>
+                            <h3 class="text-white font-bold tracking-wider uppercase">Chỉ số tương lai</h3>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-white/40 text-[10px] mb-2 uppercase">Dự báo tăng trưởng (24 tháng)</p>
+                            <div id="growth-value" class="text-4xl font-mono text-emerald-400 font-bold">+0%</div>
+                            <div class="mt-4 flex gap-1 h-8 items-end justify-center">
+                                <div class="w-2 bg-emerald-500/20 h-2"></div>
+                                <div class="w-2 bg-emerald-500/40 h-4"></div>
+                                <div class="w-2 bg-emerald-500/60 h-6"></div>
+                                <div class="w-2 bg-emerald-500 h-8 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
@@ -385,7 +542,10 @@
                         </div>
                         <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Xác Thực</h3>
                         <p class="text-sm text-white/60 mb-8">Tải bản báo cáo định giá (PDF) có dấu mộc bảo chứng AI.</p>
-                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Tải báo cáo</button>
+
+                        <button id="btn-download-report" class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
+                            Tải báo cáo
+                        </button>
                     </div>
                     <div id="virtual-pdf" class="absolute inset-0 bg-white opacity-0 scale-0 pointer-events-none rounded-lg flex items-center justify-center">
                         <span class="text-black font-bold">PDF REPORT</span>
@@ -402,7 +562,12 @@
                         </div>
                         <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Săn Tìm</h3>
                         <p class="text-sm text-white/60 mb-8">Tìm kiếm những biển số có giá trị tương đương trong kho báu.</p>
-                        <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Khám phá kho</button>
+                        <a href="detail_oto_xemay.php" class="inline-block">
+                            <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
+                                Khám phá kho
+                            </button>
+                        </a>
+                        <!-- <button class="btn-mercury px-6 py-2 border border-cyan-500/50 rounded-full text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Khám phá kho</button> -->
                     </div>
                 </div>
             </div>
@@ -549,42 +714,82 @@
         });
 
         input.addEventListener('input', () => {
+            // --- PHẦN TỰ ĐỘNG ĐỊNH DẠNG (NEW) ---
+            let val = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
+            let formatted = "";
+
+            if (val.length > 0) {
+                formatted += val.substring(0, 2); // 2 số đầu
+                if (val.length >= 3) formatted += val.substring(2, 3); // 1 chữ cái
+                if (val.length > 3) formatted += "-" + val.substring(3, 6); // Dấu - và 3 số
+                if (val.length > 6) formatted += "." + val.substring(6, 8); // Dấu . và 2 số
+            }
+            e.target.value = formatted;
             // Digital Ripple
             speedMult = 5;
             setTimeout(() => speedMult = 1, 200);
             if ("vibrate" in navigator) navigator.vibrate(10);
         });
 
-        // 5. THE NEURAL CRUNCH (CLICK BUTTON)
+        // Hàm hiển thị thông báo bên phải màn hình
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+        <i class="ri-error-warning-line toast-icon"></i>
+        <div class="toast-content">${message}</div>
+    `;
+
+            container.appendChild(toast);
+
+            // Hiệu ứng hiện ra (dùng GSAP hoặc CSS class)
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+        // 5. THE NEURAL CRUNCH (SỬA ĐỔI)
+        // SỬA LẠI MỤC SỐ 5 TRONG CODE CỦA BẠN
         document.getElementById('btn-valuation').addEventListener('click', () => {
-            const crunchTl = gsap.timeline();
+            const input = document.getElementById('plate-input');
+            const laser = document.getElementById('laser-line');
+            const plateValue = input.value.trim();
 
-            // Co hội tụ hạt và rung màn hình
-            speedMult = 20;
-            document.body.classList.add('shake-screen');
+            // Regex chuẩn: 2 số - 1 chữ - gạch ngang - 3 số - chấm - 2 số
+            const plateRegex = /^\d{2}[A-Z]-\d{3}\.\d{2}$/;
 
-            crunchTl.to("#scanner-hub", {
-                    scale: 0.8,
-                    filter: "blur(10px)",
-                    duration: 0.5
-                })
-                .to(".radar-ring", {
-                    rotation: "+=1080",
-                    duration: 1,
-                    ease: "power4.in"
-                }, 0)
-                .to("#quantum-portal", {
-                    backgroundColor: "#22d3ee",
-                    duration: 0.1,
+            if (!plateRegex.test(plateValue)) {
+                // 1. Rung lắc input
+                gsap.to(input, {
+                    x: 10,
+                    duration: 0.05,
+                    repeat: 5,
+                    yoyo: true
+                });
+
+                // 2. Đổi laser sang màu đỏ cảnh báo
+                gsap.to(laser, {
+                    backgroundColor: "#ff4444",
+                    duration: 0.2,
                     yoyo: true,
                     repeat: 1
-                })
-                .add(() => {
-                    // Transition effect sang Section tiếp theo
-                    console.log("Valuation complete. Jumping to results...");
-                    document.body.classList.remove('shake-screen');
-                    // Window.scrollTo(...)
                 });
+
+                // 3. Hiển thị thông báo nhỏ bên góc phải (Thay vì alert)
+                showToast("Định dạng không hợp lệ. Ví dụ đúng: 51K-888.88");
+                return;
+            }
+            // GỌI HÀM PHÂN TÍCH
+            startAIAnalysis(plateValue);
+
+            // // --- Nếu đúng thì chạy hiệu ứng "Neural Crunch" như cũ ---
+            // const crunchTl = gsap.timeline();
+            // // ... code hiệu ứng của bạn tiếp tục ở đây ...
+            // showToast("Đang kết nối Neural Network..."); // Thông báo thành công nếu muốn
         });
 
         // DATA STREAM DECRYPTION (Rìa màn hình)
@@ -598,7 +803,118 @@
         });
     });
 
+
     // ----------------------------- section 2 ----------------------------- //
+    // Hàm bắt đầu phân tích và cuộn xuống Section 2
+    function startAIAnalysis(plateNumber) {
+        // 1. Cập nhật biển số vào trung tâm Section 2
+        const plateDisplay = document.getElementById('analyzing-plate');
+        if (plateDisplay) plateDisplay.innerText = plateNumber;
+
+        // 2. Cuộn xuống Section 2
+        const section2 = document.getElementById('neural-analysis');
+        if (section2) {
+            section2.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // 3. Tính toán dữ liệu giả lập dựa trên biển số
+        const cleanNumber = plateNumber.replace(/[^0-9]/g, '');
+        const lastDigit = parseInt(cleanNumber.slice(-1)) || 0;
+        const plateSum = cleanNumber.split('').reduce((a, b) => a + parseInt(b), 0);
+
+        const resultData = {
+            price: (plateSum * 2) + (lastDigit * 15) + 50,
+            que: lastDigit % 2 === 0 ? "Cát Tường" : "Đại Cát",
+            nguHanh: lastDigit < 5 ? "Kim Sinh Thủy" : "Thổ Sinh Kim",
+            rarity: (lastDigit === 8 || lastDigit === 9) ? "TOP 0.1% SIÊU HIẾM" : "TOP 10% PHỔ BIẾN",
+            growth: "+" + (lastDigit * 4 + 12) + ".5%"
+        };
+
+        // 4. Kích hoạt hiệu ứng GSAP cho các Module (Sửa lỗi không hiển thị)
+        const tl = gsap.timeline();
+
+        // Hiện Core Pulse trung tâm
+        tl.to("#core-pulse", {
+            scale: 1,
+            opacity: 0.6,
+            duration: 1,
+            ease: "expo.out"
+        });
+
+        // ÉP CÁC MODULE HAI BÊN HIỂN THỊ
+        tl.to(".module-card", {
+            opacity: 1,
+            y: 0,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power4.out"
+        }, "-=0.5");
+
+        // 5. Hiệu ứng nhảy số tiền
+        let counter = {
+            val: 0
+        };
+        gsap.to(counter, {
+            val: resultData.price,
+            duration: 3,
+            ease: "power4.out",
+            onUpdate: () => {
+                document.getElementById('value-counter').innerText = Math.floor(counter.val);
+            }
+        });
+
+        // 6. Đổ dữ liệu vào các Module Phong Thủy/Thị Trường
+        // Sử dụng setTimeout để tạo cảm giác AI đang "quét" từng mục
+        setTimeout(() => {
+            // Cập nhật text
+            const elQue = document.getElementById('fengshui-result');
+            const elNguHanh = document.getElementById('ngu-hanh');
+            const elMarket = document.getElementById('market-status');
+            const elGrowth = document.getElementById('growth-value');
+            const elBar = document.getElementById('fengshui-bar');
+
+            if (elQue) elQue.innerText = resultData.que;
+            if (elNguHanh) elNguHanh.innerText = resultData.nguHanh;
+            if (elMarket) elMarket.innerText = resultData.rarity;
+            if (elGrowth) elGrowth.innerText = resultData.growth;
+            if (elBar) elBar.style.width = (40 + lastDigit * 6) + "%";
+
+            // Hiệu ứng lóe sáng khi dữ liệu xuất hiện
+            gsap.from(".module-card span, .module-card div", {
+                filter: "brightness(5)",
+                duration: 0.8,
+                stagger: 0.05
+            });
+
+            showToast("Phân tích Neural Network hoàn tất!");
+        }, 1500);
+
+        // Chạy hiệu ứng tia quét (Scanline) liên tục trên các card
+        gsap.to(".scanline", {
+            top: "100%",
+            opacity: 1,
+            duration: 2,
+            repeat: -1,
+            ease: "none",
+            stagger: 0.3
+        });
+    }
+
+    // Hàm vẽ các đường dẫn dữ liệu SVG động
+    function animateDataPaths() {
+        const leftPath = document.getElementById('path-left');
+        const rightPath = document.getElementById('path-right');
+
+        // Logic này sẽ tính toán vị trí dựa trên layout thực tế
+        // Ở đây ta sử dụng hiệu ứng dash-offset đơn giản
+        gsap.to(".data-path", {
+            strokeDashoffset: 0,
+            duration: 2,
+            ease: "power2.inOut"
+        });
+    }
     document.addEventListener('DOMContentLoaded', () => {
         gsap.registerPlugin(ScrollTrigger);
 
@@ -763,6 +1079,69 @@
                     if (navigator.vibrate) navigator.vibrate(20);
                     lastScrollLeft = currentScroll;
                 }
+            });
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadBtn = document.getElementById('btn-download-report');
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                // Lấy dữ liệu thực tế từ màn hình
+                const currentPrice = document.getElementById('value-counter').innerText;
+                const plate = document.getElementById('analyzing-plate').innerText;
+                const virtualPdf = document.getElementById('virtual-pdf');
+
+                // Nếu chưa định giá (vẫn là 0), thông báo cho người dùng
+                if (currentPrice === "0" || plate.includes("00A-000.00")) {
+                    if (typeof showToast === "function") showToast("Vui lòng định giá biển số trước!");
+                    else alert("Vui lòng định giá biển số trước!");
+                    return;
+                }
+
+                // Hiệu ứng Visual
+                downloadBtn.innerText = "ĐANG XỬ LÝ...";
+                gsap.to(virtualPdf, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.5
+                });
+
+                setTimeout(() => {
+                    try {
+                        // Nội dung báo cáo
+                        const content = `BAO CAO DINH GIA AI\nBien so: ${plate}\nGia tri: ${currentPrice} Trieu VND\nMa xac thuc: ${Math.random().toString(36).toUpperCase()}`;
+
+                        // Tạo Blob và tải file
+                        const blob = new Blob([content], {
+                            type: 'text/plain'
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = `Bao_cao_${plate}.txt`;
+
+                        document.body.appendChild(a);
+                        a.click(); // Kích hoạt tải
+
+                        // Dọn dẹp
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+
+                        // Reset giao diện
+                        downloadBtn.innerText = "TẢI BÁO CÁO";
+                        gsap.to(virtualPdf, {
+                            opacity: 0,
+                            scale: 0,
+                            duration: 0.3
+                        });
+                        showToast("Đã tải file thành công!");
+                    } catch (err) {
+                        console.error("Lỗi tải file:", err);
+                        // downloadBtn.innerText = "LỖI TẢI FILE";
+                    }
+                }, 1500);
             });
         }
     });

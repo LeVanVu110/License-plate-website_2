@@ -1,4 +1,52 @@
 <?php include "header.php"; ?>
+<?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+$auctionModel = new Auction();
+
+// 1. Lấy ID từ URL (ví dụ: dau_gia.php?id=5)
+$auctionIdFromUrl = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($auctionIdFromUrl > 0) {
+    // Nếu có ID cụ thể, lấy đúng phiên đó
+    $currentAuction = $auctionModel->getAuctionDetail($auctionIdFromUrl);
+} else {
+    // Nếu không có ID trên URL, lấy phiên mới nhất đang diễn ra
+    $liveAuctions = $auctionModel->getLiveAuctions();
+    $currentAuction = $liveAuctions[0] ?? null;
+}
+
+// Kiểm tra nếu không tìm thấy phiên nào
+if (!$currentAuction) {
+    echo "<div class='min-h-screen bg-[#00050A] flex items-center justify-center text-cyan-500'>
+            Phiên đấu giá không tồn tại hoặc đã kết thúc.
+          </div>";
+    include "footer.php";
+    exit;
+}
+// Tính toán dữ liệu
+$startingPrice = $currentAuction['starting_price'];
+$currentPrice = $currentAuction['current_max_bid'] ?? $startingPrice;
+
+// $endTime = strtotime($currentAuction['end_time']); 
+// Kiểm tra trạng thái Pause
+$isPaused = isset($currentAuction['is_paused']) && $currentAuction['is_paused'] == 1;
+$remainingSeconds = isset($currentAuction['remaining_seconds']) ? intval($currentAuction['remaining_seconds']) : 0;
+
+if ($isPaused) {
+    // Nếu đang dừng, ép thời gian kết thúc ảo để JS không chạy bậy
+    $endTime = time() + $remainingSeconds;
+} else {
+    $endTime = strtotime($currentAuction['end_time']);
+}
+$remainingSeconds = $endTime - time();
+// $endTime = time() + 10; // Ép thời gian kết thúc là thời điểm hiện tại + 10 giây
+// $remainingSeconds = 10; // Luôn luôn còn 10 giây
+
+$sniperActive = $currentAuction['sniper_time'];
+$sql_count = "SELECT COUNT(*) as total FROM bids WHERE auction_id = " . $currentAuction['id'];
+$res_count = Db::$connection->query($sql_count);
+$bidCount = $res_count->fetch_assoc()['total'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -132,10 +180,11 @@
             .cube-face.top,
             .cube-face.bottom {
                 height: 40px;
-               
+
             }
-            .cube-face.bottom{
-                 top: -60px !important;
+
+            .cube-face.bottom {
+                top: -60px !important;
             }
 
             .cube-face.left,
@@ -203,6 +252,42 @@
                 flex: 1;
                 flex-direction: column;
             }
+        }
+
+        /* Ẩn mũi tên tăng giảm của input number */
+        #custom-amount-input::-webkit-outer-spin-button,
+        #custom-amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #custom-amount-input {
+            -moz-appearance: textfield;
+        }
+
+        .recent-bidders {
+            position: relative;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        #recent-bids-list {
+            display: flex;
+            flex-direction: column;
+            animation: marquee-up 10s linear infinite;
+            /* Nếu bạn muốn tự cuộn */
+        }
+
+        /* Hoặc nếu muốn cuộn bằng tay thì bỏ animation, thêm: */
+        .recent-bidders {
+            overflow-y: auto;
+        }
+
+        .recent-bidders::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .recent-bidders::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.2);
         }
 
         /* ----------------------------- section 2 -----------------------------  */
@@ -553,35 +638,31 @@
 <body>
 
     <!-- ----------------------------- section 1 -----------------------------  -->
+    <div id="toast-container" class="fixed top-30 left-6 z-[9999] flex flex-col gap-3"></div>
+
     <section id="grand-arena" class="relative min-h-screen bg-[#00050A] overflow-hidden flex items-center justify-center">
-
         <canvas id="energy-particles" class="absolute inset-0 z-0 opacity-60"></canvas>
-
         <div class="absolute inset-0 z-0">
             <div class="light-sweep absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent skew-x-12"></div>
         </div>
 
         <div class="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-
             <div class="portal-side left-side w-full lg:w-1/4 flex flex-col gap-6">
-                <div class="glass-console p-6 rounded-2xl border-l-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl">
+                <div class="glass-console p-6 rounded-2xl border-l-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl text-center">
                     <p class="text-white/40 text-[10px] tracking-[4px] uppercase mb-1">Giá khởi điểm</p>
-                    <p class="text-white text-xl font-mono">500.000.000đ</p>
-
+                    <p class="text-white text-xl font-mono"><?php echo number_format($startingPrice, 0, ',', '.'); ?>đ</p>
                     <div class="my-6 h-[1px] bg-cyan-500/20 w-full"></div>
-
                     <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-1 font-bold">Giá hiện tại</p>
-                    <h3 id="current-price" class="text-[#99FFFF] text-4xl font-bold font-sans drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]" style="text-align: center;">
-                        850.000.000
+                    <h3 id="current-price-display" class="text-[#99FFFF] text-4xl font-bold font-sans drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+                        <?php echo number_format($currentPrice, 0, ',', '.'); ?>
                     </h3>
                 </div>
-
                 <div class="flex gap-4">
-                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10">
-                        <p class="text-white/30 text-[8px] uppercase">Lượt trả</p>
-                        <p class="text-white font-bold">128</p>
+                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                        <p class="text-white/30 text-[8px] uppercase">Lượt trả giá</p>
+                        <p class="text-white font-bold" id="bid-count-display"><?php echo $bidCount; ?></p>
                     </div>
-                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div class="flex-1 glass-console p-4 rounded-xl bg-white/5 border border-white/10 text-center">
                         <p class="text-white/30 text-[8px] uppercase">Đang xem</p>
                         <p class="text-cyan-400 font-bold">1.2k</p>
                     </div>
@@ -596,49 +677,154 @@
                             <div class="plate-body relative bg-[#F0F0F0] p-4 rounded-xl border-4 border-[#CCCCCC] shadow-2xl flex flex-col items-center">
                                 <span class="text-black/30 font-bold self-start text-xl">VN</span>
                                 <h2 id="plate-number" class="text-black text-6xl md:text-8xl font-black tracking-tighter py-4">
-                                    30K-999.99
+                                    <?php echo $currentAuction['plate_number']; ?>
                                 </h2>
                             </div>
                         </div>
                     </div>
-                    <div class="cube-face back bg-cyan-500/5 backdrop-blur-sm border border-cyan-500/20"></div>
-                    <div class="cube-face top bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/20"></div>
+                    <div class="cube-face back bg-cyan-500/5 border border-cyan-500/20"></div>
+                    <div class="cube-face top bg-cyan-500/10 border border-cyan-500/20"></div>
                     <div class="cube-face bottom bg-cyan-500/20 shadow-[0_0_100px_rgba(0,255,255,0.3)]"></div>
                 </div>
             </div>
 
             <div class="portal-side right-side w-full lg:w-1/4 flex flex-col gap-6">
                 <div class="glass-console p-6 rounded-2xl border-r-2 border-cyan-500 bg-[#001A33]/40 backdrop-blur-xl text-right">
-                    <p class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-2 font-bold">Thời gian còn lại</p>
-                    <div id="countdown-timer" class="digital-font text-5xl md:text-6xl text-cyan-400">
-                        00:58
+                    <p id="timer-label" class="text-cyan-400 text-[10px] tracking-[4px] uppercase mb-2 font-bold">
+                        <?php echo $isPaused ? "Hệ thống tạm dừng" : "Thời gian còn lại"; ?>
+                    </p>
+
+                    <div id="status-container" class="flex justify-end items-center gap-2 mb-2">
+                        <?php if ($isPaused): ?>
+                            <span class="status-tag text-[8px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded border border-red-500/30 animate-pulse uppercase">
+                                <i class="ri-pause-circle-fill"></i> SYSTEM HALTED
+                            </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <div id="countdown-timer" class="digital-font text-5xl md:text-6xl <?php echo $isPaused ? 'text-amber-500' : 'text-cyan-400'; ?> font-bold">
+                        <?php
+                        $h = floor($remainingSeconds / 3600);
+                        $m = floor(($remainingSeconds % 3600) / 60);
+                        $s = $remainingSeconds % 60;
+                        echo sprintf("%02d:%02d:%02d", $h, $m, $s);
+                        ?>
                     </div>
                 </div>
 
                 <div class="bid-control flex flex-col gap-4">
-                    <button id="bid-now-btn" class="relative group overflow-hidden py-6 rounded-2xl bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)] transition-all">
+                    <!-- <button id="bid-now-btn" class="relative group overflow-hidden py-6 rounded-2xl bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)] transition-all">
                         <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
-                        <span class="relative z-10 text-white font-bold uppercase tracking-[4px]">Trả giá ngay</span>
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="text-[10px] text-white/70 uppercase tracking-widest mb-1">Xác nhận mức giá</span>
+                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">Chọn mức giá phía dưới</span>
+                        </div>
+                    </button> -->
+                    <button id="bid-now-btn"
+                        <?php echo $isPaused ? 'disabled' : ''; ?>
+                        class="relative group overflow-hidden py-6 rounded-2xl transition-all <?php echo $isPaused ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#007FFF] shadow-[0_0_30px_rgba(0,127,255,0.4)]'; ?>">
+                        <div id="btn-content" class="relative z-10 flex flex-col items-center">
+                            <span id="btn-label" class="text-[10px] text-white/70 uppercase tracking-widest mb-1">
+                                <?php echo $isPaused ? "Hệ thống tạm dừng" : "Xác nhận mức giá"; ?>
+                            </span>
+                            <span id="pending-bid-display" class="text-white font-bold uppercase tracking-[2px]">
+                                <?php echo $isPaused ? "STOPPED" : "Chọn mức giá phía dưới"; ?>
+                            </span>
+                        </div>
                     </button>
 
                     <div class="flex gap-2">
-                        <button class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all">+5M</button>
-                        <button class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all">+10M</button>
-                        <button class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all">Tùy chỉnh</button>
+                        <button class="bid-prep-btn flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all" data-add="5000000">+5M</button>
+                        <button class="bid-prep-btn flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all" data-add="10000000">+10M</button>
+                        <button id="custom-bid-trigger" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs hover:bg-cyan-500/20 transition-all">Tùy chỉnh</button>
                     </div>
                 </div>
 
                 <div class="recent-bidders bg-white/5 rounded-xl p-4 overflow-hidden h-32">
-                    <div class="marquee-vertical space-y-2">
-                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Ẩn danh 432</span> vừa trả 860M</p>
-                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Anh Hoàng - HN</span> vừa trả 850M</p>
+                    <div class="marquee-vertical space-y-2" id="recent-bids-list">
+                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Ẩn danh ***</span> vừa trả giá</p>
+                        <p class="text-[10px] text-white/40"><span class="text-cyan-400">Người dùng VIP</span> đã tham gia</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    <div id="custom-bid-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-[#001A33] border border-cyan-500/30 w-full max-w-md rounded-2xl p-8 shadow-[0_0_50px_rgba(0,255,255,0.1)] scale-90 transition-transform duration-300" id="modal-content">
+            <h3 class="text-cyan-400 text-xl font-bold mb-6 flex items-center gap-2">
+                <i class="ri-edit-2-line"></i> Nhập giá thầu tùy chỉnh
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-white/50 text-xs uppercase tracking-widest">Giá hiện tại</label>
+                    <p class="text-white text-lg font-mono"><?php echo number_format($currentPrice, 0, ',', '.'); ?>đ</p>
+                </div>
+
+                <div class="relative">
+                    <input type="number" id="custom-amount-input"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white text-2xl font-bold focus:outline-none focus:border-cyan-500 transition-all"
+                        placeholder="Nhập số tiền...">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30">VNĐ</span>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button id="close-modal" class="flex-1 py-3 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-all">Hủy</button>
+                    <button id="confirm-custom-bid" class="flex-1 py-3 rounded-xl bg-cyan-600 text-white font-bold hover:bg-cyan-500 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">Áp dụng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="mt-10 bg-[#001A33] p-6 rounded-2xl border border-white/10">
+        <h3 class="text-white font-bold mb-4">Thông báo mới nhất</h3>
+        <table class="w-full text-left text-sm text-white/70">
+            <thead>
+                <tr class="border-b border-white/5">
+                    <th class="py-2">Tiêu đề</th>
+                    <th>Nội dung</th>
+                    <th>Thời gian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $u_id = $_SESSION['user_id'] ?? 0;
+                $notifs = Db::$connection->query("SELECT * FROM notifications WHERE receiver_id = $u_id ORDER BY created_at DESC LIMIT 5");
+                while ($n = $notifs->fetch_assoc()):
+                ?>
+                    <tr class="border-b border-white/5">
+                        <td class="py-3 text-cyan-400"><?php echo $n['title']; ?></td>
+                        <td><?php echo $n['content']; ?></td>
+                        <td class="text-xs"><?php echo $n['created_at']; ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between text-xs mb-4">
+        <span class="text-white/50 uppercase">Hạn mức còn lại:</span>
+        <span class="text-cyan-400 font-bold">
+            <?php
+            // Lấy hạn mức từ database tương tự như lấy giá
+            $u_id = $_SESSION['user_id'];
+            $u_info = Db::$connection->query("SELECT bidding_limit FROM customers WHERE id = $u_id")->fetch_assoc();
+            echo number_format($u_info['bidding_limit'], 0, ',', '.');
+            ?>đ
+        </span>
+    </div> -->
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <?php
+    // Truy vấn lấy danh sách các phiên đấu giá đang diễn ra
+    // Kết hợp bảng auctions và plates để lấy số biển, loại xe, giá khởi điểm...
+    $sql_grid = "SELECT a.*, p.plate_number, p.vehicle_type, p.starting_price 
+             FROM auctions a 
+             JOIN plates p ON a.plate_id = p.id 
+             WHERE a.end_time > NOW() AND a.start_time <= NOW()
+             ORDER BY a.end_time ASC 
+             LIMIT 42"; // Giới hạn số lượng hiển thị
+
+    $res_grid = Db::$connection->query($sql_grid);
+    ?>
     <section id="multiverse-stakes" class="relative min-h-screen py-24 bg-[#000F1A] overflow-hidden">
 
         <div class="absolute inset-0 z-0 opacity-10 pointer-events-none" id="matrix-bg">
@@ -658,83 +844,117 @@
                     </div>
                 </div>
             </div>
-
             <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php if ($res_grid && $res_grid->num_rows > 0): ?>
+                    <?php while ($item = $res_grid->fetch_assoc()):
+                        // Tính toán thời gian còn lại (giây)
+                        $remSeconds = strtotime($item['end_time']) - time();
 
-                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="1" data-time="55">
-                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
-                        <div class="glint-layer absolute inset-0 pointer-events-none"></div>
+                        // Lấy giá cao nhất hiện tại của phiên này
+                        $auction_id = $item['id'];
+                        $sql_max = "SELECT MAX(bid_amount) as max_bid FROM bids WHERE auction_id = $auction_id";
+                        $res_max = Db::$connection->query($sql_max);
+                        $current_price = $res_max->fetch_assoc()['max_bid'] ?? $item['starting_price'];
+                    ?>
+                        <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden"
+                            data-id="<?php echo $item['id']; ?>"
+                            data-time="<?php echo $remSeconds; ?>">
 
-                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center overflow-hidden border border-white/5">
-                            <div class="absolute inset-0 bg-gradient-to-t from-cyan-500/10 to-transparent"></div>
-                            <div class="plate-mockup bg-white text-black px-6 py-3 rounded-lg font-bold text-2xl font-mono shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                51L - 888.88
-                            </div>
-                            <div class="quick-view absolute inset-0 bg-[#000F1A]/90 backdrop-blur-md flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <p class="text-cyan-400 text-[10px] uppercase mb-2">Thông số chi tiết</p>
-                                <div class="flex gap-4 text-white/70 text-xs">
-                                    <span>Bước giá: 5M</span>
-                                    <span>Lượt trả: 86</span>
+                            <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
+                                <div class="glint-layer absolute inset-0 pointer-events-none"></div>
+
+                                <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center overflow-hidden border border-white/5">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-cyan-500/10 to-transparent"></div>
+
+                                    <?php if ($item['vehicle_type'] == 'Car'): ?>
+                                        <div class="plate-mockup bg-white text-black px-6 py-3 rounded-lg font-bold text-2xl font-mono shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                            <?php echo $item['plate_number']; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="plate-mockup bg-white text-black w-24 h-24 rounded-lg font-bold text-xl font-mono flex flex-col items-center justify-center leading-tight">
+                                            <?php
+                                            $parts = explode('-', $item['plate_number']);
+                                            echo "<span>" . ($parts[0] ?? '') . "</span>";
+                                            echo "<span>" . ($parts[1] ?? '') . "</span>";
+                                            ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="quick-view absolute inset-0 bg-[#000F1A]/90 backdrop-blur-md flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <p class="text-cyan-400 text-[10px] uppercase mb-2">Thông số chi tiết</p>
+                                        <div class="flex gap-4 text-white/70 text-xs">
+                                            <span>Bước giá: <?php echo number_format($item['bid_increment'] / 1000000, 0); ?>M</span>
+                                            <span>Loại: <?php echo ($item['vehicle_type'] == 'Car' ? 'Ô tô' : 'Xe máy'); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-6">
+                                    <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
+                                        <span>Thời gian còn lạis</span>
+                                        <span class="text-red-400 countdown-text" id="timer-<?php echo $item['id']; ?>">
+                                            --:--:--
+                                        </span>
+                                    </div>
+                                    <?php
+                                    $totalDuration = strtotime($item['end_time']) - strtotime($item['start_time']);
+                                    $elapsed = time() - strtotime($item['start_time']);
+                                    $percent = 100 - (($elapsed / $totalDuration) * 100);
+                                    $percent = max(0, min(100, $percent)); // Giới hạn từ 0 - 100
+                                    ?>
+
+                                    <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                                        <div class="progress-fill js-progress h-full bg-cyan-500 transition-all duration-1000"
+                                            style="width: <?php echo $percent; ?>%"
+                                            data-total="<?php echo $totalDuration; ?>">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="flex items-center justify-between mt-auto">
+                                    <div>
+                                        <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
+                                        <p class="text-[#99FFFF] font-bold text-xl font-mono price-val">
+                                            <?php echo number_format($current_price / 1000000, 0); ?>M
+                                        </p>
+                                    </div>
+                                    <a href="dau_gia.php?id=<?php echo $item['id']; ?>" class="bg-cyan-500 hover:bg-[#99FFFF] text-[#000F1A] px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors text-center">
+                                        Tham chiến
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mb-6">
-                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
-                                <span>Thời gian còn lại</span>
-                                <span class="text-red-400 countdown-text">55s</span>
-                            </div>
-                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full bg-cyan-500 w-[80%]"></div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between mt-auto">
-                            <div>
-                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
-                                <p class="text-[#99FFFF] font-bold text-xl font-mono price-val">1.250M</p>
-                            </div>
-                            <button class="bg-cyan-500 hover:bg-[#99FFFF] text-[#000F1A] px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
-                                Tham chiến
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="arena-mini-card group relative rounded-3xl p-[1px] bg-gradient-to-br from-cyan-500/20 to-transparent overflow-hidden" data-id="2" data-time="3600">
-                    <div class="inner-content bg-[#001A33]/60 backdrop-blur-2xl rounded-[23px] p-6 h-full flex flex-col">
-                        <div class="plate-preview relative h-40 bg-white/5 rounded-2xl mb-6 flex items-center justify-center border border-white/5">
-                            <div class="plate-mockup bg-white text-black w-24 h-24 rounded-lg font-bold text-xl font-mono flex flex-col items-center justify-center leading-tight">
-                                <span>29-AA</span>
-                                <span>999.99</span>
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <div class="flex justify-between text-[10px] text-white/40 uppercase mb-2 font-mono">
-                                <span>Thời gian còn lại</span>
-                                <span class="text-cyan-400 countdown-text">01:00:00</span>
-                            </div>
-                            <div class="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full bg-cyan-500 w-[40%]"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-auto">
-                            <div>
-                                <p class="text-white/40 text-[9px] uppercase tracking-widest">Giá hiện tại</p>
-                                <p class="text-[#99FFFF] font-bold text-xl font-mono">450M</p>
-                            </div>
-                            <button class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-[#000F1A] transition-all">
-                                Tham chiến
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p class="text-cyan-500 col-span-3 text-center opacity-50">Không có phiên nào đang diễn ra.</p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <?php
+    // Lấy 2 phiên "khủng" nhất để hiển thị Card lớn
+    $sql_top_sold = "SELECT a.*, p.plate_number, c.full_name, MAX(b.bid_amount) as final_price 
+                 FROM auctions a 
+                 JOIN plates p ON a.plate_id = p.id 
+                 JOIN bids b ON a.id = b.auction_id 
+                 JOIN customers c ON b.customer_id = c.id
+                 WHERE a.end_time <= NOW() AND b.is_winning_bid = 1
+                 GROUP BY a.id
+                 ORDER BY final_price DESC LIMIT 2";
+    $res_top_sold = Db::$connection->query($sql_top_sold);
+
+    // Lấy danh sách Top 5 kỷ lục cho bảng dưới
+    $sql_records = "SELECT c.full_name, MAX(b.bid_amount) as final_price 
+                FROM bids b 
+                JOIN customers c ON b.customer_id = c.id
+                WHERE b.is_winning_bid = 1
+                GROUP BY b.customer_id
+                ORDER BY final_price DESC LIMIT 5";
+    $res_records = Db::$connection->query($sql_records);
+    ?>
     <section id="hall-of-sovereigns" class="relative min-h-screen py-24 bg-[#00050A] overflow-hidden">
 
         <canvas id="star-dust" class="absolute inset-0 z-0 opacity-40"></canvas>
@@ -752,59 +972,51 @@
             </div>
 
             <div id="honor-carousel" class="flex flex-col lg:flex-row justify-center items-center gap-12 lg:gap-8 h-full">
-
-                <div class="honor-card group relative" data-sold="true">
-                    <div class="video-overlay absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 rounded-2xl overflow-hidden">
-                        <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                            <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-street-traffic-with-cars-and-lights-34538-wide.mp4" type="video/mp4">
-                        </video>
+                <?php while ($sold = $res_top_sold->fetch_assoc()): ?>
+                    <div class="honor-card group relative">
+                        <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
+                            <div class="sold-seal">SOLD</div>
+                            <div class="honor-plate relative mb-8">
+                                <div class="sapphire-filter"></div>
+                                <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
+                                    <?php echo $sold['plate_number']; ?>
+                                </div>
+                            </div>
+                            <div class="text-center space-y-2">
+                                <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
+                                <h4 class="text-white text-xl font-light tracking-wide">
+                                    <?php
+                                    $name = $sold['full_name'];
+                                    echo mb_substr($name, 0, 3) . "****";
+                                    ?>
+                                </h4>
+                                <div class="price-sparkle-wrap mt-4">
+                                    <span class="text-silver text-2xl font-bold font-mono price-sparkle">
+                                        <?php echo number_format($sold['final_price'], 0, ',', '.'); ?>đ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="beam-effect"></div>
                     </div>
-
-                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
-                        <div class="sold-seal">SOLD</div>
-
-                        <div class="honor-plate relative mb-8">
-                            <div class="sapphire-filter"></div>
-                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
-                                30K - 888.88
-                            </div>
-                        </div>
-
-                        <div class="text-center space-y-2">
-                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
-                            <h4 class="text-white text-xl font-light tracking-wide">Mr. Hoang****</h4>
-                            <div class="price-sparkle-wrap mt-4">
-                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">2.450.000.000đ</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="beam-effect"></div>
-                </div>
-
-                <div class="honor-card group relative">
-                    <div class="card-inner relative bg-[#001A33]/40 backdrop-blur-3xl p-8 rounded-2xl border border-white/10 flex flex-col items-center">
-                        <div class="sold-seal">SOLD</div>
-                        <div class="honor-plate relative mb-8">
-                            <div class="sapphire-filter"></div>
-                            <div class="bg-white text-black px-8 py-4 rounded-lg font-bold text-4xl font-mono shadow-2xl">
-                                51L - 999.99
-                            </div>
-                        </div>
-                        <div class="text-center space-y-2">
-                            <p class="text-cyan-400/60 text-[10px] uppercase tracking-widest font-mono">Chủ sở hữu</p>
-                            <h4 class="text-white text-xl font-light tracking-wide">Mrs. Tuyet**</h4>
-                            <div class="price-sparkle-wrap mt-4">
-                                <span class="text-silver text-2xl font-bold font-mono price-sparkle">1.890.000.000đ</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="beam-effect"></div>
-                </div>
-
+                <?php endwhile; ?>
             </div>
 
             <div class="mt-32 max-w-2xl mx-auto glass-panel p-8 rounded-3xl border border-white/5 bg-white/5">
+                <h3 class="text-silver text-center text-sm uppercase tracking-[10px] mb-8" style="color: #20c3dc">Bảng Vàng Kỷ Lục</h3>
+                <div class="space-y-4">
+                    <?php
+                    $rank = 1;
+                    while ($rec = $res_records->fetch_assoc()): ?>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                            <span class="text-white/40 font-mono">0<?php echo $rank++; ?>. <?php echo mb_substr($rec['full_name'], 0, 3); ?>**</span>
+                            <span class="text-cyan-400 font-bold"><?php echo number_format($rec['final_price'], 0, ',', '.'); ?>đ</span>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+
+            <!-- <div class="mt-32 max-w-2xl mx-auto glass-panel p-8 rounded-3xl border border-white/5 bg-white/5">
                 <h3 class="text-silver text-center text-sm uppercase tracking-[10px] mb-8">Bảng Vàng Kỷ Lục</h3>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center border-b border-white/5 pb-4">
@@ -816,12 +1028,12 @@
                         <span class="text-cyan-400 font-bold">9.200.000.000đ</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
-        <!-- <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
+        <button class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500 text-black font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(0,255,255,0.5)] uppercase text-xs tracking-widest">
             Đăng ký phiên tới
-        </button> -->
+        </button>
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
@@ -990,30 +1202,455 @@
         }
         animate();
 
-        // 4. Price Surge Logic
-        document.getElementById('bid-now-btn').addEventListener('click', () => {
-            const price = document.getElementById('current-price');
+        // // 4. Price Surge Logic
+        // document.getElementById('bid-now-btn').addEventListener('click', () => {
+        //     const price = document.getElementById('current-price');
 
-            // Hiệu ứng bùng nổ giá
-            gsap.timeline()
-                .to(price, {
-                    scale: 1.4,
-                    filter: "brightness(2)",
-                    duration: 0.1
-                })
-                .set(price, {
-                    textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN')
-                })
-                .to(price, {
-                    scale: 1,
-                    filter: "brightness(1)",
-                    duration: 0.4,
-                    ease: "back.out"
-                });
+        //     // Hiệu ứng bùng nổ giá
+        //     gsap.timeline()
+        //         .to(price, {
+        //             scale: 1.4,
+        //             filter: "brightness(2)",
+        //             duration: 0.1
+        //         })
+        //         .set(price, {
+        //             textContent: (parseInt(price.textContent.replace(/\./g, '')) + 5000000).toLocaleString('vi-VN')
+        //         })
+        //         .to(price, {
+        //             scale: 1,
+        //             filter: "brightness(1)",
+        //             duration: 0.4,
+        //             ease: "back.out"
+        //         });
 
-            if (navigator.vibrate) navigator.vibrate(50);
+        //     if (navigator.vibrate) navigator.vibrate(50);
+        // });
+    });
+    // Logic Countdown
+    // Thêm biến trạng thái từ PHP
+    let timeLeft = <?php echo $remainingSeconds; ?>;
+    let isPaused = <?php echo $isPaused ? 'true' : 'false'; ?>;
+    const timerDisplay = document.getElementById('countdown-timer');
+
+    function formatTime(seconds) {
+        if (seconds <= 0) return "KẾT THÚC";
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    const countdownInterval = setInterval(() => {
+        // Nếu đang Pause, không làm gì cả, chỉ đứng im chờ
+        if (isPaused) return;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            const timerDisplay = document.getElementById('countdown-timer');
+            if (timerDisplay) timerDisplay.innerText = "HẾT GIỜ";
+            return;
+        }
+
+        // Nếu không Pause, bắt đầu trừ giây và hiển thị
+        timeLeft--;
+
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+
+        const timerDisplay = document.getElementById('countdown-timer');
+        if (timerDisplay) {
+            timerDisplay.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+    }, 1000);
+    setInterval(function() {
+        if (isPaused || timeLeft <= 0) return; // Nếu đang dừng thì không trừ giây nữa
+
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+    }, 1000);
+
+    // Hiệu ứng hạt Energy Particles (Cơ bản)
+    const canvas = document.getElementById('energy-particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function init() {
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+
+    // GSAP cho khối 3D Crystal
+    gsap.to("#crystal-cube", {
+        rotateY: 360,
+        duration: 20,
+        repeat: -1,
+        ease: "none"
+    });
+    // 1. Khởi tạo dữ liệu từ PHP
+    let currentPriceValue = <?php echo $currentPrice; ?>;
+    const auctionId = <?php echo $currentAuction['id']; ?>;
+    let pendingBid = 0; // Biến tạm để giữ số tiền đang chọn
+
+    // 2. Hàm hiển thị thông báo Toast (Thay cho Alert)
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+
+        // Style cho Toast
+        const borderCol = type === 'success' ? 'border-cyan-500' : 'border-red-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-fill text-cyan-400' : 'ri-error-warning-fill text-red-400';
+
+        toast.className = `bg-[#001A33]/95 border-l-4 ${borderCol} text-white p-4 rounded shadow-2xl backdrop-blur-md translate-x-full transition-all duration-500 flex items-center gap-3 min-w-[300px]`;
+        toast.innerHTML = `
+            <i class="${icon} text-xl"></i>
+            <span class="text-sm font-medium">${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        // Animation trượt vào
+        setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+
+        // Tự động biến mất sau 4 giây
+        setTimeout(() => {
+            toast.classList.add('opacity-0', '-translate-y-4');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    // 3. Hàm cập nhật hiển thị số tiền đang chờ trên nút bấm
+    function updatePendingDisplay(amount) {
+        pendingBid = amount;
+        const display = document.getElementById('pending-bid-display');
+        display.innerText = `TRẢ GIÁ: ${new Intl.NumberFormat('vi-VN').format(amount)}đ`;
+
+        // Hiệu ứng nhẹ khi số tiền thay đổi trên nút
+        gsap.fromTo(display, {
+            scale: 0.9
+        }, {
+            scale: 1,
+            duration: 0.3,
+            ease: "back.out"
+        });
+    }
+
+    // 4. Gán sự kiện cho các nút chọn mức giá (+5M, +10M, Tùy chỉnh)
+    document.querySelectorAll('.bid-control button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const text = this.innerText.trim();
+
+            // Nếu là nút Trả giá ngay thì bỏ qua (xử lý riêng ở mục 5)
+            if (this.id === 'bid-now-btn' || text.includes('Trả giá ngay')) return;
+
+            let amountToSet = 0;
+            if (text === '+5M') {
+                amountToSet = currentPriceValue + 5000000;
+                showToast("Đã chọn mức giá +5,000,000đ", "success");
+            } else if (text === '+10M') {
+                amountToSet = currentPriceValue + 10000000;
+                showToast("Đã chọn mức giá +10,000,000đ", "success");
+            }
+
+            if (amountToSet > 0) {
+                updatePendingDisplay(amountToSet);
+            }
         });
     });
+    // 2. Vòng lặp kiểm tra trạng thái từ Server (Mỗi 2 giây - Realtime)
+    setInterval(function() {
+        // Bạn cần một file PHP nhỏ (get_status.php) để trả về json trạng thái
+        fetch('get_auction_status.php?id=<?php echo $auctionIdFromUrl; ?>')
+            .then(res => res.json())
+            .then(data => {
+                // Cập nhật biến isPaused từ server
+                isPaused = (data.is_paused == 1);
+                timeLeft = data.remaining_seconds; // Đồng bộ lại thời gian cho chuẩn
+
+                // Điều khiển Giao diện
+                const btn = document.getElementById('bid-now-btn');
+                const btnLabel = document.getElementById('btn-label');
+                const timerDisplay = document.getElementById('countdown-timer');
+
+                if (isPaused) {
+                    // Trạng thái DỪNG
+                    btn.disabled = true;
+                    btn.classList.add('bg-gray-600', 'cursor-not-allowed', 'opacity-50');
+                    btn.classList.remove('bg-[#007FFF]', 'shadow-[0_0_30px_rgba(0,127,255,0.4)]');
+                    btnLabel.innerText = "Hệ thống tạm dừng";
+                    timerDisplay.classList.replace('text-cyan-400', 'text-amber-500');
+                } else {
+                    // Trạng thái CHẠY TIẾP
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-600', 'cursor-not-allowed', 'opacity-50');
+                    btn.classList.add('bg-[#007FFF]', 'shadow-[0_0_30px_rgba(0,127,255,0.4)]');
+                    btnLabel.innerText = "Xác nhận mức giá";
+                    timerDisplay.classList.replace('text-amber-500', 'text-cyan-400');
+                }
+            });
+    }, 2000);
+
+    function updateTimerDisplay(seconds) {
+        if (seconds < 0) return;
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        const display = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        document.getElementById('countdown-timer').innerText = display;
+    }
+    // 5. Xử lý nút TRẢ GIÁ NGAY (Bấm cái này mới gửi dữ liệu đi)
+    document.getElementById('bid-now-btn').addEventListener('click', async function() {
+        if (pendingBid <= currentPriceValue) {
+            showToast("Vui lòng chọn mức giá thầu trước!", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('auction_id', auctionId);
+        formData.append('bid_amount', pendingBid);
+
+        try {
+            const response = await fetch('process_bid.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // Cập nhật giá hiển thị chính trên bảng điện tử
+                const priceDisplay = document.getElementById('current-price-display');
+                priceDisplay.innerText = result.new_price;
+                currentPriceValue = pendingBid; // Cập nhật mốc giá hiện tại
+
+                // Reset trạng thái nút chọn
+                pendingBid = 0;
+                document.getElementById('pending-bid-display').innerText = "Chọn mức giá phía dưới";
+
+                // Hiệu ứng Glow cho bảng giá chính
+                gsap.fromTo(priceDisplay, {
+                    scale: 1.3,
+                    color: "#fff"
+                }, {
+                    scale: 1,
+                    color: "#99FFFF",
+                    duration: 0.6
+                });
+
+                showToast(`Chúc mừng! Bạn đã dẫn đầu với giá ${result.new_price}đ`, 'success');
+
+                // Cập nhật lượt trả giá (nếu có element)
+                const countDisp = document.getElementById('bid-count-display');
+                if (countDisp) countDisp.innerText = parseInt(countDisp.innerText) + 1;
+
+            } else {
+                showToast(result.message, 'error');
+            }
+        } catch (error) {
+            showToast("Lỗi kết nối server!", "error");
+            console.error(error);
+        }
+    });
+    const modal = document.getElementById('custom-bid-modal');
+    const modalContent = document.getElementById('modal-content');
+    const customInput = document.getElementById('custom-amount-input');
+
+    // 1. Mở Modal khi bấm nút Tùy chỉnh
+    document.getElementById('custom-bid-trigger').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        customInput.value = currentPriceValue + 1000000; // Gợi ý giá tiếp theo
+        customInput.focus();
+
+        // Hiệu ứng phóng to nhẹ
+        setTimeout(() => modalContent.classList.remove('scale-90'), 10);
+    });
+
+    // 2. Đóng Modal
+    const closeModal = () => {
+        modalContent.classList.add('scale-90');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 200);
+    };
+
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // 3. Xử lý khi bấm Áp dụng trong Modal
+    document.getElementById('confirm-custom-bid').addEventListener('click', () => {
+        const val = parseFloat(customInput.value);
+
+        if (!val || val <= currentPriceValue) {
+            showToast("Giá phải lớn hơn giá hiện tại!", "error");
+            return;
+        }
+
+        // Cập nhật giá lên nút chính "Trả giá ngay"
+        updatePendingDisplay(val);
+        showToast("Đã thiết lập mức giá mới", "success");
+        closeModal();
+    });
+    // 1. Khai báo các biến cần thiết (đảm bảo lấy đúng từ PHP)
+    let remainingSeconds = <?php echo $remainingSeconds; ?>;
+    const currentAuctionId = <?php echo $currentAuction['id']; ?>;
+    window.isFinalized = false; // Dùng window để đảm bảo biến toàn cục
+
+    const countdownTimer = setInterval(function() {
+        if (remainingSeconds <= 0) {
+            clearInterval(countdownTimer);
+            // document.getElementById('countdown').innerHTML = "00 : 00 : 00";
+
+            // Vô hiệu hóa nút trả giá
+            const bidBtn = document.getElementById('bid-now-btn');
+            if (bidBtn) {
+                bidBtn.disabled = true;
+                bidBtn.innerText = "PHIÊN ĐÃ KẾT THÚC";
+                bidBtn.style.backgroundColor = "#4B5563";
+                bidBtn.style.cursor = "not-allowed";
+            }
+
+            // CHỈ GỌI KẾT THÚC MỘT LẦN
+            if (!window.isFinalized) {
+                window.isFinalized = true;
+                console.log("Hết giờ! Đang gọi lệnh trừ tiền cho phiên ID: " + currentAuctionId);
+                finalizeAuction(currentAuctionId);
+            }
+            return;
+        }
+
+        remainingSeconds--;
+
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+        const seconds = remainingSeconds % 60;
+
+        const displayNode = document.getElementById('countdown');
+        if (displayNode) {
+            displayNode.innerHTML = `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+        }
+
+        if (remainingSeconds <= 5) {
+            document.getElementById('countdown').style.color = "#EF4444";
+        }
+    }, 1000);
+
+    // 2. Hàm finalizeAuction sửa lại để đảm bảo PHP nhận được auction_id
+    function finalizeAuction(auctionId) {
+        // Sử dụng URLSearchParams để chắc chắn PHP nhận được qua $_POST
+        const params = new URLSearchParams();
+        params.append('auction_id', auctionId);
+
+        fetch('finalize_auction.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Kết quả từ Server:", data);
+
+                if (data.status === 'success') {
+                    // Lấy ID người dùng hiện tại từ PHP để so sánh
+                    const currentUserId = <?php echo $_SESSION['user_id'] ?? 0; ?>;
+
+                    if (data.winner_id == currentUserId) {
+                        alert("CHÚC MỪNG! Bạn đã thắng cuộc. Hạn mức tiền của bạn đã bị khấu trừ.");
+                    } else {
+                        console.log("Phiên đấu giá kết thúc. Người thắng là khách hàng ID: " + data.winner_id);
+                    }
+                    // Load lại trang sau 2 giây để cập nhật số tiền mới trên giao diện
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+
+                } else if (data.status === 'already_finalized') {
+                    console.log("Phiên này đã được trừ tiền trước đó.");
+                } else if (data.status === 'no_bids') {
+                    console.log("Không có ai đặt giá, không trừ tiền.");
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gọi file finalize_auction.php:', error);
+            });
+    }
+
+    function updateRecentBids() {
+        const auctionId = <?php echo $currentAuction['id']; ?>;
+
+        fetch(`get_recent_bids.php?auction_id=${auctionId}`)
+            .then(response => response.json())
+            .then(data => {
+                const listContainer = document.getElementById('recent-bids-list');
+                if (data.length === 0) {
+                    listContainer.innerHTML = '<p class="text-[10px] text-white/40">Chưa có lượt trả giá nào.</p>';
+                    return;
+                }
+
+                // Tạo HTML cho danh sách
+                let html = '';
+                data.forEach(bid => {
+                    html += `
+                    <div class="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                        <p class="text-[10px] text-white/60">
+                            <span class="text-cyan-400 font-bold">${bid.name}</span> vừa trả giá
+                        </p>
+                        <span class="text-[9px] text-yellow-400">${bid.amount}</span>
+                    </div>
+                `;
+                });
+
+                listContainer.innerHTML = html;
+            })
+            .catch(err => console.error("Lỗi lấy danh sách bid:", err));
+    }
+
+    // Chạy lần đầu ngay khi load trang
+    updateRecentBids();
+
+    // Tự động cập nhật mỗi 3 giây
+    setInterval(updateRecentBids, 3000);
 
     // ----------------------------- section 2 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
@@ -1180,6 +1817,47 @@
 
     });
 
+    function startGridCountdowns() {
+        const cards = document.querySelectorAll('.arena-mini-card');
+
+        cards.forEach(card => {
+            let timeLeft = parseInt(card.getAttribute('data-time'));
+            const timerDisplay = card.querySelector('.countdown-text');
+            const progressFill = card.querySelector('.progress-fill');
+            const initialTime = timeLeft; // Có thể thay bằng tổng thời gian phiên nếu có
+
+            const interval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerDisplay.innerText = "KẾT THÚC";
+                    timerDisplay.classList.add('text-gray-500');
+                    return;
+                }
+
+                timeLeft--;
+
+                // Định dạng thời gian
+                let h = Math.floor(timeLeft / 3600);
+                let m = Math.floor((timeLeft % 3600) / 60);
+                let s = timeLeft % 60;
+
+                let display = "";
+                if (h > 0) display += (h < 10 ? "0" + h : h) + ":";
+                display += (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+
+                timerDisplay.innerText = display;
+
+                // Đổi màu nếu dưới 60s
+                if (timeLeft < 60) {
+                    timerDisplay.classList.replace('text-cyan-400', 'text-red-500');
+                    timerDisplay.classList.add('animate-pulse');
+                }
+            }, 1000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', startGridCountdowns);
+
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
         // 1. Foggy Reveal Animation
@@ -1223,44 +1901,53 @@
             });
         });
 
-        // 2. Star Dust Particle System
+        // 2. Star Dust Particle System - Nâng cấp
         const canvas = document.getElementById('star-dust');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         let stars = [];
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 200; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 1.5,
-                vX: (Math.random() - 0.5) * 0.2,
-                vY: (Math.random() - 0.5) * 0.2
+                size: Math.random() * 2,
+                vX: (Math.random() - 0.5) * 0.3,
+                vY: (Math.random() - 0.5) * 0.3,
+                opacity: Math.random()
             });
         }
 
         function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00FFFF";
+
             stars.forEach(s => {
                 s.x += s.vX;
                 s.y += s.vY;
-                if (s.x < 0 || s.x > canvas.width) s.vX *= -1;
-                if (s.y < 0 || s.y > canvas.height) s.vY *= -1;
+
+                // Tràn biên thì xuất hiện ở phía đối diện (Loop)
+                if (s.x < 0) s.x = canvas.width;
+                if (s.x > canvas.width) s.x = 0;
+                if (s.y < 0) s.y = canvas.height;
+                if (s.y > canvas.height) s.y = 0;
+
+                // Vẽ hạt với hiệu ứng phát sáng nhẹ
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(153, 255, 255, ${s.opacity})`; // Màu Cyan nhạt
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = "#00FFFF";
                 ctx.fill();
             });
             requestAnimationFrame(animateStars);
         }
         animateStars();
-
-        // 3. Mobile 3D Carousel (Simple version)
-        if (window.innerWidth < 1024) {
-            // Sử dụng cử chỉ vuốt để thay đổi focus cho thẻ
-            // Ở đây có thể tích hợp thư viện Swiper.js hoặc tự viết logic xoay 3D
-        }
     });
 
     // ----------------------------- section 4 ----------------------------- //
@@ -1330,9 +2017,28 @@
         });
     });
 
+
     // ----------------------------- section 5 ----------------------------- //
 
+
     // ----------------------------- section 6 ----------------------------- //
+    function placeBid(auctionId, amount) {
+        fetch('handle_bid.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    auction_id: auctionId,
+                    bid_amount: amount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Đặt giá thành công!');
+                    // Load lại phần Sổ Cái để hiện dòng giao dịch mới
+                    $("#ledger-container").load(window.location.href + " #ledger-container");
+                }
+            });
+    }
 </script>
 
 </html>

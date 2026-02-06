@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+session_start();
 
+// Mảng các ID được phép vào vùng Admin
+$admin_roles = [1, 2, 3, 4, 5];
+
+if (!isset($_SESSION['role_id']) || !in_array($_SESSION['role_id'], $admin_roles)) {
+    // Nếu không có quyền, đuổi về trang login hoặc báo lỗi
+    header("Location: login.php?error=access_denied");
+    exit();
+}
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,6 +109,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
+        }
+        #map-canvas{
+            width: 100%;
+            height: 70%;
         }
 
         /* ----------------------------- section 3 -----------------------------  */

@@ -356,56 +356,78 @@
         /* ----------------------------- section 6 -----------------------------  */
     </style>
 </head>
+<?php
+
+$newsModel = new News();
+$data = $newsModel->get();
+
+$featured = $data['featured'];
+$list = $data['list'];
+
+// $newsModel = new News();
+$newsData = $newsModel->get();
+$newsData_PhongThuy = $newsModel->get_PhongThuy();
+$newsData_ThiTruong = $newsModel->get_ThiTruong();
+$newsData_PhapLy = $newsModel->get_PhapLy();
+
+
+
+
+// $featured = $newsData['featured']; // Bài viết mới nhất (thường dùng làm ô to nhất)
+$otherNews = $newsData['list'];    // Danh sách các bài còn lại
+?>
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
+    <?php
+    // Nếu không có bài viết nào, có thể ẩn section hoặc hiện mặc định
+    if ($featured):
+    ?>
+        <section id="oracle-chronicle" class="relative min-h-screen bg-[#000B18] overflow-hidden flex items-center">
 
-        <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>
+            <canvas id="star-map-canvas" class="absolute inset-0 z-0 opacity-60"></canvas>
 
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
-                <div class="lg:w-1/2 order-2 lg:order-1">
-                    <div class="relative pl-8 border-l border-cyan-500/30 overflow-hidden" id="headline-container">
-                        <h1 id="hero-headline" class="text-4xl md:text-7xl font-serif text-[#E0F7FA] leading-[1.1] mb-8 opacity-0 -translate-x-full">
-                            GIẢI MÃ: BIỂN SỐ TỈ ĐÔ <br>
-                            <span class="text-cyan-400">888.88</span> <br>
-                            ĐỊNH DANH VẬN MỆNH THẾ NÀO?
-                        </h1>
+                    <div class="lg:w-1/2 order-2 lg:order-1">
+                        <div class="relative pl-8 border-l border-cyan-500/30 overflow-hidden" id="headline-container">
+                            <h1 id="hero-headline" class="text-4xl md:text-7xl font-serif text-[#E0F7FA] leading-[1.1] mb-8 opacity-0 -translate-x-full">
+                                <?= mb_strtoupper($featured['title'], 'UTF-8') ?>
+                            </h1>
 
-                        <p id="hero-lead" class="text-lg md:text-xl text-cyan-200/70 font-sans leading-relaxed mb-10 opacity-0">
-                            Từ một dãy số vô hồn trở thành di sản tài chính triệu đô. Khám phá bí ẩn phong thủy và lực đẩy thị trường phía sau những con số quyền lực nhất Việt Nam.
-                        </p>
+                            <p id="hero-lead" class="text-lg md:text-xl text-cyan-200/70 font-sans leading-relaxed mb-10 opacity-0">
+                                <?= $featured['summary'] ?>
+                            </p>
 
-                        <a href="chitiet_tintuc.php?name=GIẢI MÃ: BIỂN SỐ TỈ ĐÔ 888.88 ĐỊNH DANH VẬN MỆNH THẾ NÀO&image=https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
-                            id="btn-read-now"
-                            class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
-                            Đọc Ngay
-                        </a>
+                            <a href="chitiet_tintuc.php?slug=<?= $featured['slug'] ?>&id=<?= $featured['id'] ?>"
+                                class="inline-block px-12 py-4 bg-white/5 backdrop-blur-md border border-cyan-500/50 rounded-lg text-cyan-400 font-bold tracking-[0.3rem] uppercase hover:bg-cyan-500 hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.2)] text-center">
+                                Đọc Ngay
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <div class="lg:w-1/2 order-1 lg:order-2 relative" id="hero-image-wrapper">
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
-                        <div id="sapphire-filter" class="absolute inset-0 bg-blue-900/40 backdrop-blur-sm z-10 transition-all duration-1000"></div>
+                    <div class="lg:w-1/2 order-1 lg:order-2 relative" id="hero-image-wrapper">
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
+                            <div id="sapphire-filter" class="absolute inset-0 bg-blue-900/40 backdrop-blur-sm z-10 transition-all duration-1000"></div>
 
-                        <img id="hero-img" src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2070&auto=format&fit=crop"
-                            alt="Luxury Car & Plate"
-                            class="w-full h-[300px] md:h-[600px] object-cover scale-110 opacity-0">
+                            <img id="hero-img" src="<?= $featured['thumbnail'] ?>"
+                                alt="<?= $featured['title'] ?>"
+                                class="w-full h-[300px] md:h-[600px] object-cover scale-110 opacity-0">
 
-                        <div class="absolute -inset-2 bg-cyan-500/20 blur-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="absolute -inset-2 bg-cyan-500/20 blur-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-cyan-500/50 animate-bounce">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path>
-            </svg>
-        </div>
-    </section>
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-cyan-500/50 animate-bounce">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
     <section id="intelligence-grid" class="relative min-h-screen py-24 bg-[#000B18]">
@@ -419,47 +441,51 @@
             </div>
 
             <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[200px]">
+                <?php foreach ($newsData_PhongThuy as $item): ?>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-8">
+                            <span class="tag mb-4 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
+                <?php endforeach ?>
+                <?php foreach ($newsData_ThiTruong as $item): ?>
 
-                <a href="chitiet_tintuc.php?name=Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)&image=https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070"
-                    class="news-item fengshui lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?q=80&w=2070" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] via-transparent to-transparent opacity-90"></div>
-                    <div class="absolute bottom-0 p-8">
-                        <span class="tag mb-4 inline-block">#PhongThuy</span>
-                        <h3 class="text-2xl font-bold text-[#E0F7FA] leading-tight">Giải mã sức mạnh con số 8 trong chu kỳ vận 9 (2024-2044)</h3>
-                    </div>
-                </a>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-xl font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
+                <?php endforeach ?>
+                <?php foreach ($newsData_PhapLy as $item): ?>
+                    <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>&id=<?= $item['id'] ?>"
+                        class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
+                        <div class="glint"></div>
+                        <img src="<?php echo $item['thumbnail']; ?>" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
+                        <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
+                        <div class="absolute bottom-0 p-6 z-20">
+                            <span class="tag mb-2 inline-block"><?php echo $item['tag']; ?></span>
+                            <h3 class="text-sm font-bold text-[#E0F7FA]"><?php echo $item['title']; ?></h3>
+                        </div>
+                    </a>
+                <?php endforeach ?>
 
-                <a href="chitiet_tintuc.php?name=Tổng hợp giá đấu các phiên VIP tháng 1/2026&image=https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000"
-                    class="news-item market lg:col-span-2 lg:row-span-1 relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#000B18] to-transparent opacity-80"></div>
-                    <div class="absolute bottom-0 p-6">
-                        <span class="tag mb-2 inline-block">#ThiTruong</span>
-                        <h3 class="text-xl font-bold text-[#E0F7FA]">Tổng hợp giá đấu các phiên VIP tháng 1/2026</h3>
-                    </div>
-                </a>
-
-                <a href="chitiet_tintuc.php?name=Tương lai di sản số trên blockchain&image=https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000"
-                    class="news-item legal relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
-                    <div class="glint"></div>
-                    <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=2000" class="thumb-img absolute inset-0 w-full h-full object-cover transition-transform duration-700">
-                    <div class="absolute inset-0 bg-blue-900/40 z-10"></div>
-                    <div class="absolute bottom-0 p-6 z-20">
-                        <span class="tag mb-2 inline-block">#PhapLy</span>
-                        <h3 class="text-sm font-bold text-[#E0F7FA]">Tương lai di sản số trên blockchain</h3>
-                    </div>
-                </a>
-
-                <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"
+                <!-- <a href="chitiet_tintuc.php?name=Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim&image=https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854"
                     class="news-item fengshui relative group overflow-hidden rounded-3xl border border-cyan-500/20 bg-blue-900/10 backdrop-blur-md">
                     <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1854" class="thumb-img absolute inset-0 w-full h-full object-cover opacity-40">
                     <div class="absolute bottom-0 p-6">
                         <h3 class="text-sm font-bold text-[#E0F7FA]">Top 5 dãy số mang lại tài lộc cho chủ xe mệnh Kim</h3>
                     </div>
-                </a>
+                </a> -->
 
             </div>
         </div>
