@@ -1,61 +1,59 @@
 <?php
 class Customer extends Db
 {
-    public function get($keyword = null)
+    // public function get($keyword = null)
+    // {
+    //     if ($keyword) {
+    //         // Nếu có từ khóa, thực hiện tìm kiếm (Deep Search)
+    //         $search = "%$keyword%";
+    //         $sql = "SELECT * FROM customers 
+    //             WHERE full_name LIKE ? 
+    //             OR email LIKE ? 
+    //             OR phone_number LIKE ? 
+    //             ORDER BY total_spent DESC";
+
+    //         $stmt = self::$connection->prepare($sql);
+    //         $stmt->bind_param("sss", $search, $search, $search);
+    //         $stmt->execute();
+    //         $result = $stmt->get_result();
+    //         return $result->fetch_all(MYSQLI_ASSOC);
+    //     } else {
+    //         // Nếu không có từ khóa, lấy tất cả như cũ
+    //         $sql = "SELECT * FROM customers ORDER BY total_spent DESC";
+    //         $result = self::$connection->query($sql);
+    //         return $result->fetch_all(MYSQLI_ASSOC);
+    //     }
+    // }
+    public function get($keyword = null, $page = 1, $limit = 8)
     {
+        $offset = ($page - 1) * $limit;
+
         if ($keyword) {
-            // Nếu có từ khóa, thực hiện tìm kiếm (Deep Search)
             $search = "%$keyword%";
             $sql = "SELECT * FROM customers 
                 WHERE full_name LIKE ? 
                 OR email LIKE ? 
                 OR phone_number LIKE ? 
-                ORDER BY total_spent DESC";
+                ORDER BY total_spent DESC 
+                LIMIT ? OFFSET ?";
 
             $stmt = self::$connection->prepare($sql);
-            $stmt->bind_param("sss", $search, $search, $search);
+            $stmt->bind_param("sssii", $search, $search, $search, $limit, $offset);
             $stmt->execute();
             $result = $stmt->get_result();
             return $result->fetch_all(MYSQLI_ASSOC);
         } else {
-            // Nếu không có từ khóa, lấy tất cả như cũ
-            $sql = "SELECT * FROM customers ORDER BY total_spent DESC";
-            $result = self::$connection->query($sql);
+            $sql = "SELECT * FROM customers ORDER BY total_spent DESC LIMIT ? OFFSET ?";
+            $stmt = self::$connection->prepare($sql);
+            $stmt->bind_param("ii", $limit, $offset);
+            $stmt->execute();
+            $result = $stmt->get_result();
             return $result->fetch_all(MYSQLI_ASSOC);
         }
     }
-    // public function get($keyword = null, $page = 1, $limit = 6, $rank = null)
-    // {
-    //     $offset = ($page - 1) * $limit;
-    //     $sql = "SELECT * FROM customers WHERE 1=1";
-    //     $params = [];
-    //     $types = "";
 
-    //     if ($keyword) {
-    //         $sql .= " AND (full_name LIKE ? OR email LIKE ? OR phone_number LIKE ?)";
-    //         $search = "%$keyword%";
-    //         array_push($params, $search, $search, $search);
-    //         $types .= "sss";
-    //     }
-
-    //     if ($rank && $rank !== 'all') {
-    //         $sql .= " AND rank = ?";
-    //         array_push($params, $rank);
-    //         $types .= "s";
-    //     }
-
-    //     $sql .= " ORDER BY total_spent DESC LIMIT ? OFFSET ?";
-    //     array_push($params, $limit, $offset);
-    //     $types .= "ii";
-
-    //     $stmt = self::$connection->prepare($sql);
-    //     $stmt->bind_param($types, ...$params);
-    //     $stmt->execute();
-    //     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    // }
-
-    // Hàm bổ sung để tính tổng số trang
-    public function countAll($keyword = null)
+    // Thêm hàm này để tính tổng số trang
+    public function countTotal($keyword = null)
     {
         if ($keyword) {
             $search = "%$keyword%";
@@ -64,10 +62,12 @@ class Customer extends Db
             $stmt->bind_param("sss", $search, $search, $search);
             $stmt->execute();
             return $stmt->get_result()->fetch_assoc()['total'];
+        } else {
+            $sql = "SELECT COUNT(*) as total FROM customers";
+            return self::$connection->query($sql)->fetch_assoc()['total'];
         }
-        $result = self::$connection->query("SELECT COUNT(*) as total FROM customers");
-        return $result->fetch_assoc()['total'];
     }
+
     // HÀM MỚI: Lấy thông tin chi tiết của 1 người dùng theo ID
     public function getUserById($id)
     {
@@ -261,7 +261,21 @@ class Customer extends Db
         $limit = number_format($customer['bidding_limit'] / 1000000000, 1) . 'B';
         // $avatar = !empty($customer['avatar']) ? $customer['avatar'] : "https://i.pravatar.cc/150?u=" . $id;
         // Tìm dòng này trong Customer.php và sửa lại:
-        $avatar = htmlspecialchars($customer['avatar']);
+        $avatarData = $customer['avatar'];
+        if (empty($avatarData)) {
+            // Nếu không có ảnh, dùng ảnh mặc định theo ID
+            $avatar = "https://i.pravatar.cc/150?u=" . $id;
+        } else if (strpos($avatarData, 'http') === 0) {
+            // Nếu là link web (bắt đầu bằng http), giữ nguyên
+            $avatar = $avatarData;
+        } else {
+            // Nếu là đường dẫn file trong folder assets, thêm dấu / ở đầu hoặc đi từ gốc web
+            // Ví dụ: assets/uploads/avatars/123.jpg
+            $avatar = "../" . $avatarData;
+            // Lưu ý: Nếu trang Admin nằm trong folder /Admin, cần dùng ../ để ra ngoài 
+            // rồi mới vào /assets. Bạn hãy kiểm tra lại cấu trúc folder nhé.
+        }
+        $avatar = htmlspecialchars($avatar);
 
         $configs = [
             'diamond' => [

@@ -41,26 +41,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
             ];
             $result = $customerModel->update($id, $data);
         } else if ($action == 'portal_onboard') {
-            // 1. Nhận dữ liệu trực tiếp từ 2 ô nhập riêng biệt
+            $finalAvatar = '';
+
+            // 1. Nhận dữ liệu
             $email = !empty($_POST['email']) ? trim($_POST['email']) : null;
             $phone = !empty($_POST['phone_number']) ? trim($_POST['phone_number']) : null;
 
-            // 2. Chuẩn bị mảng data
+            // 2. Xử lý Đường dẫn File vật lý bằng __DIR__
+            // __DIR__ là: D:\xampp\htdocs\License-plate-website_2\Admin
+            // dirname(__DIR__) sẽ là: D:\xampp\htdocs\License-plate-website_2
+            $baseDir = dirname(__DIR__);
+            $uploadFolder = DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'avatars' . DIRECTORY_SEPARATOR;
+            $absolutePath = $baseDir . $uploadFolder;
+
+            // Kiểm tra và tạo thư mục nếu chưa tồn tại
+            if (!is_dir($absolutePath)) {
+                mkdir($absolutePath, 0777, true);
+            }
+
+            // Ưu tiên 1: Nếu có file upload thực tế
+            if (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] == 0) {
+                $fileName = time() . '_' . basename($_FILES['avatar_file']['name']);
+                $targetFile = $absolutePath . $fileName;
+
+                if (move_uploaded_file($_FILES['avatar_file']['tmp_name'], $targetFile)) {
+                    // Lưu vào DB đường dẫn tương đối để hiển thị trên web
+                    $finalAvatar = 'assets/uploads/avatars/' . $fileName;
+                }
+            }
+            // Ưu tiên 2: Nếu không có file upload, lấy link ảnh mẫu (preset) hoặc mặc định
+            else {
+                $finalAvatar = !empty($_POST['avatar']) ? $_POST['avatar'] : 'https://i.pravatar.cc/150?u=' . time();
+            }
+
+            // 3. Chuẩn bị mảng data cho Model
             $data = [
                 'full_name'     => $_POST['full_name'],
-                'email'         => $email,        // Sẽ là null nếu để trống
-                'phone_number'  => $phone,        // Sẽ là null nếu để trống
+                'email'         => $email,
+                'phone_number'  => $phone,
                 'rank'          => ucfirst(strtolower($_POST['rank'])),
                 'total_spent'   => (float)$_POST['deposit'],
                 'bidding_limit' => (float)$_POST['deposit'] * 2,
-                'avatar'        => 'https://i.pravatar.cc/150?u=' . time(),
+                'avatar'        => $finalAvatar, // Đảm bảo cột trong DB tên là 'avatar'
                 'password'      => '123456'
             ];
 
-            // 3. Gọi hàm add trong model
+            // 4. Gọi hàm add trong model
             $result = $customerModel->add($data);
 
-            echo json_encode(['success' => $result]);
+            if ($result) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Lỗi SQL: Không thể thêm dữ liệu vào Database']);
+            }
             exit();
         }
 
@@ -897,6 +930,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                                             </div>
 
                                             <div class="space-y-6 portal-field">
+                                                <div class="p-6 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group">
+                                                    <label class="text-[9px] text-white/30 uppercase block mb-4">Identity Visualization (Avatar)</label>
+                                                    <div class="flex items-center gap-6">
+                                                        <div class="relative">
+                                                            <img id="avatar-preview" src="https://i.pravatar.cc/150?u=new" class="w-20 h-20 rounded-full border-2 border-[#D4AF37] object-cover shadow-lg shadow-[#D4AF37]/20">
+                                                            <label for="avatar-upload" class="absolute bottom-0 right-0 w-7 h-7 bg-[#D4AF37] rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-md">
+                                                                <i class="ri-camera-line text-black text-xs"></i>
+                                                                <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="previewUpload(this)">
+                                                            </label>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <p class="text-[10px] text-white/40 mb-3 italic">Chọn nhận diện nhanh:</p>
+                                                            <div class="flex gap-2">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=1" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=2" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <img onclick="selectPresetAvatar(this.src)" src="https://i.pravatar.cc/150?u=3" class="w-8 h-8 rounded-full cursor-pointer border border-transparent hover:border-[#D4AF37] transition-all">
+                                                                <div onclick="document.getElementById('avatar-upload').click()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/10">
+                                                                    <i class="ri-add-line text-white/50"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
                                                     <label class="text-[9px] text-white/30 uppercase block mb-4">Predicted Rank</label>
                                                     <div id="rank-display" class="flex items-center gap-4">
@@ -967,19 +1023,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="member-masonry">
                 <?php
 
-                $customers = $customerModel->get(); // Lấy danh sách từ DB
-                if (isset($_GET['search'])) {
-                    $results = $customerModel->get($_GET['search']);
+                // 1. Cấu hình phân trang
+                $limit = 8; // Số lượng khách hàng mỗi trang
+                $page = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+                $keyword = isset($_GET['search']) ? $_GET['search'] : null;
+
+                // 2. Lấy dữ liệu theo trang và từ khóa
+                $customers = $customerModel->get($keyword, $page, $limit);
+                $totalRecords = $customerModel->countTotal($keyword);
+                $totalPages = ceil($totalRecords / $limit);
+
+                // 3. Xử lý Search AJAX (Nếu có)
+                if (isset($_GET['search']) && isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                    $results = $customerModel->get($_GET['search'], 1, 20);
                     echo json_encode($results);
                     exit;
                 }
 
-                foreach ($customers as $customer) {
-                    echo $customerModel->renderVipCard($customer);
-                }
-                
                 ?>
-                
+                <?php if (count($customers) > 0): ?>
+                    <?php foreach ($customers as $customer): ?>
+                        <?= $customerModel->renderVipCard($customer); ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-white/30 col-span-full text-center py-10">No members found.</p>
+                <?php endif; ?>
+
 
                 <style>
                     @keyframes shimmer {
@@ -988,9 +1057,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                         }
                     }
                 </style>
-
-
             </div>
+            <div class="mt-12 flex justify-center items-center gap-2 ">
+                <?php if ($page > 1): ?>
+                    <a href="?p=<?= $page - 1 ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <a href="?p=<?= $i ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl border transition-all <?= $i == $page ? 'bg-cyan-500 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $totalPages): ?>
+                    <a href="?p=<?= $page + 1 ?><?= $keyword ? "&search=$keyword" : "" ?>"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            <p class="text-center text-white/20 text-[10px] mt-4 uppercase tracking-[2px]">
+                Showing <?= count($customers) ?> of <?= $totalRecords ?> Elite Members
+            </p>
         </section>
         <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
             <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
@@ -1667,32 +1760,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
         const phoneInput = document.getElementById('portal-phone');
         const depositInput = document.getElementById('deposit-input');
         const rankDisplay = document.getElementById('rank-name');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarUploadInput = document.getElementById('avatar-upload');
 
         if (!nameInput || !emailInput || !phoneInput || !depositInput) {
             alert("Lỗi hệ thống: Không tìm thấy các ô nhập liệu!");
             return;
         }
 
-        // 2. Lấy giá trị
+        // 2. Lấy giá trị thực tế
         const fullName = nameInput.value.trim();
         const email = emailInput.value.trim();
         const phone = phoneInput.value.trim();
         const deposit = depositInput.value;
         const rankName = rankDisplay ? rankDisplay.innerText : "Gold";
 
-        // 3. Kiểm tra nhập liệu (Bắt buộc Tên, Tiền và ít nhất 1 phương thức liên lạc)
+        // 3. Kiểm tra nhập liệu
         if (!fullName || !deposit || (!email && !phone)) {
             alert("Vui lòng điền Họ tên, Số tiền và ít nhất Email hoặc Số điện thoại!");
             return;
         }
 
-        // 4. Hiệu ứng nút bấm
+        // 4. Hiệu ứng nút bấm (Sử dụng event.target an toàn hơn)
         const btn = event.currentTarget;
         const originalText = btn.innerText;
         btn.innerText = "INITIALIZING...";
         btn.disabled = true;
 
-        // 5. Chuẩn bị dữ liệu gửi đi
+        // 5. Chuẩn bị FormData (PHẢI KHỞI TẠO TRƯỚC KHI APPEND)
         const formData = new FormData();
         formData.append('action_type', 'portal_onboard');
         formData.append('full_name', fullName);
@@ -1701,12 +1796,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
         formData.append('deposit', deposit);
         formData.append('rank', rankName.replace(' MEMBER', '').trim());
 
+        // XỬ LÝ AVATAR (Gửi đúng tên cột 'avatar' cho DB)
+        if (avatarUploadInput && avatarUploadInput.files[0]) {
+            // Nếu có file thực tế được chọn từ máy tính
+            formData.append('avatar_file', avatarUploadInput.files[0]);
+        } else if (avatarPreview) {
+            // Nếu dùng ảnh mẫu (preset), gửi URL của ảnh đó
+            formData.append('avatar', avatarPreview.src);
+        }
+
+        // 6. Gửi dữ liệu
         try {
             const response = await fetch('VipVelations.php', {
                 method: 'POST',
                 body: formData
             });
-            const res = await response.json();
+
+            // Kiểm tra xem server có trả về JSON hợp lệ không
+            const text = await response.text();
+            let res;
+            try {
+                res = JSON.parse(text);
+            } catch (e) {
+                console.error("Server response was not JSON:", text);
+                throw new Error("Dữ liệu phản hồi từ server không hợp lệ!");
+            }
 
             if (res.success) {
                 alert("Matrix Integrated: Thêm VIP mới thành công!");
@@ -1718,9 +1832,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
             }
         } catch (err) {
             console.error("Fetch error:", err);
-            alert("Lỗi kết nối máy chủ!");
+            alert("Lỗi kết nối máy chủ: " + err.message);
             btn.innerText = originalText;
             btn.disabled = false;
+        }
+    }
+    // Hàm chọn ảnh từ danh sách gợi ý
+    function selectPresetAvatar(src) {
+        const preview = document.getElementById('avatar-preview');
+        preview.src = src;
+
+        // Hiệu ứng GSAP nhẹ khi đổi ảnh
+        gsap.fromTo(preview, {
+            scale: 0.8,
+            opacity: 0.5
+        }, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.4
+        });
+    }
+
+    // Hàm preview ảnh khi người dùng upload từ máy tính
+    function previewUpload(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+                gsap.from("#avatar-preview", {
+                    filter: "brightness(2)",
+                    duration: 0.5
+                });
+            };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
