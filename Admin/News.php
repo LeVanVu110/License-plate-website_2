@@ -18,7 +18,54 @@ require_once dirname(__DIR__) . "/config.php";
 require_once dirname(__DIR__) . "/models/db.php";
 require_once dirname(__DIR__) . "/models/Customer.php";
 require_once dirname(__DIR__) . "/models/News.php";
+$newsModel = new News();
 
+if (isset($_POST['btn_add_news'])) {
+    // 1. Lấy author_id từ session của Customer (người đang đăng nhập)
+    // Đảm bảo lúc bạn xử lý Login bạn đã lưu: $_SESSION['user_id'] = $row['id'];
+    $author_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+    if (!$author_id) {
+        echo "<script>alert('Lỗi: Bạn phải đăng nhập để đăng bài!'); window.location.href='login.php';</script>";
+        exit();
+    }
+
+    $title = $_POST['title'];
+
+    // Hàm tạo Slug (đưa ra ngoài hoặc giữ nguyên bên trong)
+    function create_slug($string) {
+        $search = array(
+            '#(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)#', '#(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)#', '#(ì|í|ị|ỉ|ĩ)#',
+            '#(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)#', '#(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)#', '#(ỳ|ý|ỵ|ỷ|ỹ)#', '#(đ)#',
+            '#(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)#', '#(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)#', '#(Ì|Í|Ị|Ỉ|Ĩ)#',
+            '#(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)#', '#(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)#', '#(Ỳ|Ý|Ỵ|Ỷ|Ỹ)#', '#(Đ)#',
+            '/[^a-zA-Z0-9\-\_]/',
+        );
+        $replace = array('a','e','i','o','u','y','d','A','E','I','O','U','Y','D','-',);
+        $string = preg_replace($search, $replace, $string);
+        $string = preg_replace('/(-)+/', '-', $string);
+        return strtolower(trim($string, '-'));
+    }
+    
+    $slug = create_slug($title);
+    $content = $_POST['content'];
+    $summary = mb_substr(strip_tags($content), 0, 150) . '...';
+    $thumbnail = !empty($_POST['thumbnail']) ? $_POST['thumbnail'] : 'https://via.placeholder.com/400x225';
+    $tag = !empty($_POST['tag']) ? $_POST['tag'] : '#General';
+    $category = $_POST['category'];
+    $status = $_POST['status'];
+
+    // Thực hiện insert (author_id ở đây là ID của Customer)
+    $result = $newsModel->insert($title, $slug, $summary, $content, $thumbnail, $tag, $category, $author_id, $status);
+
+    if ($result) {
+        // Sau khi insert thành công, lấy ID bài viết vừa tạo
+        $new_post_id = $result; 
+        echo "<script>alert('Đăng bài thành công!'); window.location.href='News.php';</script>";
+    } else {
+        echo "<script>alert('Lỗi SQL: Hãy đảm bảo Database đã được đổi Khóa ngoại sang bảng Customer!');</script>";
+    }
+}
 
 ?>
 
@@ -356,7 +403,7 @@ require_once dirname(__DIR__) . "/models/News.php";
                 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                 if ($page < 1) $page = 1;
 
-                $newsModel = new News();
+
                 $listNews = $newsModel->getAllAdmin($page, $limit);
                 $totalNews = $newsModel->countAll();
                 $totalPages = ceil($totalNews / $limit);
@@ -474,7 +521,7 @@ require_once dirname(__DIR__) . "/models/News.php";
                 <i class="ri-add-line text-3xl"></i>
             </button>
 
-            <div id="side-panel" class="fixed top-0 right-0 h-full w-full md:w-[80%] bg-[#0a0a0a] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-500 ease-out shadow-[-50px_0_100px_rgba(0,0,0,0.9)] overflow-y-auto">
+            <!-- <div id="side-panel" class="fixed top-0 right-0 h-full w-full md:w-[80%] bg-[#0a0a0a] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-500 ease-out shadow-[-50px_0_100px_rgba(0,0,0,0.9)] overflow-y-auto">
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-10">
                         <h2 class="text-2xl font-bold flex items-center gap-3">
@@ -525,120 +572,193 @@ require_once dirname(__DIR__) . "/models/News.php";
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+            <form action="News.php" method="POST">
+                <div id="side-panel" class="fixed top-0 right-0 h-full w-full md:w-[80%] bg-[#0a0a0a] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-500 ease-out shadow-[-50px_0_100px_rgba(0,0,0,0.9)] overflow-y-auto">
+                    <div class="p-8">
+                        <div class="flex justify-between items-center mb-10">
+                            <h2 class="text-2xl font-bold flex items-center gap-3">
+                                <i class="ri-edit-circle-line text-blue-500"></i> Editorial Composer
+                            </h2>
+                            <button type="button" onclick="toggleSidePanel()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors">
+                                <i class="ri-close-line text-2xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 space-y-6">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] uppercase text-white/40 font-bold tracking-widest">Article Title</label>
+                                    <input type="text" name="title" required placeholder="Enter a catchy headline..."
+                                        class="w-full bg-transparent border-b border-white/10 py-4 text-2xl font-bold focus:border-blue-500 outline-none transition-all text-white">
+                                </div>
+
+                                <div class="bg-white/5 rounded-2xl p-6 min-h-[450px] border border-white/5 flex flex-col">
+                                    <label class="text-[10px] uppercase text-white/40 font-bold tracking-widest mb-4">Body Content</label>
+                                    <textarea name="content" required placeholder="Write your story here..."
+                                        class="w-full flex-grow bg-transparent outline-none text-white/70 resize-none min-h-[350px] leading-relaxed"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div class="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-4">
+                                    <h5 class="font-bold text-sm border-b border-white/10 pb-2 text-blue-400">Classification</h5>
+                                    <div>
+                                        <label class="text-[9px] text-white/30 uppercase block mb-2">Category</label>
+                                        <select name="category" class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-blue-500">
+                                            <option value="Auction_News">Auction News</option>
+                                            <option value="Market_Trends">Market Trends</option>
+                                            <option value="Event">Event</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] text-white/30 uppercase block mb-2">Visibility</label>
+                                        <select name="status" class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-blue-500">
+                                            <option value="Published">Published</option>
+                                            <option value="Draft">Draft</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-4">
+                                    <h5 class="font-bold text-sm border-b border-white/10 pb-2 text-blue-400">Assets & Metadata</h5>
+                                    <div>
+                                        <label class="text-[9px] text-white/30 uppercase block mb-2">Thumbnail URL</label>
+                                        <input type="text" name="thumbnail" placeholder="https://images.unsplash.com/..."
+                                            class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] text-white/30 uppercase block mb-2">HashTags</label>
+                                        <input type="text" name="tag" placeholder="#Auction #VipPlate"
+                                            class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div class="pt-4">
+                                    <button type="submit" name="btn_add_news"
+                                        class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                                        <i class="ri-send-plane-fill"></i> PUBLISH CHANGES
+                                    </button>
+                                    <p class="text-[10px] text-center text-white/20 mt-4 italic">Auto-save is active for your drafts.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
-        <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out shadow-[-20px_0_60px_rgba(0,0,0,0.8)] flex flex-col">
+            <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out shadow-[-20px_0_60px_rgba(0,0,0,0.8)] flex flex-col">
 
-            <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
-                <div class="flex items-center gap-1">
-                    <button onclick="closeForge()" class="text-white/40 hover:text-white transition-colors text-sm font-medium">CANCEL</button>
-                    <div class="h-4 w-[1px] bg-white/10"></div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] text-white/40 font-bold tracking-widest uppercase">Completion</span>
-                        <div class="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
-                            <div id="progress-bar" class="h-full bg-blue-600 w-[65%] shadow-[0_0_10px_#2563eb]"></div>
+                <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
+                    <div class="flex items-center gap-1">
+                        <button onclick="closeForge()" class="text-white/40 hover:text-white transition-colors text-sm font-medium">CANCEL</button>
+                        <div class="h-4 w-[1px] bg-white/10"></div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] text-white/40 font-bold tracking-widest uppercase">Completion</span>
+                            <div class="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                                <div id="progress-bar" class="h-full bg-blue-600 w-[65%] shadow-[0_0_10px_#2563eb]"></div>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="flex items-center gap-3">
+                        <div id="auto-save-pulse" class="flex items-center gap-2 px-3 text-blue-400/60 hidden">
+                            <i class="ri-cloud-line animate-pulse"></i>
+                            <span class="text-[10px] font-mono uppercase">Auto-saved</span>
+                        </div>
+                        <button class="px-4 py-2 text-white/60 hover:text-white text-sm transition-colors">Save Draft</button>
+                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[14px] font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
+                            PUBLISH
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div id="auto-save-pulse" class="flex items-center gap-2 px-3 text-blue-400/60 hidden">
-                        <i class="ri-cloud-line animate-pulse"></i>
-                        <span class="text-[10px] font-mono uppercase">Auto-saved</span>
+                <div class="flex flex-grow overflow-hidden">
+
+                    <div class="flex-grow overflow-y-auto p-8 lg:p-12 custom-scrollbar relative" id="editor-container">
+                        <div id="floating-toolbar" class="absolute hidden bg-[#1a1a1a] border border-white/10 rounded-lg p-1 shadow-2xl flex items-center gap-1 z-50">
+                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-bold"></i></button>
+                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-italic"></i></button>
+                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-link"></i></button>
+                            <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-h-1"></i></button>
+                        </div>
+
+                        <input type="text" placeholder="Article Headline..." class="w-full bg-transparent border-none text-4xl lg:text-5xl font-bold text-white placeholder:text-white/10 outline-none mb-8">
+
+                        <div id="rich-editor" contenteditable="true" class="prose prose-invert prose-blue max-w-none min-h-[500px] outline-none text-white/70 text-lg leading-relaxed" data-placeholder="Start writing the future...">
+                            <div contenteditable="false" class="my-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center justify-between group">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center font-bold text-blue-400">51K</div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Linked Asset</p>
+                                        <p class="text-white font-mono uppercase">999.99 - Ngũ Quý Sapphire</p>
+                                    </div>
+                                </div>
+                                <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">BID NOW</button>
+                            </div>
+                        </div>
                     </div>
-                    <button class="px-4 py-2 text-white/60 hover:text-white text-sm transition-colors">Save Draft</button>
-                    <button class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[14px] font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
-                        PUBLISH
-                    </button>
-                </div>
-            </div>
 
-            <div class="flex flex-grow overflow-hidden">
+                    <aside class="w-80 border-l border-white/5 bg-black/20 p-6 hidden lg:flex flex-col gap-8 overflow-y-auto shrink-0">
 
-                <div class="flex-grow overflow-y-auto p-8 lg:p-12 custom-scrollbar relative" id="editor-container">
-                    <div id="floating-toolbar" class="absolute hidden bg-[#1a1a1a] border border-white/10 rounded-lg p-1 shadow-2xl flex items-center gap-1 z-50">
-                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-bold"></i></button>
-                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-italic"></i></button>
-                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-link"></i></button>
-                        <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
-                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-h-1"></i></button>
-                    </div>
-
-                    <input type="text" placeholder="Article Headline..." class="w-full bg-transparent border-none text-4xl lg:text-5xl font-bold text-white placeholder:text-white/10 outline-none mb-8">
-
-                    <div id="rich-editor" contenteditable="true" class="prose prose-invert prose-blue max-w-none min-h-[500px] outline-none text-white/70 text-lg leading-relaxed" data-placeholder="Start writing the future...">
-                        <div contenteditable="false" class="my-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center justify-between group">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center font-bold text-blue-400">51K</div>
-                                <div>
-                                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Linked Asset</p>
-                                    <p class="text-white font-mono uppercase">999.99 - Ngũ Quý Sapphire</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <h5 class="text-[11px] font-bold text-white/40 uppercase tracking-widest">SEO Analyzer</h5>
+                                <div class="flex gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
+                                    <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                                    <div class="w-2 h-2 rounded-full bg-white/10"></div>
                                 </div>
                             </div>
-                            <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">BID NOW</button>
-                        </div>
-                    </div>
-                </div>
-
-                <aside class="w-80 border-l border-white/5 bg-black/20 p-6 hidden lg:flex flex-col gap-8 overflow-y-auto shrink-0">
-
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <h5 class="text-[11px] font-bold text-white/40 uppercase tracking-widest">SEO Analyzer</h5>
-                            <div class="flex gap-1">
-                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
-                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
-                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
-                            </div>
-                        </div>
-                        <p class="text-[10px] text-emerald-400/80">Great! Headline is highly engaging.</p>
-                    </div>
-
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Featured Image</label>
-                        <div id="drop-zone" class="aspect-video rounded-2xl border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-2 group hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden relative">
-                            <i class="ri-image-add-line text-2xl text-white/20 group-hover:text-blue-500 transition-colors"></i>
-                            <span class="text-[10px] text-white/20 font-bold group-hover:text-white transition-colors uppercase">Drop 16:9 Image</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-5">
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Category</label>
-                            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none focus:border-blue-500/50">
-                                <option>Auction News</option>
-                                <option>Market Trends</option>
-                                <option>Events</option>
-                            </select>
+                            <p class="text-[10px] text-emerald-400/80">Great! Headline is highly engaging.</p>
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Slug (URL)</label>
-                            <div class="relative">
-                                <input type="text" value="bien-so-ngu-quy-999-99" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-blue-400 font-mono outline-none">
-                                <i class="ri-link absolute right-4 top-1/2 -translate-y-1/2 text-white/20"></i>
+                        <div class="space-y-3">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Featured Image</label>
+                            <div id="drop-zone" class="aspect-video rounded-2xl border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-2 group hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden relative">
+                                <i class="ri-image-add-line text-2xl text-white/20 group-hover:text-blue-500 transition-colors"></i>
+                                <span class="text-[10px] text-white/20 font-bold group-hover:text-white transition-colors uppercase">Drop 16:9 Image</span>
                             </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Tags</label>
-                            <input type="text" placeholder="#NgũQuý, #BiểnĐẹp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none">
-                        </div>
-                    </div>
-                </aside>
-            </div>
+                        <div class="space-y-5">
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Category</label>
+                                <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none focus:border-blue-500/50">
+                                    <option>Auction News</option>
+                                    <option>Market Trends</option>
+                                    <option>Events</option>
+                                </select>
+                            </div>
 
-            <div class="lg:hidden h-16 border-t border-white/5 bg-black px-6 flex items-center justify-between shrink-0">
-                <button class="p-2 text-white/40"><i class="ri-settings-4-line text-xl"></i></button>
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-blue-600"></div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest">Step 2: Content</span>
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Slug (URL)</label>
+                                <div class="relative">
+                                    <input type="text" value="bien-so-ngu-quy-999-99" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-blue-400 font-mono outline-none">
+                                    <i class="ri-link absolute right-4 top-1/2 -translate-y-1/2 text-white/20"></i>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Tags</label>
+                                <input type="text" placeholder="#NgũQuý, #BiểnĐẹp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none">
+                            </div>
+                        </div>
+                    </aside>
                 </div>
-                <button class="p-2 text-blue-500"><i class="ri-eye-line text-xl"></i></button>
+
+                <div class="lg:hidden h-16 border-t border-white/5 bg-black px-6 flex items-center justify-between shrink-0">
+                    <button class="p-2 text-white/40"><i class="ri-settings-4-line text-xl"></i></button>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Step 2: Content</span>
+                    </div>
+                    <button class="p-2 text-blue-500"><i class="ri-eye-line text-xl"></i></button>
+                </div>
             </div>
-        </div>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
         <!-- <section id="engagement-hub" class="mt-16 bg-[#080808] border border-white/5 rounded-3xl overflow-hidden shadow-2xl" style="margin-left: 3%;">

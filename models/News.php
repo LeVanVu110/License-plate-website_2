@@ -80,28 +80,81 @@ class News extends Db
         return $result->fetch_assoc();
     }
     public function getAllAdmin($page = 1, $limit = 3)
-{
-    $offset = ($page - 1) * $limit;
-    
-    // Câu lệnh lấy dữ liệu có LIMIT và OFFSET
-    $sql = "SELECT n.*, a.full_name as author_name 
+    {
+        $offset = ($page - 1) * $limit;
+
+        // Câu lệnh lấy dữ liệu có LIMIT và OFFSET
+        $sql = "SELECT n.*, a.full_name as author_name 
             FROM news n 
             LEFT JOIN admin_accounts a ON n.author_id = a.id 
             ORDER BY n.created_at DESC 
             LIMIT ? OFFSET ?";
 
-    $stmt = self::$connection->prepare($sql);
-    $stmt->bind_param("ii", $limit, $offset);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
-}
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("ii", $limit, $offset);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 
-// Hàm bổ sung để đếm tổng số bài (phục vụ phân trang)
-public function countAll() {
-    $sql = "SELECT COUNT(*) as total FROM news";
-    $result = self::$connection->query($sql);
-    $data = $result->fetch_assoc();
-    return $data['total'];
-}
+    // Hàm bổ sung để đếm tổng số bài (phục vụ phân trang)
+    public function countAll()
+    {
+        $sql = "SELECT COUNT(*) as total FROM news";
+        $result = self::$connection->query($sql);
+        $data = $result->fetch_assoc();
+        return $data['total'];
+    }
+    public function insert($title, $slug, $summary, $content, $thumbnail, $tag, $category, $author_id, $status)
+    {
+        // Câu lệnh SQL với các tham số ẩn (?) để chống SQL Injection
+        $sql = "INSERT INTO `news` 
+            (`title`, `slug`, `summary`, `content`, `thumbnail`, `tag`, `category`, `author_id`, `status`, `created_at`, `updated_at`) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+
+        $stmt = self::$connection->prepare($sql);
+
+        // Kiểm tra nếu prepare lỗi
+        if (!$stmt) {
+            return false;
+        }
+
+        /* Giải thích tham số trong bind_param:
+       s: string (chuỗi)
+       i: integer (số nguyên)
+       Thứ tự: title(s), slug(s), summary(s), content(s), thumbnail(s), tag(s), category(s), author_id(i), status(s)
+    */
+        $stmt->bind_param(
+            "sssssssis",
+            $title,
+            $slug,
+            $summary,
+            $content,
+            $thumbnail,
+            $tag,
+            $category,
+            $author_id,
+            $status
+        );
+
+        $result = $stmt->execute();
+
+        // Trả về ID của bài viết vừa chèn nếu thành công, ngược lại trả về false
+        return $result ? $stmt->insert_id : false;
+    }
+    public function getAllNewsWithAuthor()
+    {
+        // Sử dụng INNER JOIN để lấy name từ bảng customer dựa trên author_id
+        $sql = "SELECT news.*, customer.full_name as author_name 
+            FROM news 
+            INNER JOIN customer ON news.author_id = customer.id 
+            ORDER BY news.created_at DESC";
+
+        $result = self::$connection->query($sql);
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        return $items;
+    }
 }

@@ -458,4 +458,14 @@ class Customer extends Db
         }
         return $data;
     }
+    public function getCustomerNameById($id)
+    {
+        $sql = "SELECT full_name FROM customer WHERE id = ?";
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+
+        return $result ? $result['full_name'] : "Unknown";
+    }
 }
