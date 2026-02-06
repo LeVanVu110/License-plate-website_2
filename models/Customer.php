@@ -468,4 +468,15 @@ class Customer extends Db
 
         return $result ? $result['full_name'] : "Unknown";
     }
+    /**
+     * HÀM XÓA: Sử dụng Soft Delete bằng cách đổi trạng thái (status)
+     */
+    public function delete($id)
+    {
+        // Sửa tên bảng thành customers
+        $sql = "DELETE FROM customers WHERE id = ?";
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
 }

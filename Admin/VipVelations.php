@@ -27,6 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
 
     try {
         $action = $_POST['action_type'];
+        if ($action == 'delete_customer') {
+            $id = $_POST['customer_id'];
+            if ($customerModel->delete($id)) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Lỗi DB hoặc ràng buộc dữ liệu']);
+            }
+            exit; // Ngắt để không load phần HTML bên dưới
+        }
 
         // 1. LOGIC SỬA (GIỮ NGUYÊN CỦA BẠN)
         if ($action == 'save_customer') {
@@ -103,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
     }
     exit();
 }
+
 ?>
 
 <head>
@@ -1085,8 +1095,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                 Showing <?= count($customers) ?> of <?= $totalRecords ?> Elite Members
             </p>
         </section>
-        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+        <!-- <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
             <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
 
             <div id="editor-container" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
 
@@ -1158,10 +1169,98 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                     <button class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
                     <div class="flex gap-2 md:gap-4">
                         <button onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
+                        <button type="button" onclick="deleteCustomerFromEditor()" class="px-4 py-2 md:px-6 md:py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[8px] md:text-[10px] font-bold uppercase rounded-lg border border-red-500/20 transition-all">
+                            DELETE CUSTOMER
+                        </button>
                         <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px] hover:bg-white transition-all">Save Matrix</button>
                     </div>
                 </div>
             </div>
+        </div> -->
+        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+            <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
+            <form id="vip-editor-form" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
+
+                <input type="hidden" id="editor-customer-id" name="customer_id" value="">
+                <input type="hidden" id="editor-rank-value" name="rank" value="">
+                <input type="hidden" id="editor-avatar-url" name="avatar_url" value="">
+                <input type="hidden" name="action_type" id="form-action-type" value="update_customer">
+
+                <div class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
+                    <div class="flex items-center gap-2 md:gap-4">
+                        <div id="editor-rank-badge" class="px-2 py-1 rounded-full text-[3px] md:text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
+                        <h2 class="text-white/40 font-mono text-[8px] md:text-[10px] tracking-widest uppercase truncate max-w-[120px] md:max-w-none">
+                            Intelligence / <span id="editor-client-id" class="text-white">NEW</span>
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <button type="button" onclick="toggleEditMode()" id="edit-mode-btn" class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-[8px] md:text-[10px] uppercase font-bold transition-all">
+                            <i class="ri-pencil-line"></i> <span class="hidden sm:inline">Enter Edit Mode</span>
+                        </button>
+                        <button type="button" onclick="closeVipEditor()" class="p-1 text-white/20 hover:text-white transition-colors">
+                            <i class="ri-close-circle-line text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row flex-1 overflow-y-auto custom-scrollbar">
+                    <div class="w-full md:w-1/4 p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col items-center gap-4 md:gap-6">
+                        <div class="relative group cursor-pointer">
+                            <div class="w-24 h-24 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-[#D4AF37]/30 overflow-hidden relative">
+                                <img id="editor-avatar" src="https://i.pravatar.cc/150" class="w-full h-full object-cover grayscale transition-all">
+                            </div>
+                        </div>
+                        <div class="text-left md:text-center">
+                            <h3 id="editor-name-display" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
+                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Status: Active</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-48 md:pb-40">
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
+                            <div class="space-y-4">
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
+                                    <input type="text" id="editor-full-name" name="full_name" placeholder="Enter name..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Email Secure</label>
+                                    <input type="email" id="editor-email" name="email" placeholder="email@example.com" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
+                                    <input type="text" id="editor-phone" name="phone_number" placeholder="+84..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
+                            <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
+                                <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
+                                <input type="range" name="bidding_limit" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000" oninput="updateLimitText(this.value)">
+                                <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
+                                    <span>0</span>
+                                    <span id="editor-limit-text">0B VND</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center z-10">
+                    <button type="button" class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
+                    <div class="flex gap-2 md:gap-4">
+                        <button type="button" onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
+                        <button type="button" onclick="deleteCustomerFromEditor()" class="px-4 py-2 md:px-6 md:py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[8px] md:text-[10px] font-bold uppercase rounded-lg border border-red-500/20 transition-all">
+                            DELETE CUSTOMER
+                        </button>
+                        <button type="button" onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px] hover:bg-white transition-all">Save Matrix</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
@@ -1978,41 +2077,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
         const customerData = JSON.parse(cardElement.getAttribute('data-customer'));
         const rank = cardElement.getAttribute('data-rank').toLowerCase();
 
-        // ID và Name
+        // 1. Gán ID và Dữ liệu vào Form
         const idInput = document.getElementById('editor-customer-id');
-        // Lưu Rank vào input hidden để dùng cho toggleEditMode
         const rankInput = document.getElementById('editor-rank-value');
         if (rankInput) rankInput.value = rank;
         if (idInput) idInput.value = customerData.id;
 
-        const nameDisplay = document.getElementById('editor-name-display'); // Đảm bảo ID này khớp với HTML của bạn
+        const nameDisplay = document.getElementById('editor-name-display');
         if (nameDisplay) nameDisplay.innerText = customerData.full_name;
 
         document.getElementById('editor-client-id').innerText = customerData.id.toString().padStart(6, '0');
 
-        // --- SỬA TẠI ĐÂY: Dùng phone_number thay vì phone ---
         document.getElementById('editor-full-name').value = customerData.full_name;
         document.getElementById('editor-phone').value = customerData.phone_number || '';
         document.getElementById('editor-email').value = customerData.email || '';
 
-        // --- SỬA TẠI ĐÂY: Dùng avatar thay vì avatar_url ---
         const editorAvatar = document.getElementById('editor-avatar');
-        editorAvatar.src = customerData.avatar ? customerData.avatar : `https://i.pravatar.cc/150?u=${customerData.id}`;
+        if (editorAvatar) {
+            editorAvatar.src = customerData.avatar ? customerData.avatar : `https://i.pravatar.cc/150?u=${customerData.id}`;
+        }
 
-        // Financial Matrix
+        // 2. Financial Matrix
         const limit = parseFloat(customerData.bidding_limit) || 0;
         const limitRange = document.getElementById('editor-limit-range');
         const limitText = document.getElementById('editor-limit-text');
         if (limitRange) limitRange.value = limit;
         if (limitText) limitText.innerText = (limit / 1000000000).toFixed(1) + 'B VND';
 
-        // Cập nhật Rank Badge
+        // 3. Cập nhật Rank Badge
         updateBadgeStyle(rank);
 
-        // Mở Modal (GSAP)
+        // --- PHẦN SỬA CHÍNH ĐỂ HẾT ĐEN MÀN HÌNH ---
         const overlay = document.getElementById('vip-editor-overlay');
-        const container = document.getElementById('editor-container');
         const bg = document.getElementById('editor-bg');
+
+        // Thay đổi từ editor-container sang vip-editor-form
+        const formContainer = document.getElementById('vip-editor-form');
+
         const rect = cardElement.getBoundingClientRect();
 
         overlay.classList.remove('hidden');
@@ -2023,7 +2124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                 opacity: 1,
                 duration: 0.4
             })
-            .fromTo(container, {
+            .fromTo(formContainer, { // Nhắm mục tiêu vào formContainer
                 x: rect.left - (window.innerWidth / 2 - rect.width / 2),
                 y: rect.top - (window.innerHeight / 2 - rect.height / 2),
                 scale: 0.2,
@@ -2275,6 +2376,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
                 console.error(err);
                 alert("Lỗi: Không thể đọc JSON. Có thể PHP bị lỗi cú pháp hoặc in dư thẻ HTML.");
             });
+
+
+    }
+
+    function deleteCustomerFromEditor() {
+        // SỬA TẠI ĐÂY: Đổi 'edit-customer-id' thành 'editor-customer-id'
+        const idField = document.getElementById('editor-customer-id');
+
+        if (!idField) {
+            alert("Lỗi: Không tìm thấy thẻ chứa ID khách hàng!");
+            return;
+        }
+
+        const customerId = idField.value;
+
+        if (!customerId) {
+            alert("Không có ID khách hàng để xóa!");
+            return;
+        }
+
+        if (confirm('BẠN CÓ CHẮC CHẮN MUỐN XÓA? Dữ liệu sẽ biến mất vĩnh viễn!')) {
+            const formData = new FormData();
+            formData.append('action_type', 'delete_customer');
+            formData.append('customer_id', customerId);
+
+            fetch('VipVelations.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa dòng tương ứng trong bảng (tr)
+                        const row = document.querySelector(`tr[data-id="${customerId}"]`);
+                        if (row) {
+                            gsap.to(row, {
+                                x: -50,
+                                opacity: 0,
+                                duration: 0.4,
+                                onComplete: () => row.remove()
+                            });
+                        }
+                        closeVipEditor();
+                        alert('Xóa thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(err => console.error("Lỗi kết nối:", err));
+        }
     }
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {

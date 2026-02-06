@@ -193,4 +193,46 @@ class News extends Db
 
         return $stmt->execute();
     }
+    public function searchAdmin($keyword, $page = 1, $limit = 10)
+    {
+        $offset = ($page - 1) * $limit;
+        $search = "%$keyword%";
+
+        // Sử dụng JOIN để lấy luôn tên tác giả từ bảng customer
+        $sql = "SELECT news.*, customers.full_name as author_name 
+            FROM news 
+            LEFT JOIN customers ON news.author_id = customers.id 
+            WHERE news.title LIKE ? OR news.tag LIKE ? OR news.slug LIKE ?
+            ORDER BY news.created_at DESC 
+            LIMIT ? OFFSET ?";
+
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("sssii", $search, $search, $search, $limit, $offset);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function countSearch($keyword)
+    {
+        $search = "%$keyword%";
+        $sql = "SELECT COUNT(*) as total FROM news WHERE title LIKE ? OR tag LIKE ?";
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("ss", $search, $search);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc()['total'];
+    }
+    public function delete($id)
+    {
+        $sql = "DELETE FROM `news` WHERE `id` = ?";
+        $stmt = self::$connection->prepare($sql);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
 }

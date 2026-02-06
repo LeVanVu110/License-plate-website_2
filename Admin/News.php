@@ -95,6 +95,15 @@ if (isset($_POST['btn_update_news'])) {
         echo "<script>alert('Lỗi cập nhật!');</script>";
     }
 }
+$keyword = isset($_GET['search']) ? $_GET['search'] : '';
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+    $id = $_GET['id'];
+    if ($newsModel->delete($id)) {
+        echo "<script>alert('Xóa bài viết thành công!'); window.location.href='News.php';</script>";
+    } else {
+        echo "<script>alert('Lỗi: Không thể xóa bài viết!');</script>";
+    }
+}
 
 ?>
 
@@ -309,7 +318,9 @@ if (isset($_POST['btn_update_news'])) {
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <div class="relative flex-grow md:w-80">
                         <i class="ri-search-ai-line absolute left-4 top-1/2 -translate-y-1/2 text-blue-400/60"></i>
-                        <input type="text" placeholder="AI Search: Keyword or Plate ID..."
+                        <input type="text" id="ai-search-input"
+                            value="<?= htmlspecialchars($keyword) ?>"
+                            placeholder="AI Search: Keyword or Plate ID..."
                             class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm focus:border-blue-500/50 focus:ring-0 outline-none transition-all placeholder:text-white/20">
                     </div>
                     <button onclick="toggleSidePanel()" class="bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.4)] text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all transform active:scale-95 whitespace-nowrap">
@@ -428,13 +439,23 @@ if (isset($_POST['btn_update_news'])) {
             <div class="editorial-grid space-y-4" id="post-list-container">
                 <?php
                 // Xử lý logic phân trang ở đầu file
-                $limit = 3; // Bạn muốn thấy bao nhiêu bài 1 trang (ví dụ 3 bài)
+                $limit = 3;
                 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                 if ($page < 1) $page = 1;
 
+                // --- THÊM DÒNG NÀY ĐỂ ĐỊNH NGHĨA $keyword ---
+                // --------------------------------------------
 
-                $listNews = $newsModel->getAllAdmin($page, $limit);
-                $totalNews = $newsModel->countAll();
+                if (!empty($keyword)) {
+                    // Nếu có từ khóa tìm kiếm
+                    $listNews = $newsModel->searchAdmin($keyword, $page, $limit);
+                    $totalNews = $newsModel->countSearch($keyword);
+                } else {
+                    // Nếu không có tìm kiếm (mặc định)
+                    $listNews = $newsModel->getAllAdmin($page, $limit);
+                    $totalNews = $newsModel->countAll();
+                }
+
                 $totalPages = ceil($totalNews / $limit);
 
                 foreach ($listNews as $item):
@@ -524,8 +545,12 @@ if (isset($_POST['btn_update_news'])) {
                                 class="p-2 hover:bg-white/10 rounded-lg text-white/60 transition-colors" title="Preview">
                                 <i class="ri-external-link-line text-lg"></i>
                             </a>
-                            <button onclick="deletePost(<?= $item['id'] ?>)"
+                            <!-- <button onclick="deletePost(<?= $item['id'] ?>)"
                                 class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete">
+                                <i class="ri-delete-bin-line text-lg"></i>
+                            </button> -->
+                            <button onclick="if(confirm('Bạn có chắc chắn muốn xóa?')) window.location.href='News.php?action=delete&id=<?= $item['id'] ?>'"
+                                class="p-2 hover:bg-red-500/20 rounded-lg text-red-400">
                                 <i class="ri-delete-bin-line text-lg"></i>
                             </button>
                         </div>
@@ -1077,6 +1102,24 @@ if (isset($_POST['btn_update_news'])) {
                 console.log('Sắp xếp thành công!');
             })
             .catch(error => console.error('Lỗi sắp xếp:', error));
+    }
+    document.getElementById('ai-search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const keyword = this.value.trim();
+            // Chuyển hướng trang kèm theo tham số search
+            window.location.href = `News.php?search=${encodeURIComponent(keyword)}`;
+        }
+    });
+
+    // Hiệu ứng mờ dần khi chuyển trang tìm kiếm
+    if (window.location.search.includes('search=')) {
+        gsap.from("#post-list-container > .article-card", {
+            opacity: 0,
+            y: 20,
+            stagger: 0.1,
+            duration: 0.5,
+            ease: "power2.out"
+        });
     }
 
     // ----------------------------- section 2 ----------------------------- //
