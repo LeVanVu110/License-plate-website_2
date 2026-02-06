@@ -19,33 +19,56 @@ require_once dirname(__DIR__) . "/models/db.php";
 require_once dirname(__DIR__) . "/models/Customer.php";
 $customerModel = new Customer();
 // 2. XỬ LÝ AJAX POST TẠI ĐÂY (PHẢI ĐẶT TRƯỚC MỌI THẺ HTML)
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_POST['action_type'] == 'save_customer') {
-    ob_clean(); // Xóa bộ đệm
+// TÌM ĐOẠN XỬ LÝ AJAX POST Ở ĐẦU FILE VipVelations.php VÀ THAY BẰNG:
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type'])) {
+    ob_clean();
     header('Content-Type: application/json');
 
     try {
-        $id = $_POST['id'] ?? null;
-        $data = [
-            'full_name'    => $_POST['full_name'],
-            'email'        => $_POST['email'],
-            'phone_number' => $_POST['phone'], // Lấy từ input phone gán vào phone_number
-            'rank'         => $_POST['rank'],
-            'bidding_limit' => $_POST['bidding_limit'],
-            'avatar'       => $_POST['avatar']
-        ];
+        $action = $_POST['action_type'];
 
-        if (!empty($id)) {
+        // 1. LOGIC SỬA (GIỮ NGUYÊN CỦA BẠN)
+        if ($action == 'save_customer') {
+            $id = $_POST['id'] ?? null;
+            $data = [
+                'full_name'    => $_POST['full_name'],
+                'email'        => $_POST['email'],
+                'phone_number' => $_POST['phone'], // Bạn đang dùng phone_number ở Model
+                'rank'         => $_POST['rank'],
+                'bidding_limit' => $_POST['bidding_limit'],
+                'avatar'       => $_POST['avatar']
+            ];
             $result = $customerModel->update($id, $data);
-        } else {
-            // Nếu dùng hàm add(), hãy đảm bảo trong Customer.php hàm add cũng dùng phone_number
+        } else if ($action == 'portal_onboard') {
+            // 1. Nhận dữ liệu trực tiếp từ 2 ô nhập riêng biệt
+            $email = !empty($_POST['email']) ? trim($_POST['email']) : null;
+            $phone = !empty($_POST['phone_number']) ? trim($_POST['phone_number']) : null;
+
+            // 2. Chuẩn bị mảng data
+            $data = [
+                'full_name'     => $_POST['full_name'],
+                'email'         => $email,        // Sẽ là null nếu để trống
+                'phone_number'  => $phone,        // Sẽ là null nếu để trống
+                'rank'          => ucfirst(strtolower($_POST['rank'])),
+                'total_spent'   => (float)$_POST['deposit'],
+                'bidding_limit' => (float)$_POST['deposit'] * 2,
+                'avatar'        => 'https://i.pravatar.cc/150?u=' . time(),
+                'password'      => '123456'
+            ];
+
+            // 3. Gọi hàm add trong model
             $result = $customerModel->add($data);
+
+            echo json_encode(['success' => $result]);
+            exit();
         }
 
         echo json_encode(['success' => $result]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
-    exit(); // Bắt buộc phải có exit
+    exit();
 }
 ?>
 
@@ -850,11 +873,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                                             <div class="space-y-6 portal-field">
-                                                <div class="group">
-                                                    <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Identification</label>
-                                                    <input type="text" oninput="checkDuplicate(this.value)" placeholder="Phone or Email..." class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
-                                                    <div id="duplicate-warning" class="hidden items-center gap-2 mt-2 text-rose-500 animate-bounce">
-                                                        <i class="ri-error-warning-line"></i> <span class="text-[10px] font-bold">EXISTING VIP DETECTED</span>
+                                                <div class="group mb-6">
+                                                    <label class="text-[9px] text-white/30 uppercase block mb-2">Customer Full Name</label>
+                                                    <input type="text" id="portal-fullname" placeholder="Nhập họ và tên..." class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
+                                                </div>
+
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="group">
+                                                        <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Email Address</label>
+                                                        <input type="email" id="portal-email" placeholder="example@gmail.com" class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
+                                                    </div>
+                                                    <div class="group">
+                                                        <label class="text-[9px] text-[#D4AF37] uppercase tracking-widest block mb-2">Phone Number</label>
+                                                        <input type="text" id="portal-phone" placeholder="09xxxxxxx" class="w-full bg-white/5 border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-all font-light">
                                                     </div>
                                                 </div>
 
@@ -892,7 +923,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
                                                 <input type="checkbox" id="welcome-invite" class="accent-[#D4AF37]">
                                                 <label for="welcome-invite" class="text-[10px] text-white/60 uppercase tracking-widest cursor-pointer">Send Welcome Invitation</label>
                                             </div>
-                                            <button class="w-full md:w-auto px-10 py-4 bg-[#D4AF37] text-black font-black text-xs uppercase tracking-[4px] rounded-xl hover:bg-[#F1C40F] transition-all shadow-lg shadow-[#D4AF37]/20">
+                                            <button onclick="finalizePortalRegistration()" class="w-full md:w-auto px-10 py-4 bg-[#D4AF37] text-black font-black text-xs uppercase tracking-[4px] rounded-xl hover:bg-[#F1C40F] transition-all shadow-lg shadow-[#D4AF37]/20">
                                                 Finalize Registration
                                             </button>
                                         </div>
@@ -934,116 +965,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="member-masonry">
-
-                <!-- <div class="member-card-wrapper cursor-pointer" data-rank="diamond" onclick="openVipEditor(this)">
-                    <div class="member-card group relative bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-5 hover:border-cyan-400 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]">
-
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
-                                <span class="text-[6px] text-cyan-400 font-bold uppercase tracking-[2px]">Diamond Club</span>
-                            </div>
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full border-2 border-cyan-500/50 overflow-hidden shadow-inner">
-                                <img src="https://i.pravatar.cc/150?u=diamond1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="VIP Avatar">
-                            </div>
-                            <div>
-                                <h3 class="text-white font-medium text-sm tracking-wide">Mr. Hoang Nguyen</h3>
-                                <p class="text-white/40 text-[10px] font-mono mt-1">ID: #888899</p>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
-                            <div>
-                                <p class="text-[8px] text-white/30 uppercase tracking-widest">Bidding Limit</p>
-                                <p class="text-xs text-cyan-400 font-bold mt-1">25.0B VND</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[8px] text-white/30 uppercase tracking-widest">Assets</p>
-                                <p class="text-xs text-white font-bold mt-1">12 Plates</p>
-                            </div>
-                        </div>
-
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
-                            style="background-image: radial-gradient(#0891B2 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
-                    </div>
-                </div>
-                <div class="member-card-wrapper cursor-pointer" data-rank="gold" onclick="openVipEditor(this)">
-                    <div class="member-card group relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#D4AF37]/20 rounded-3xl p-5">
-
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
-                                    <span class="text-[8px] text-[#D4AF37] font-bold uppercase tracking-[2px]">Gold Member</span>
-                                </div>
-                                <div class="w-2 h-2 bg-amber-500 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
-                            </div>
-
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 rounded-full border-2 border-[#D4AF37]/30 overflow-hidden bg-[#111]">
-                                    <img src="https://i.pravatar.cc/150?u=gold2" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                                </div>
-                                <div>
-                                    <h3 class="text-white font-medium text-sm">Ms. Linh Dan</h3>
-                                    <p class="text-white/40 text-[10px] font-mono">ID: #777888</p>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
-                                <div>
-                                    <p class="text-[8px] text-white/30 uppercase">Bidding Limit</p>
-                                    <p class="text-xs text-[#D4AF37] font-bold mt-1">5.2B VND</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[8px] text-white/30 uppercase">Assets</p>
-                                    <p class="text-xs text-white font-bold mt-1">4 Plates</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
-                    </div>
-                </div>
-                <div class="member-card-wrapper cursor-pointer" data-rank="platinum" onclick="openVipEditor(this)">
-                    <div class="member-card group relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#E5E4E2]/20 rounded-3xl p-5">
-
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none"></div>
-
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="px-3 py-1 bg-[#E5E4E2]/10 border border-[#E5E4E2]/20 rounded-full">
-                                    <span class="text-[8px] text-[#E5E4E2] font-bold uppercase tracking-[2px]">Platinum Member</span>
-                                </div>
-                                <div class="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_#7c7c7c]"></div>
-                            </div>
-
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 rounded-full border-2 border-[#E5E4E2]/30 overflow-hidden bg-[#111] shadow-[0_0_15px_rgba(229,228,226,0.1)]">
-                                    <img src="https://i.pravatar.cc/150?u=platinum1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                                </div>
-                                <div>
-                                    <h3 class="text-white font-medium text-sm">Mr. Hoang Nam</h3>
-                                    <p class="text-white/40 text-[10px] font-mono">ID: #999000</p>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-6 border-t border-white/5 flex justify-between">
-                                <div>
-                                    <p class="text-[8px] text-white/30 uppercase">Bidding Limit</p>
-                                    <p class="text-xs text-[#E5E4E2] font-bold mt-1">15.8B VND</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[8px] text-white/30 uppercase">Assets</p>
-                                    <p class="text-xs text-white font-bold mt-1">12 Plates</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
-                    </div>
-                </div> -->
                 <?php
 
                 $customers = $customerModel->get(); // Lấy danh sách từ DB
@@ -1056,7 +977,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
                 foreach ($customers as $customer) {
                     echo $customerModel->renderVipCard($customer);
                 }
+                
                 ?>
+                
 
                 <style>
                     @keyframes shimmer {
@@ -1069,78 +992,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
 
             </div>
         </section>
-        <!-- <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
-            <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
-
-            <div id="editor-container" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
-
-                <div class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
-                    <div class="flex items-center gap-2 md:gap-4">
-                        <div id="editor-rank-badge" class="px-2 py-1 rounded-full text-[3px] md:text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
-                        <h2 class="text-white/40 font-mono text-[8px] md:text-[10px] tracking-widest uppercase truncate max-w-[120px] md:max-w-none">
-                            Intelligence / <span id="editor-client-id" class="text-white">8888</span>
-                        </h2>
-                    </div>
-                    <div class="flex items-center gap-2 md:gap-3">
-                        <button onclick="toggleEditMode()" id="edit-mode-btn" class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-[8px] md:text-[10px] uppercase font-bold transition-all">
-                            <i class="ri-pencil-line"></i> <span class="hidden sm:inline">Enter Edit Mode</span>
-                        </button>
-                        <button onclick="closeVipEditor()" class="p-1 text-white/20 hover:text-white transition-colors"><i class="ri-close-circle-line text-xl md:text-2xl"></i></button>
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row flex-1 overflow-y-auto custom-scrollbar">
-
-                    <div class="w-full md:w-1/4 p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col items-center gap-4 md:gap-6">
-                        <div class="relative group cursor-pointer">
-                            <div class="w-24 h-24 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-[#D4AF37]/30 overflow-hidden relative">
-                                <img id="editor-avatar" src="https://i.pravatar.cc/150?u=gold2" class="w-full h-full object-cover grayscale transition-all">
-                            </div>
-                        </div>
-                        <div class="text-left md:text-center">
-                            <h3 id="editor-name" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
-                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Loyalty Score: 850</p>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-32 md:pb-8">
-                        <div class="space-y-6 md:space-y-8">
-                            <h4 class="text-[9px] md:text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
-                            <div class="space-y-4">
-                                <div class="input-field-group">
-                                    <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
-                                    <input type="text" id="editor-full-name" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
-                                </div>
-                                <div class="input-field-group">
-                                    <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
-                                    <input type="text" id="editor-phone" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-6 md:space-y-8">
-                            <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
-                            <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
-                                <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
-                                <input type="range" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000">
-                                <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
-                                    <span>0</span>
-                                    <span id="editor-limit-text">0B VND</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center z-10">
-                    <button class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend</button>
-                    <div class="flex gap-2 md:gap-4">
-                        <button onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
-                        <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px]">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
             <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
 
@@ -1808,6 +1659,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_PO
         if (number >= 1000000000) return (number / 1000000000).toFixed(1) + " Tỷ";
         if (number >= 1000000) return (number / 1000000).toFixed(0) + " Triệu";
         return number.toLocaleString('vi-VN');
+    }
+    async function finalizePortalRegistration() {
+        // 1. Lấy phần tử
+        const nameInput = document.getElementById('portal-fullname');
+        const emailInput = document.getElementById('portal-email');
+        const phoneInput = document.getElementById('portal-phone');
+        const depositInput = document.getElementById('deposit-input');
+        const rankDisplay = document.getElementById('rank-name');
+
+        if (!nameInput || !emailInput || !phoneInput || !depositInput) {
+            alert("Lỗi hệ thống: Không tìm thấy các ô nhập liệu!");
+            return;
+        }
+
+        // 2. Lấy giá trị
+        const fullName = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const deposit = depositInput.value;
+        const rankName = rankDisplay ? rankDisplay.innerText : "Gold";
+
+        // 3. Kiểm tra nhập liệu (Bắt buộc Tên, Tiền và ít nhất 1 phương thức liên lạc)
+        if (!fullName || !deposit || (!email && !phone)) {
+            alert("Vui lòng điền Họ tên, Số tiền và ít nhất Email hoặc Số điện thoại!");
+            return;
+        }
+
+        // 4. Hiệu ứng nút bấm
+        const btn = event.currentTarget;
+        const originalText = btn.innerText;
+        btn.innerText = "INITIALIZING...";
+        btn.disabled = true;
+
+        // 5. Chuẩn bị dữ liệu gửi đi
+        const formData = new FormData();
+        formData.append('action_type', 'portal_onboard');
+        formData.append('full_name', fullName);
+        formData.append('email', email);
+        formData.append('phone_number', phone);
+        formData.append('deposit', deposit);
+        formData.append('rank', rankName.replace(' MEMBER', '').trim());
+
+        try {
+            const response = await fetch('VipVelations.php', {
+                method: 'POST',
+                body: formData
+            });
+            const res = await response.json();
+
+            if (res.success) {
+                alert("Matrix Integrated: Thêm VIP mới thành công!");
+                location.reload();
+            } else {
+                alert("Lỗi: " + (res.message || "Không thể thêm khách hàng"));
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+            alert("Lỗi kết nối máy chủ!");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
 
     // ----------------------------- section 2 ----------------------------- //

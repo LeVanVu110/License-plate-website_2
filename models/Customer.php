@@ -24,6 +24,50 @@ class Customer extends Db
             return $result->fetch_all(MYSQLI_ASSOC);
         }
     }
+    // public function get($keyword = null, $page = 1, $limit = 6, $rank = null)
+    // {
+    //     $offset = ($page - 1) * $limit;
+    //     $sql = "SELECT * FROM customers WHERE 1=1";
+    //     $params = [];
+    //     $types = "";
+
+    //     if ($keyword) {
+    //         $sql .= " AND (full_name LIKE ? OR email LIKE ? OR phone_number LIKE ?)";
+    //         $search = "%$keyword%";
+    //         array_push($params, $search, $search, $search);
+    //         $types .= "sss";
+    //     }
+
+    //     if ($rank && $rank !== 'all') {
+    //         $sql .= " AND rank = ?";
+    //         array_push($params, $rank);
+    //         $types .= "s";
+    //     }
+
+    //     $sql .= " ORDER BY total_spent DESC LIMIT ? OFFSET ?";
+    //     array_push($params, $limit, $offset);
+    //     $types .= "ii";
+
+    //     $stmt = self::$connection->prepare($sql);
+    //     $stmt->bind_param($types, ...$params);
+    //     $stmt->execute();
+    //     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // }
+
+    // Hàm bổ sung để tính tổng số trang
+    public function countAll($keyword = null)
+    {
+        if ($keyword) {
+            $search = "%$keyword%";
+            $sql = "SELECT COUNT(*) as total FROM customers WHERE full_name LIKE ? OR email LIKE ? OR phone_number LIKE ?";
+            $stmt = self::$connection->prepare($sql);
+            $stmt->bind_param("sss", $search, $search, $search);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_assoc()['total'];
+        }
+        $result = self::$connection->query("SELECT COUNT(*) as total FROM customers");
+        return $result->fetch_assoc()['total'];
+    }
     // HÀM MỚI: Lấy thông tin chi tiết của 1 người dùng theo ID
     public function getUserById($id)
     {
@@ -322,23 +366,25 @@ class Customer extends Db
     }
     public function add($data)
     {
-        $sql = "INSERT INTO customers (full_name, email, rank, bidding_limit, total_spent, avatar_url, phone, password_hash) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        // SQL: Tên cột thực tế trong DB của bạn là 'phone' và 'password_hash'
+        $sql = "INSERT INTO customers (full_name, email, phone_number, rank, total_spent, bidding_limit, avatar, password_hash) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = self::$connection->prepare($sql);
 
-        // Hash mật khẩu mặc định nếu không có
+        // Xử lý mật khẩu
         $password = password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT);
 
+        // Bind param: 8 tham số (ssssddss)
         $stmt->bind_param(
-            "sssddsss",
+            "ssssddss",
             $data['full_name'],
             $data['email'],
+            $data['phone_number'], // Lấy từ key 'phone_number' bạn muốn
             $data['rank'],
-            $data['bidding_limit'],
             $data['total_spent'],
-            $data['avatar_url'],
-            $data['phone'],
+            $data['bidding_limit'],
+            $data['avatar'],
             $password
         );
 
