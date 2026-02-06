@@ -79,4 +79,29 @@ class News extends Db
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+    public function getAllAdmin($page = 1, $limit = 3)
+{
+    $offset = ($page - 1) * $limit;
+    
+    // Câu lệnh lấy dữ liệu có LIMIT và OFFSET
+    $sql = "SELECT n.*, a.full_name as author_name 
+            FROM news n 
+            LEFT JOIN admin_accounts a ON n.author_id = a.id 
+            ORDER BY n.created_at DESC 
+            LIMIT ? OFFSET ?";
+
+    $stmt = self::$connection->prepare($sql);
+    $stmt->bind_param("ii", $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+// Hàm bổ sung để đếm tổng số bài (phục vụ phân trang)
+public function countAll() {
+    $sql = "SELECT COUNT(*) as total FROM news";
+    $result = self::$connection->query($sql);
+    $data = $result->fetch_assoc();
+    return $data['total'];
+}
 }

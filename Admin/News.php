@@ -17,6 +17,8 @@ require_once dirname(__DIR__) . "/config.php";
 // 2. Nạp db.php (Cùng nằm trong thư mục Models với file này)
 require_once dirname(__DIR__) . "/models/db.php";
 require_once dirname(__DIR__) . "/models/Customer.php";
+require_once dirname(__DIR__) . "/models/News.php";
+
 
 ?>
 
@@ -268,7 +270,7 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                 </div>
             </div>
 
-            <div class="editorial-grid space-y-4" id="post-list-container">
+            <!-- <div class="editorial-grid space-y-4" id="post-list-container">
                 <div class="article-card group relative bg-white/[0.02] border border-white/5 hover:border-blue-500/30 rounded-2xl p-3 flex flex-col md:flex-row items-center gap-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(37,99,235,0.1)]"
                     data-id="101">
 
@@ -344,6 +346,126 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                         <button onclick="openArticleForge('create')" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit"><i class="ri-pencil-line text-lg"></i></button>
                         <button class="p-2 hover:bg-white/10 rounded-lg text-white/60 transition-colors" title="Preview"><i class="ri-external-link-line text-lg"></i></button>
                         <button class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><i class="ri-delete-bin-line text-lg"></i></button>
+                    </div>
+                </div>
+            </div> -->
+            <div class="editorial-grid space-y-4" id="post-list-container">
+                <?php
+                // Xử lý logic phân trang ở đầu file
+                $limit = 3; // Bạn muốn thấy bao nhiêu bài 1 trang (ví dụ 3 bài)
+                $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                if ($page < 1) $page = 1;
+
+                $newsModel = new News();
+                $listNews = $newsModel->getAllAdmin($page, $limit);
+                $totalNews = $newsModel->countAll();
+                $totalPages = ceil($totalNews / $limit);
+
+                foreach ($listNews as $item):
+                    // Xử lý hiển thị tag và màu sắc status
+                    $statusClass = ($item['status'] == 'Published')
+                        ? 'bg-blue-600/20 text-blue-400 border-blue-500/30'
+                        : 'bg-white/10 text-white/40 border-white/20';
+
+                    // Format ngày tháng
+                    $date = date('M d, Y', strtotime($item['created_at']));
+                ?>
+                    <div class="article-card group relative bg-white/[0.02] border border-white/5 hover:border-blue-500/30 rounded-2xl p-3 flex flex-col md:flex-row items-center gap-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(37,99,235,0.1)]"
+                        data-id="<?= $item['id'] ?>">
+
+                        <div class="hidden md:flex drag-handle cursor-grab active:cursor-grabbing text-white/10 hover:text-white/40 px-2">
+                            <i class="ri-draggable text-xl"></i>
+                        </div>
+
+                        <div class="w-full md:w-48 aspect-video rounded-xl overflow-hidden bg-white/5 border border-white/10 relative">
+                            <img src="<?= $item['thumbnail'] ?>"
+                                alt="<?= htmlspecialchars($item['title']) ?>"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden"></div>
+
+                            <div class="absolute bottom-3 left-3 md:hidden">
+                                <span class="status-badge px-3 py-1 bg-blue-600 text-[10px] font-bold rounded-full">
+                                    <?= strtoupper($item['status']) ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow space-y-2 w-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] text-blue-400 font-mono uppercase tracking-widest">
+                                        <?= str_replace('_', ' ', $item['category']) ?>
+                                    </span>
+                                    <h3 class="text-lg font-bold text-white/90 group-hover:text-white transition-colors line-clamp-1">
+                                        <?= htmlspecialchars($item['title']) ?>
+                                    </h3>
+                                </div>
+
+                                <div class="hidden md:block" style="margin-top: 10px;">
+                                    <span onclick="flipStatus(this, <?= $item['id'] ?>)"
+                                        class="cursor-pointer status-badge px-3 py-1 border text-[10px] font-bold rounded-lg transition-all duration-500 <?= $statusClass ?>">
+                                        <?= strtoupper($item['status']) ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-6 text-[11px] text-white/30 font-mono">
+                                <span class="flex items-center gap-1">
+                                    <i class="ri-eye-line"></i> <?= number_format($item['views'] ?? 0) ?>
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i class="ri-calendar-line"></i> <?= $date ?>
+                                </span>
+                                <span class="flex items-center gap-1 text-blue-400/60">
+                                    <i class="ri-price-tag-3-line"></i> <?= $item['tag'] ?>
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i class="ri-user-smile-line"></i> <?= $item['author_name'] ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex md:opacity-0 group-hover:opacity-100 items-center gap-2 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 pr-4">
+                            <button onclick="openArticleForge('edit', <?= $item['id'] ?>)"
+                                class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit">
+                                <i class="ri-pencil-line text-lg"></i>
+                            </button>
+                            <a href="chitiet_tintuc.php?slug=<?= $item['slug'] ?>" target="_blank"
+                                class="p-2 hover:bg-white/10 rounded-lg text-white/60 transition-colors" title="Preview">
+                                <i class="ri-external-link-line text-lg"></i>
+                            </a>
+                            <button onclick="deletePost(<?= $item['id'] ?>)"
+                                class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete">
+                                <i class="ri-delete-bin-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                <div class="mt-8 flex items-center justify-between border-t border-white/5 pt-6">
+                    <p class="text-[11px] text-white/20 font-mono uppercase">
+                        Showing <?= count($listNews) ?> of <?= $totalNews ?> articles
+                    </p>
+
+                    <div class="flex items-center gap-2">
+                        <?php if ($page > 1): ?>
+                            <a href="?page=<?= $page - 1 ?>" class="p-2 bg-white/5 hover:bg-blue-600/20 text-white/40 hover:text-blue-400 rounded-lg transition-all">
+                                <i class="ri-arrow-left-s-line"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <a href="?page=<?= $i ?>"
+                                class="px-4 py-2 rounded-lg text-xs font-bold transition-all <?= $i == $page ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]' : 'bg-white/5 text-white/40 hover:bg-white/10' ?>">
+                                <?= $i ?>
+                            </a>
+                        <?php endfor; ?>
+
+                        <?php if ($page < $totalPages): ?>
+                            <a href="?page=<?= $page + 1 ?>" class="p-2 bg-white/5 hover:bg-blue-600/20 text-white/40 hover:text-blue-400 rounded-lg transition-all">
+                                <i class="ri-arrow-right-s-line"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -677,7 +799,7 @@ require_once dirname(__DIR__) . "/models/Customer.php";
     window.addEventListener('load', () => {
         gsap.from(".article-card", {
             y: 20,
-            opacity: 0,
+            // opacity: 0,
             duration: 0.8,
             stagger: 0.1,
             ease: "power2.out"
