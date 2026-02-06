@@ -47,12 +47,15 @@ require_once dirname(__DIR__) . "/models/Customer.php";
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         body {
             background-color: #000814;
             margin: 0;
             padding: 0;
         }
+
+
 
         /* ----------------------------- section 1 -----------------------------  */
         .font-mono {
@@ -95,6 +98,107 @@ require_once dirname(__DIR__) . "/models/Customer.php";
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        /* 2. Tùy chỉnh thanh cuộn (Custom Scrollbar) phong cách Matrix */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+            /* Sapphire Blue khi hover */
+        }
+
+        /* 3. Article Forge (Side Panel) Shadow & Transition */
+        #article-forge {
+            box-shadow: -30px 0 70px rgba(0, 0, 0, 0.9);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 4. Rich Text Editor Styling (Quan trọng) */
+        [contenteditable="true"]:empty:before {
+            content: attr(data-placeholder);
+            color: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        #rich-editor img {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        #rich-editor img:hover {
+            border-color: #2563eb;
+            cursor: pointer;
+        }
+
+        /* 5. Hiệu ứng Floating Toolbar */
+        #floating-toolbar {
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.9);
+            animation: toolbarFadeIn 0.2s ease-out;
+        }
+
+        @keyframes toolbarFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 6. Trạng thái Badge Status Flip */
+        .status-badge {
+            backface-visibility: hidden;
+            display: inline-block;
+        }
+
+        /* 7. Preview Mode - Giả lập giao diện người dùng xem */
+        .preview-mode {
+            background: #fff !important;
+            color: #1a1a1a !important;
+            padding: 40px !important;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 8. Hiệu ứng Progress Bar Sapphire Glow */
+        #progress-bar {
+            position: relative;
+        }
+
+        #progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 100%;
+            background: #fff;
+            filter: blur(5px);
+            box-shadow: 0 0 15px #2563eb;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #article-forge {
+                width: 100% !important;
+                /* Chiếm toàn màn hình trên mobile */
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -164,10 +268,49 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                 </div>
             </div>
 
-            <div class="editorial-grid space-y-4">
+            <div class="editorial-grid space-y-4" id="post-list-container">
+                <div class="article-card group relative bg-white/[0.02] border border-white/5 hover:border-blue-500/30 rounded-2xl p-3 flex flex-col md:flex-row items-center gap-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(37,99,235,0.1)]"
+                    data-id="101">
+
+                    <div class="hidden md:flex drag-handle cursor-grab active:cursor-grabbing text-white/10 hover:text-white/40 px-2">
+                        <i class="ri-draggable text-xl"></i>
+                    </div>
+
+                    <div class="w-full md:w-48 aspect-video rounded-xl overflow-hidden bg-white/5 border border-white/10 relative">
+                        <img src="https://images.unsplash.com/photo-1614062486668-3e9a59755497?q=80&w=400&h=225&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.5] group-hover:grayscale-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden"></div>
+                        <div class="absolute bottom-3 left-3 md:hidden">
+                            <span class="status-badge px-3 py-1 bg-blue-600 text-[10px] font-bold rounded-full">PUBLIC</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow space-y-2 w-full">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] text-blue-400 font-mono uppercase tracking-widest">Market Insights</span>
+                                <h3 class="text-lg font-bold text-white/90 group-hover:text-white transition-colors line-clamp-1">Kỷ lụcs đấu giá mới cho biển số ngũ quý 9: Đẳng cấp Sapphire</h3>
+                            </div>
+                            <div class="hidden md:block" style="margin-top: 20px;">
+                                <span onclick="flipStatus(this)" class="cursor-pointer status-badge px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold rounded-lg transition-all duration-500">PUBLIC</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-6 text-[11px] text-white/30 font-mono">
+                            <span class="flex items-center gap-1"><i class="ri-eye-line"></i> 1,240</span>
+                            <span class="flex items-center gap-1"><i class="ri-calendar-line"></i> Feb 06, 2026</span>
+                            <span class="flex items-center gap-1 text-blue-400/60"><i class="ri-price-tag-3-line"></i> 51K-999.99</span>
+                        </div>
+                    </div>
+
+                    <div class="flex md:opacity-0 group-hover:opacity-100 items-center gap-2 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 pr-4">
+                        <button onclick="openArticleForge('create')" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit"><i class="ri-pencil-line text-lg"></i></button>
+                        <button class="p-2 hover:bg-white/10 rounded-lg text-white/60 transition-colors" title="Preview"><i class="ri-external-link-line text-lg"></i></button>
+                        <button class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><i class="ri-delete-bin-line text-lg"></i></button>
+                    </div>
+                </div>
                 <div class="article-card group relative bg-white/[0.02] border border-white/5 hover:border-blue-500/30 rounded-2xl p-3 flex flex-col md:flex-row items-center gap-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(37,99,235,0.1)]">
 
-                    <div class="hidden md:flex cursor-grab active:cursor-grabbing text-white/10 hover:text-white/40 px-2">
+                    <div class="hidden md:flex drag-handle cursor-grab active:cursor-grabbing text-white/10 hover:text-white/40 px-2">
                         <i class="ri-draggable text-xl"></i>
                     </div>
 
@@ -185,7 +328,7 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                                 <span class="text-[10px] text-blue-400 font-mono uppercase tracking-widest">Market Insights</span>
                                 <h3 class="text-lg font-bold text-white/90 group-hover:text-white transition-colors line-clamp-1">Kỷ lục đấu giá mới cho biển số ngũ quý 9: Đẳng cấp Sapphire</h3>
                             </div>
-                            <div class="hidden md:block">
+                            <div class="hidden md:block" style="margin-top: 20px;">
                                 <span onclick="flipStatus(this)" class="cursor-pointer status-badge px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold rounded-lg transition-all duration-500">PUBLIC</span>
                             </div>
                         </div>
@@ -198,7 +341,7 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                     </div>
 
                     <div class="flex md:opacity-0 group-hover:opacity-100 items-center gap-2 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 pr-4">
-                        <button class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit"><i class="ri-pencil-line text-lg"></i></button>
+                        <button onclick="openArticleForge('create')" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit"><i class="ri-pencil-line text-lg"></i></button>
                         <button class="p-2 hover:bg-white/10 rounded-lg text-white/60 transition-colors" title="Preview"><i class="ri-external-link-line text-lg"></i></button>
                         <button class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors" title="Delete"><i class="ri-delete-bin-line text-lg"></i></button>
                     </div>
@@ -218,6 +361,7 @@ require_once dirname(__DIR__) . "/models/Customer.php";
                         <button onclick="toggleSidePanel()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors">
                             <i class="ri-close-line text-2xl"></i>
                         </button>
+
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -263,8 +407,235 @@ require_once dirname(__DIR__) . "/models/Customer.php";
         </div>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
+        <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out shadow-[-20px_0_60px_rgba(0,0,0,0.8)] flex flex-col">
+
+            <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center gap-1">
+                    <button onclick="closeForge()" class="text-white/40 hover:text-white transition-colors text-sm font-medium">CANCEL</button>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-white/40 font-bold tracking-widest uppercase">Completion</span>
+                        <div class="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-blue-600 w-[65%] shadow-[0_0_10px_#2563eb]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div id="auto-save-pulse" class="flex items-center gap-2 px-3 text-blue-400/60 hidden">
+                        <i class="ri-cloud-line animate-pulse"></i>
+                        <span class="text-[10px] font-mono uppercase">Auto-saved</span>
+                    </div>
+                    <button class="px-4 py-2 text-white/60 hover:text-white text-sm transition-colors">Save Draft</button>
+                    <button class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[14px] font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
+                        PUBLISH
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-grow overflow-hidden">
+
+                <div class="flex-grow overflow-y-auto p-8 lg:p-12 custom-scrollbar relative" id="editor-container">
+                    <div id="floating-toolbar" class="absolute hidden bg-[#1a1a1a] border border-white/10 rounded-lg p-1 shadow-2xl flex items-center gap-1 z-50">
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-bold"></i></button>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-italic"></i></button>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-link"></i></button>
+                        <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-h-1"></i></button>
+                    </div>
+
+                    <input type="text" placeholder="Article Headline..." class="w-full bg-transparent border-none text-4xl lg:text-5xl font-bold text-white placeholder:text-white/10 outline-none mb-8">
+
+                    <div id="rich-editor" contenteditable="true" class="prose prose-invert prose-blue max-w-none min-h-[500px] outline-none text-white/70 text-lg leading-relaxed" data-placeholder="Start writing the future...">
+                        <div contenteditable="false" class="my-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center justify-between group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center font-bold text-blue-400">51K</div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Linked Asset</p>
+                                    <p class="text-white font-mono uppercase">999.99 - Ngũ Quý Sapphire</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">BID NOW</button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="w-80 border-l border-white/5 bg-black/20 p-6 hidden lg:flex flex-col gap-8 overflow-y-auto shrink-0">
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h5 class="text-[11px] font-bold text-white/40 uppercase tracking-widest">SEO Analyzer</h5>
+                            <div class="flex gap-1">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
+                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-emerald-400/80">Great! Headline is highly engaging.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Featured Image</label>
+                        <div id="drop-zone" class="aspect-video rounded-2xl border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-2 group hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden relative">
+                            <i class="ri-image-add-line text-2xl text-white/20 group-hover:text-blue-500 transition-colors"></i>
+                            <span class="text-[10px] text-white/20 font-bold group-hover:text-white transition-colors uppercase">Drop 16:9 Image</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Category</label>
+                            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none focus:border-blue-500/50">
+                                <option>Auction News</option>
+                                <option>Market Trends</option>
+                                <option>Events</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Slug (URL)</label>
+                            <div class="relative">
+                                <input type="text" value="bien-so-ngu-quy-999-99" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-blue-400 font-mono outline-none">
+                                <i class="ri-link absolute right-4 top-1/2 -translate-y-1/2 text-white/20"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Tags</label>
+                            <input type="text" placeholder="#NgũQuý, #BiểnĐẹp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none">
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="lg:hidden h-16 border-t border-white/5 bg-black px-6 flex items-center justify-between shrink-0">
+                <button class="p-2 text-white/40"><i class="ri-settings-4-line text-xl"></i></button>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Step 2: Content</span>
+                </div>
+                <button class="p-2 text-blue-500"><i class="ri-eye-line text-xl"></i></button>
+            </div>
+        </div>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
+        <!-- <section id="engagement-hub" class="mt-16 bg-[#080808] border border-white/5 rounded-3xl overflow-hidden shadow-2xl" style="margin-left: 3%;">
+
+            <div class="grid grid-cols-1 md:grid-cols-4 border-b border-white/5 bg-white/[0.02]">
+                <div class="p-6 border-r border-white/5">
+                    <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Total Comments</p>
+                    <h3 class="text-2xl font-bold mt-1 font-mono">2,840</h3>
+                </div>
+                <div class="p-6 border-r border-white/5 relative overflow-hidden">
+                    <p class="text-[10px] text-orange-400 font-bold uppercase tracking-widest">Pending Review</p>
+                    <h3 class="text-2xl font-bold mt-1 font-mono text-orange-400">142</h3>
+                    <div class="absolute bottom-0 left-0 h-1 bg-orange-500 w-1/3 shadow-[0_0_10px_#f97316]"></div>
+                </div>
+                <div class="p-6 border-r border-white/5">
+                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">VIP Interactions</p>
+                    <h3 class="text-2xl font-bold mt-1 font-mono text-blue-400">89</h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-[10px] text-red-400 font-bold uppercase tracking-widest">Top Flagged Keyword</p>
+                    <h3 class="text-lg font-bold mt-1 uppercase text-red-400">"Lừa đảo" <span class="text-[10px] text-white/20">(12)</span></h3>
+                </div>
+            </div>
+
+            <div class="p-4 bg-black/40 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <button class="px-4 py-2 bg-blue-600/10 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">All</button>
+                    <button class="px-4 py-2 bg-white/5 text-white/40 text-xs font-bold rounded-lg border border-white/5 hover:border-red-500/30 hover:text-red-400 transition-all flex items-center gap-2">
+                        <i class="ri-pulse-line"></i> Negative (AI)
+                    </button>
+                    <button class="px-4 py-2 bg-white/5 text-white/40 text-xs font-bold rounded-lg border border-white/5 hover:border-cyan-400/30 hover:text-cyan-400 transition-all">VIP Only</button>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-[10px] text-white/20 uppercase font-mono italic">Admin A is typing...</span>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <button class="text-xs text-white/40 hover:text-white transition-colors">Bulk Approve</button>
+                </div>
+            </div>
+
+            <div class="comment-feed divide-y divide-white/5" id="comment-list">
+
+                <div class="comment-item group relative p-6 hover:bg-white/[0.01] transition-all flex gap-5 items-start border-l-4 border-red-500/50">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500 shadow-[0_0_15px_#ef4444]"></div>
+
+                    <div class="relative shrink-0">
+                        <div class="w-12 h-12 rounded-full border-2 border-red-500/30 p-0.5 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                            <img src="https://i.pravatar.cc/100?u=12" class="w-full h-full rounded-full grayscale group-hover:grayscale-0 transition-all">
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 px-1.5 bg-red-600 text-[8px] font-bold rounded border border-black uppercase">Spam?</div>
+                    </div>
+
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="text-sm font-bold text-white/90">Nguyễn Văn Tèo <span class="ml-2 text-[10px] text-white/20 font-normal">#ID8829</span></h4>
+                                <p class="text-[10px] text-blue-400/60 uppercase tracking-tighter mt-0.5">Bài viết: "Kỷ lục đấu giá mới..."</p>
+                            </div>
+                            <span class="text-[10px] text-white/20 font-mono italic">2 mins ago</span>
+                        </div>
+                        <p class="text-sm text-white/60 leading-relaxed bg-red-500/5 p-3 rounded-xl border border-red-500/10 italic">
+                            "Web lừa đảo đó anh em ơi, đừng tin, tôi nạp tiền không được!"
+                        </p>
+
+                        <div class="mt-4 flex items-center gap-4">
+                            <button onclick="approveComment(this)" class="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-all">
+                                <i class="ri-check-double-line text-sm"></i> APPROVE
+                            </button>
+                            <button class="text-[10px] font-bold text-red-400 hover:text-red-300 flex items-center gap-1" onclick="this.closest('.comment-item').remove()">
+                                <i class="ri-delete-bin-7-line text-sm"></i> DELETE
+                            </button>
+                            <button onclick="toggleReplyBox(this)" class="text-[10px] font-bold text-white/30 hover:text-white flex items-center gap-1">
+                                <i class="ri-reply-line text-sm"></i> QUICK REPLY
+                            </button>
+                        </div>
+
+                        <div class="reply-box hidden mt-4 pt-4 border-t border-white/5 animate-slide-down">
+                            <div class="relative">
+                                <textarea placeholder="Write a response as Admin..." class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-white outline-none focus:border-blue-500/50 min-h-[80px]"></textarea>
+                                <button class="absolute bottom-3 right-3 px-4 py-1.5 bg-blue-600 text-[10px] font-bold rounded-lg">SEND</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-item group relative p-6 hover:bg-white/[0.01] transition-all flex gap-5 items-start border-l-4 border-cyan-500">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_#22d3ee]"></div>
+
+                    <div class="relative shrink-0">
+                        <div class="w-12 h-12 rounded-full border-2 border-cyan-500 p-0.5 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                            <img src="https://i.pravatar.cc/100?u=99" class="w-full h-full rounded-full">
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 px-1.5 bg-cyan-500 text-[8px] font-bold text-black rounded border border-black uppercase">DIAMOND</div>
+                    </div>
+
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="text-sm font-bold text-cyan-400">Trần Thế Khải <i class="ri-vip-crown-fill text-xs"></i></h4>
+                                <p class="text-[10px] text-white/20 uppercase tracking-tighter mt-0.5">Bài viết: "Sự trỗi dậy của Sapphire..."</p>
+                            </div>
+                            <span class="text-[10px] text-white/20 font-mono italic">10:45 AM</span>
+                        </div>
+                        <p class="text-sm text-white/80 leading-relaxed">
+                            "Tuyệt vời! Tôi vừa trúng đấu giá biển 51K-999.99 nhờ bài viết hướng dẫn này. Sàn làm việc rất chuyên nghiệp."
+                        </p>
+
+                        <div class="mt-4 flex items-center gap-4">
+                            <button class="text-[10px] font-bold text-white/30 hover:text-white flex items-center gap-1">
+                                <i class="ri-thumb-up-line text-sm"></i> 24 LIKES
+                            </button>
+                            <button onclick="toggleReplyBox(this)" class="text-[10px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                                <i class="ri-reply-line text-sm"></i> REPLY AS ADMIN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
 
         <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -323,10 +694,222 @@ require_once dirname(__DIR__) . "/models/Customer.php";
             }
         }
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const postList = document.getElementById('post-list-container');
+
+        // Khởi tạo Sortable
+        new Sortable(postList, {
+            handle: '.drag-handle', // Chỉ cho phép kéo tại icon 6 chấm
+            animation: 150, // Tốc độ trượt (ms)
+            ghostClass: 'bg-blue-600/10', // Màu nền của mục đang được kéo
+            chosenClass: 'border-blue-500', // Viền của mục khi được chọn
+            dragClass: 'opacity-50', // Độ mờ khi đang di chuyển
+
+            // Sự kiện xảy ra khi thả chuột (kết thúc kéo)
+            onEnd: function(evt) {
+                // Lấy danh sách ID theo thứ tự mới
+                const rows = postList.querySelectorAll('.article-card');
+                let newOrder = [];
+                rows.forEach((row, index) => {
+                    newOrder.push({
+                        id: row.getAttribute('data-id'),
+                        position: index + 1
+                    });
+                });
+
+                console.log('Thứ tự mới:', newOrder);
+
+                // Gọi hàm lưu vào Database
+                saveNewOrder(newOrder);
+            },
+        });
+    });
+
+    // Hàm gửi dữ liệu lên Server qua AJAX
+    function saveNewOrder(orderData) {
+        // Hiển thị hiệu ứng "Auto-save Pulse" đã làm ở Section 2 để thông báo
+        triggerAutoSave();
+
+        fetch('update_order.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order: orderData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Sắp xếp thành công!');
+            })
+            .catch(error => console.error('Lỗi sắp xếp:', error));
+    }
 
     // ----------------------------- section 2 ----------------------------- //
+    // 1. Hiệu ứng Floating Toolbar khi bôi đen văn bản
+    const editor = document.getElementById('rich-editor');
+    const toolbar = document.getElementById('floating-toolbar');
+
+    editor.addEventListener('mouseup', () => {
+        const selection = window.getSelection();
+        if (selection.toString().length > 0) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+
+            toolbar.style.left = `${rect.left + (rect.width / 2) - (toolbar.offsetWidth / 2)}px`;
+            toolbar.style.top = `${rect.top - 50 + window.scrollY}px`;
+            toolbar.classList.remove('hidden');
+
+            gsap.from(toolbar, {
+                y: 10,
+                opacity: 0,
+                duration: 0.2
+            });
+        } else {
+            toolbar.classList.add('hidden');
+        }
+    });
+
+    // 2. Giả lập hiệu ứng Auto-save Pulse
+    function triggerAutoSave() {
+        const pulse = document.getElementById('auto-save-pulse');
+        pulse.classList.remove('hidden');
+
+        gsap.fromTo(pulse, {
+            opacity: 0
+        }, {
+            opacity: 1,
+            duration: 0.5,
+            onComplete: () => {
+                setTimeout(() => {
+                    gsap.to(pulse, {
+                        opacity: 0,
+                        duration: 1,
+                        onComplete: () => pulse.classList.add('hidden')
+                    });
+                }, 2000);
+            }
+        });
+    }
+    // Chạy thử sau mỗi 10 giây
+    setInterval(triggerAutoSave, 10000);
+
+    // 3. Xử lý Drag-and-Drop ảnh vào Editor
+    const dropZone = document.getElementById('drop-zone');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-blue-500', 'bg-blue-500/10');
+        gsap.to(dropZone, {
+            scale: 1.02,
+            duration: 0.3
+        });
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-blue-500', 'bg-blue-500/10');
+        gsap.to(dropZone, {
+            scale: 1,
+            duration: 0.3
+        });
+    });
+
+    // 4. Asset Linker Logic (Gõ # hiện card)
+    editor.addEventListener('input', (e) => {
+        const content = editor.innerText;
+        if (content.endsWith('#')) {
+            // Logica hiển thị menu gợi ý biển số tại đây
+            console.log("Trigger Asset Linker Menu...");
+        }
+    });
+    // Hàm mở trình soạn thảo (Dùng cho cả Thêm mới và Sửa)
+    function openArticleForge(mode = 'create', data = null) {
+        const forge = document.getElementById('article-forge');
+        const titleInput = forge.querySelector('input[type="text"]');
+        const richEditor = document.getElementById('rich-editor');
+
+        if (mode === 'create') {
+            // Reset form nếu là thêm mới
+            titleInput.value = '';
+            richEditor.innerHTML = '';
+            // Cập nhật thanh tiến trình về 0%
+            updateProgress(0);
+        } else if (mode === 'edit' && data) {
+            // Nạp dữ liệu vào nếu là chỉnh sửa
+            titleInput.value = data.title;
+            richEditor.innerHTML = data.content;
+            updateProgress(100);
+        }
+
+        // Hiệu ứng trượt vào bằng GSAP
+        gsap.to(forge, {
+            x: 0,
+            duration: 0.6,
+            ease: "power4.out"
+        });
+    }
+
+    // Hàm đóng trình soạn thảo
+    function closeForge() {
+        const forge = document.getElementById('article-forge');
+        gsap.to(forge, {
+            x: '100%',
+            duration: 0.5,
+            ease: "power4.in"
+        });
+    }
+
+    // Hàm cập nhật thanh tiến trình (Progress Bar)
+    function updateProgress(percent) {
+        gsap.to("#progress-bar", {
+            width: `${percent}%`,
+            duration: 0.5
+        });
+    }
 
     // ----------------------------- section 3 ----------------------------- //
+    // 1. Hiệu ứng "The Sweep Action" khi duyệt bình luận
+    function approveComment(btn) {
+        const item = btn.closest('.comment-item');
+
+        // GSAP Animation: Trượt phải + Mờ dần
+        gsap.to(item, {
+            x: 100,
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.in",
+            onComplete: () => {
+                item.remove();
+                // Cập nhật bộ đếm (Ví dụ đơn giản)
+                const count = document.querySelector('.text-orange-400');
+                count.innerText = parseInt(count.innerText) - 1;
+            }
+        });
+    }
+
+    // 2. Hiện khung trả lời nhanh (Quick Reply Overlay)
+    function toggleReplyBox(btn) {
+        const commentBody = btn.closest('.flex-grow');
+        const replyBox = commentBody.querySelector('.reply-box');
+
+        if (replyBox.classList.contains('hidden')) {
+            replyBox.classList.remove('hidden');
+            gsap.from(replyBox, {
+                height: 0,
+                opacity: 0,
+                duration: 0.4,
+                ease: "back.out(1.7)"
+            });
+        } else {
+            gsap.to(replyBox, {
+                height: 0,
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => replyBox.classList.add('hidden')
+            });
+        }
+    }
 
     // ----------------------------- section 4 ----------------------------- //
 
