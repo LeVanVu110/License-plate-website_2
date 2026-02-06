@@ -33,20 +33,31 @@ if (isset($_POST['btn_add_news'])) {
     $title = $_POST['title'];
 
     // Hàm tạo Slug (đưa ra ngoài hoặc giữ nguyên bên trong)
-    function create_slug($string) {
+    function create_slug($string)
+    {
         $search = array(
-            '#(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)#', '#(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)#', '#(ì|í|ị|ỉ|ĩ)#',
-            '#(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)#', '#(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)#', '#(ỳ|ý|ỵ|ỷ|ỹ)#', '#(đ)#',
-            '#(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)#', '#(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)#', '#(Ì|Í|Ị|Ỉ|Ĩ)#',
-            '#(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)#', '#(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)#', '#(Ỳ|Ý|Ỵ|Ỷ|Ỹ)#', '#(Đ)#',
+            '#(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)#',
+            '#(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)#',
+            '#(ì|í|ị|ỉ|ĩ)#',
+            '#(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)#',
+            '#(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)#',
+            '#(ỳ|ý|ỵ|ỷ|ỹ)#',
+            '#(đ)#',
+            '#(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)#',
+            '#(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)#',
+            '#(Ì|Í|Ị|Ỉ|Ĩ)#',
+            '#(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)#',
+            '#(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)#',
+            '#(Ỳ|Ý|Ỵ|Ỷ|Ỹ)#',
+            '#(Đ)#',
             '/[^a-zA-Z0-9\-\_]/',
         );
-        $replace = array('a','e','i','o','u','y','d','A','E','I','O','U','Y','D','-',);
+        $replace = array('a', 'e', 'i', 'o', 'u', 'y', 'd', 'A', 'E', 'I', 'O', 'U', 'Y', 'D', '-',);
         $string = preg_replace($search, $replace, $string);
         $string = preg_replace('/(-)+/', '-', $string);
         return strtolower(trim($string, '-'));
     }
-    
+
     $slug = create_slug($title);
     $content = $_POST['content'];
     $summary = mb_substr(strip_tags($content), 0, 150) . '...';
@@ -60,10 +71,28 @@ if (isset($_POST['btn_add_news'])) {
 
     if ($result) {
         // Sau khi insert thành công, lấy ID bài viết vừa tạo
-        $new_post_id = $result; 
+        $new_post_id = $result;
         echo "<script>alert('Đăng bài thành công!'); window.location.href='News.php';</script>";
     } else {
         echo "<script>alert('Lỗi SQL: Hãy đảm bảo Database đã được đổi Khóa ngoại sang bảng Customer!');</script>";
+    }
+}
+// XỬ LÝ KHI NHẤN NÚT UPDATE
+if (isset($_POST['btn_update_news'])) {
+    $id = $_POST['news_id'];
+    $title = $_POST['title'];
+    $slug = $_POST['slug'];
+    $content = $_POST['content'];
+    $summary = mb_substr(strip_tags($content), 0, 150) . '...';
+    $thumbnail = $_POST['thumbnail'];
+    $tag = $_POST['tag'];
+    $category = $_POST['category'];
+    $status = $_POST['status'];
+
+    if ($newsModel->update($id, $title, $slug, $summary, $content, $thumbnail, $tag, $category, $status)) {
+        echo "<script>alert('Cập nhật thành công!'); window.location.href='News.php';</script>";
+    } else {
+        echo "<script>alert('Lỗi cập nhật!');</script>";
     }
 }
 
@@ -474,7 +503,20 @@ if (isset($_POST['btn_add_news'])) {
                         </div>
 
                         <div class="flex md:opacity-0 group-hover:opacity-100 items-center gap-2 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 pr-4">
-                            <button onclick="openArticleForge('edit', <?= $item['id'] ?>)"
+                            <!-- <button onclick="openArticleForge('edit', <?= $item['id'] ?>)"
+                                class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit">
+                                <i class="ri-pencil-line text-lg"></i>
+                            </button> -->
+                            <button onclick="openEditForge(
+                                    '<?php echo $item['id']; ?>', 
+                                    '<?php echo addslashes($item['title']); ?>', 
+                                    '<?php echo $item['slug']; ?>', 
+                                    '<?php echo addslashes($item['content']); ?>', 
+                                    '<?php echo $item['thumbnail']; ?>', 
+                                    '<?php echo $item['tag']; ?>', 
+                                    '<?php echo $item['category']; ?>', 
+                                    '<?php echo $item['status']; ?>'
+                                )"
                                 class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors" title="Edit">
                                 <i class="ri-pencil-line text-lg"></i>
                             </button>
@@ -649,116 +691,165 @@ if (isset($_POST['btn_add_news'])) {
         </div>
 
         <!-- ----------------------------- section 2 -----------------------------  -->
-            <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out shadow-[-20px_0_60px_rgba(0,0,0,0.8)] flex flex-col">
+        <!-- <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out shadow-[-20px_0_60px_rgba(0,0,0,0.8)] flex flex-col">
 
-                <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
-                    <div class="flex items-center gap-1">
-                        <button onclick="closeForge()" class="text-white/40 hover:text-white transition-colors text-sm font-medium">CANCEL</button>
-                        <div class="h-4 w-[1px] bg-white/10"></div>
-                        <div class="flex flex-col">
-                            <span class="text-[9px] text-white/40 font-bold tracking-widest uppercase">Completion</span>
-                            <div class="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
-                                <div id="progress-bar" class="h-full bg-blue-600 w-[65%] shadow-[0_0_10px_#2563eb]"></div>
+            <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center gap-1">
+                    <button onclick="closeForge()" class="text-white/40 hover:text-white transition-colors text-sm font-medium">CANCEL</button>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-white/40 font-bold tracking-widest uppercase">Completion</span>
+                        <div class="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-blue-600 w-[65%] shadow-[0_0_10px_#2563eb]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div id="auto-save-pulse" class="flex items-center gap-2 px-3 text-blue-400/60 hidden">
+                        <i class="ri-cloud-line animate-pulse"></i>
+                        <span class="text-[10px] font-mono uppercase">Auto-saved</span>
+                    </div>
+                    <button class="px-4 py-2 text-white/60 hover:text-white text-sm transition-colors">Save Draft</button>
+                    <button class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[14px] font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
+                        PUBLISH
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-grow overflow-hidden">
+
+                <div class="flex-grow overflow-y-auto p-8 lg:p-12 custom-scrollbar relative" id="editor-container">
+                    <div id="floating-toolbar" class="absolute hidden bg-[#1a1a1a] border border-white/10 rounded-lg p-1 shadow-2xl flex items-center gap-1 z-50">
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-bold"></i></button>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-italic"></i></button>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-link"></i></button>
+                        <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+                        <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-h-1"></i></button>
+                    </div>
+
+                    <input type="text" placeholder="Article Headline..." class="w-full bg-transparent border-none text-4xl lg:text-5xl font-bold text-white placeholder:text-white/10 outline-none mb-8">
+
+                    <div id="rich-editor" contenteditable="true" class="prose prose-invert prose-blue max-w-none min-h-[500px] outline-none text-white/70 text-lg leading-relaxed" data-placeholder="Start writing the future...">
+                        <div contenteditable="false" class="my-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center justify-between group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center font-bold text-blue-400">51K</div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Linked Asset</p>
+                                    <p class="text-white font-mono uppercase">999.99 - Ngũ Quý Sapphire</p>
+                                </div>
                             </div>
+                            <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">BID NOW</button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="w-80 border-l border-white/5 bg-black/20 p-6 hidden lg:flex flex-col gap-8 overflow-y-auto shrink-0">
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h5 class="text-[11px] font-bold text-white/40 uppercase tracking-widest">SEO Analyzer</h5>
+                            <div class="flex gap-1">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
+                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                                <div class="w-2 h-2 rounded-full bg-white/10"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-emerald-400/80">Great! Headline is highly engaging.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Featured Image</label>
+                        <div id="drop-zone" class="aspect-video rounded-2xl border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-2 group hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden relative">
+                            <i class="ri-image-add-line text-2xl text-white/20 group-hover:text-blue-500 transition-colors"></i>
+                            <span class="text-[10px] text-white/20 font-bold group-hover:text-white transition-colors uppercase">Drop 16:9 Image</span>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <div id="auto-save-pulse" class="flex items-center gap-2 px-3 text-blue-400/60 hidden">
-                            <i class="ri-cloud-line animate-pulse"></i>
-                            <span class="text-[10px] font-mono uppercase">Auto-saved</span>
+                    <div class="space-y-5">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Category</label>
+                            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none focus:border-blue-500/50">
+                                <option>Auction News</option>
+                                <option>Market Trends</option>
+                                <option>Events</option>
+                            </select>
                         </div>
-                        <button class="px-4 py-2 text-white/60 hover:text-white text-sm transition-colors">Save Draft</button>
-                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[14px] font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
-                            PUBLISH
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Slug (URL)</label>
+                            <div class="relative">
+                                <input type="text" value="bien-so-ngu-quy-999-99" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-blue-400 font-mono outline-none">
+                                <i class="ri-link absolute right-4 top-1/2 -translate-y-1/2 text-white/20"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Tags</label>
+                            <input type="text" placeholder="#NgũQuý, #BiểnĐẹp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none">
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="lg:hidden h-16 border-t border-white/5 bg-black px-6 flex items-center justify-between shrink-0">
+                <button class="p-2 text-white/40"><i class="ri-settings-4-line text-xl"></i></button>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Step 2: Content</span>
+                </div>
+                <button class="p-2 text-blue-500"><i class="ri-eye-line text-xl"></i></button>
+            </div>
+        </div> -->
+        <form action="News.php" method="POST" id="edit-form">
+            <input type="hidden" name="news_id" id="edit-id">
+
+            <div id="article-forge" class="fixed inset-y-0 right-0 w-full lg:w-[85%] bg-[#080808] border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col">
+
+                <div class="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0">
+                    <button type="button" onclick="closeForge()" class="text-white/40 hover:text-white">CANCEL</button>
+                    <div class="flex items-center gap-3">
+                        <button type="submit" name="btn_update_news" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg transition-all">
+                            SAVE CHANGES
                         </button>
                     </div>
                 </div>
 
                 <div class="flex flex-grow overflow-hidden">
+                    <div class="flex-grow overflow-y-auto p-8 lg:p-12">
+                        <input type="text" name="title" id="edit-title" placeholder="Headline..." class="w-full bg-transparent border-none text-5xl font-bold text-white outline-none mb-8">
 
-                    <div class="flex-grow overflow-y-auto p-8 lg:p-12 custom-scrollbar relative" id="editor-container">
-                        <div id="floating-toolbar" class="absolute hidden bg-[#1a1a1a] border border-white/10 rounded-lg p-1 shadow-2xl flex items-center gap-1 z-50">
-                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-bold"></i></button>
-                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-italic"></i></button>
-                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-link"></i></button>
-                            <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
-                            <button class="p-2 hover:bg-white/5 rounded text-white/80"><i class="ri-h-1"></i></button>
-                        </div>
-
-                        <input type="text" placeholder="Article Headline..." class="w-full bg-transparent border-none text-4xl lg:text-5xl font-bold text-white placeholder:text-white/10 outline-none mb-8">
-
-                        <div id="rich-editor" contenteditable="true" class="prose prose-invert prose-blue max-w-none min-h-[500px] outline-none text-white/70 text-lg leading-relaxed" data-placeholder="Start writing the future...">
-                            <div contenteditable="false" class="my-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center justify-between group">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center font-bold text-blue-400">51K</div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Linked Asset</p>
-                                        <p class="text-white font-mono uppercase">999.99 - Ngũ Quý Sapphire</p>
-                                    </div>
-                                </div>
-                                <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">BID NOW</button>
-                            </div>
-                        </div>
+                        <textarea name="content" id="edit-content" class="w-full h-[500px] bg-transparent text-white/70 text-lg outline-none resize-none border border-white/5 p-4 rounded-xl" placeholder="Start writing..."></textarea>
                     </div>
 
-                    <aside class="w-80 border-l border-white/5 bg-black/20 p-6 hidden lg:flex flex-col gap-8 overflow-y-auto shrink-0">
+                    <aside class="w-80 border-l border-white/5 bg-black/20 p-6 flex flex-col gap-8 overflow-y-auto">
+                        <div class="space-y-4">
+                            <label class="text-[11px] font-bold text-white/40 uppercase">Category</label>
+                            <select name="category" id="edit-category" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
+                                <option value="Auction_News">Auction News</option>
+                                <option value="Market_Trends">Market Trends</option>
+                                <option value="Event">Events</option>
+                            </select>
 
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <h5 class="text-[11px] font-bold text-white/40 uppercase tracking-widest">SEO Analyzer</h5>
-                                <div class="flex gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
-                                    <div class="w-2 h-2 rounded-full bg-white/10"></div>
-                                    <div class="w-2 h-2 rounded-full bg-white/10"></div>
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-emerald-400/80">Great! Headline is highly engaging.</p>
-                        </div>
+                            <label class="text-[11px] font-bold text-white/40 uppercase">Slug (URL)</label>
+                            <input type="text" name="slug" id="edit-slug" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-blue-400 font-mono">
 
-                        <div class="space-y-3">
-                            <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Featured Image</label>
-                            <div id="drop-zone" class="aspect-video rounded-2xl border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-2 group hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden relative">
-                                <i class="ri-image-add-line text-2xl text-white/20 group-hover:text-blue-500 transition-colors"></i>
-                                <span class="text-[10px] text-white/20 font-bold group-hover:text-white transition-colors uppercase">Drop 16:9 Image</span>
-                            </div>
-                        </div>
+                            <label class="text-[11px] font-bold text-white/40 uppercase">Thumbnail URL</label>
+                            <input type="text" name="thumbnail" id="edit-thumbnail" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
 
-                        <div class="space-y-5">
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Category</label>
-                                <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none focus:border-blue-500/50">
-                                    <option>Auction News</option>
-                                    <option>Market Trends</option>
-                                    <option>Events</option>
-                                </select>
-                            </div>
+                            <label class="text-[11px] font-bold text-white/40 uppercase">Tags</label>
+                            <input type="text" name="tag" id="edit-tag" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
 
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Slug (URL)</label>
-                                <div class="relative">
-                                    <input type="text" value="bien-so-ngu-quy-999-99" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-blue-400 font-mono outline-none">
-                                    <i class="ri-link absolute right-4 top-1/2 -translate-y-1/2 text-white/20"></i>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-white/40 uppercase tracking-widest">Tags</label>
-                                <input type="text" placeholder="#NgũQuý, #BiểnĐẹp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/80 outline-none">
-                            </div>
+                            <label class="text-[11px] font-bold text-white/40 uppercase">Status</label>
+                            <select name="status" id="edit-status" class="w-full bg-black/5 border border-white/10 rounded-xl p-3 text-white [&>option]:bg-[#121212] [&>option]:text-white">
+                                <option value="Published">Published</option>
+                                <option value="Draft">Draft</option>
+                            </select>
                         </div>
                     </aside>
                 </div>
-
-                <div class="lg:hidden h-16 border-t border-white/5 bg-black px-6 flex items-center justify-between shrink-0">
-                    <button class="p-2 text-white/40"><i class="ri-settings-4-line text-xl"></i></button>
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-blue-600"></div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Step 2: Content</span>
-                    </div>
-                    <button class="p-2 text-blue-500"><i class="ri-eye-line text-xl"></i></button>
-                </div>
             </div>
+        </form>
 
         <!-- ----------------------------- section 3 -----------------------------  -->
         <!-- <section id="engagement-hub" class="mt-16 bg-[#080808] border border-white/5 rounded-3xl overflow-hidden shadow-2xl" style="margin-left: 3%;">
@@ -1092,14 +1183,15 @@ if (isset($_POST['btn_add_news'])) {
         });
     }
 
-    // Hàm đóng trình soạn thảo
+    // Hàm đóng Forge
     function closeForge() {
         const forge = document.getElementById('article-forge');
-        gsap.to(forge, {
-            x: '100%',
-            duration: 0.5,
-            ease: "power4.in"
-        });
+        forge.classList.add('translate-x-full');
+
+        // Reset form sau khi đóng để lần sau mở lại không bị dính dữ liệu cũ
+        setTimeout(() => {
+            document.getElementById('edit-form').reset();
+        }, 500);
     }
 
     // Hàm cập nhật thanh tiến trình (Progress Bar)
@@ -1108,6 +1200,24 @@ if (isset($_POST['btn_add_news'])) {
             width: `${percent}%`,
             duration: 0.5
         });
+    }
+
+    function openEditForge(id, title, slug, content, thumbnail, tag, category, status) {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-title').value = title;
+        document.getElementById('edit-slug').value = slug;
+        document.getElementById('edit-content').value = content;
+        document.getElementById('edit-thumbnail').value = thumbnail;
+        document.getElementById('edit-tag').value = tag;
+        document.getElementById('edit-category').value = category;
+        document.getElementById('edit-status').value = status;
+
+        // 2. Hiển thị Panel (Gỡ bỏ class ẩn)
+        const forge = document.getElementById('article-forge');
+        forge.classList.remove('translate-x-full');
+
+        // Đảm bảo z-index đủ cao để không bị đè
+        forge.style.zIndex = "100";
     }
 
     // ----------------------------- section 3 ----------------------------- //

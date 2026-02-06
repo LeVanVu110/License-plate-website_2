@@ -157,4 +157,40 @@ class News extends Db
         }
         return $items;
     }
+    public function update($id, $title, $slug, $summary, $content, $thumbnail, $tag, $category, $status)
+    {
+        $sql = "UPDATE `news` SET 
+            `title` = ?, 
+            `slug` = ?, 
+            `summary` = ?, 
+            `content` = ?, 
+            `thumbnail` = ?, 
+            `tag` = ?, 
+            `category` = ?, 
+            `status` = ?, 
+            `updated_at` = NOW() 
+            WHERE `id` = ?";
+
+        $stmt = self::$connection->prepare($sql);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        // Thứ tự tham số: ssssssssi (8 chuỗi và 1 số nguyên ID cuối cùng)
+        $stmt->bind_param(
+            "ssssssssi",
+            $title,
+            $slug,
+            $summary,
+            $content,
+            $thumbnail,
+            $tag,
+            $category,
+            $status,
+            $id
+        );
+
+        return $stmt->execute();
+    }
 }
