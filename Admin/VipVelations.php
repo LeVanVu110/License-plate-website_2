@@ -18,6 +18,35 @@ require_once dirname(__DIR__) . "/config.php";
 require_once dirname(__DIR__) . "/models/db.php";
 require_once dirname(__DIR__) . "/models/Customer.php";
 $customerModel = new Customer();
+// 2. XỬ LÝ AJAX POST TẠI ĐÂY (PHẢI ĐẶT TRƯỚC MỌI THẺ HTML)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_type']) && $_POST['action_type'] == 'save_customer') {
+    ob_clean(); // Xóa bộ đệm
+    header('Content-Type: application/json');
+
+    try {
+        $id = $_POST['id'] ?? null;
+        $data = [
+            'full_name'    => $_POST['full_name'],
+            'email'        => $_POST['email'],
+            'phone_number' => $_POST['phone'], // Lấy từ input phone gán vào phone_number
+            'rank'         => $_POST['rank'],
+            'bidding_limit' => $_POST['bidding_limit'],
+            'avatar'       => $_POST['avatar']
+        ];
+
+        if (!empty($id)) {
+            $result = $customerModel->update($id, $data);
+        } else {
+            // Nếu dùng hàm add(), hãy đảm bảo trong Customer.php hàm add cũng dùng phone_number
+            $result = $customerModel->add($data);
+        }
+
+        echo json_encode(['success' => $result]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit(); // Bắt buộc phải có exit
+}
 ?>
 
 <head>
@@ -367,6 +396,17 @@ $customerModel = new Customer();
             /* Khi hover thì ánh sáng quét nhanh hơn như một phản hồi */
         }
 
+        /* Hiệu ứng hover cho thẻ thành viên nói chung (dùng cho ALL) */
+        .member-card-wrapper:hover .member-card {
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.05) !important;
+            transform: translateY(-5px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+
+
         .member-card-wrapper {
             width: 100%;
             /* Đảm bảo thẻ luôn nằm trong grid */
@@ -381,6 +421,8 @@ $customerModel = new Customer();
 
         .member-card-wrapper[data-rank="diamond"]:hover .member-card {
             border-color: #22d3ee !important;
+            /* border-color: #f06915 !important; */
+
             /* box-shadow: 0 0 30px rgba(6, 182, 212, 0.2) !important; */
             background: rgba(255, 255, 255, 0.05);
         }
@@ -474,6 +516,7 @@ $customerModel = new Customer();
         /* --- HIỆU ỨNG CHO HẠNG GOLD (VÀNG CHAMPAGNE) --- */
         .member-card-wrapper[data-rank="gold"] .member-card::before {
             background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.4), rgba(241, 196, 15, 0.6), transparent);
+
             animation: shine-gold 5s infinite;
         }
 
@@ -767,11 +810,10 @@ $customerModel = new Customer();
                             <input type="text" id="deep-search" autocomplete="off" placeholder="Search..."
                                 class="bg-white/5 border border-white/10 rounded-lg md:rounded-xl py-2 pl-9 pr-3 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-[#0891B2] w-full md:w-[180px] lg:w-[240px] transition-all">
 
-                            <div id="search-suggestions" class="absolute top-[120%] left-[-50px] md:left-0 right-0 w-[250px] md:w-full rounded-xl overflow-hidden shadow-2xl">
-                                <div class="p-2 text-[9px] text-white/40 border-b border-white/5 uppercase font-bold bg-black">Suggested</div>
-                                <div class="suggestion-item p-3 cursor-pointer flex items-center gap-3 bg-black hover:bg-white/5" onclick="selectVIP('David Le')">
-                                    <div class="w-7 h-7 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px] text-cyan-400">DL</div>
-                                    <span class="text-[11px] text-white">David Le (Diamond)</span>
+                            <div id="search-suggestions" class="absolute top-[120%] left-[-50px] md:left-0 right-0 w-[250px] md:w-full rounded-xl overflow-hidden shadow-2xl hidden z-50">
+                                <div class="p-2 text-[9px] text-white/40 border-b border-white/5 uppercase font-bold bg-black">Intelligence Results</div>
+
+                                <div id="suggestions-list" class="max-h-[300px] overflow-y-auto custom-scrollbar bg-black">
                                 </div>
                             </div>
                         </div>
@@ -870,7 +912,8 @@ $customerModel = new Customer();
 
             <div class="flex flex-wrap items-center justify-between mb-10 gap-4 relative z-20">
                 <div class="flex gap-2" id="member-filters">
-                    <button onclick="filterMembers('all', this)" class="filter-btn active px-4 py-2 bg-[#F1C40F]/20 border border-[#F1C40F]/50 rounded-full text-[10px] font-bold text-[#F1C40F] transition-all">
+                    <button onclick="filterMembers('all', this)"
+                        class="filter-btn active px-4 py-2 bg-white/10 border border-white/40 rounded-full text-[10px] font-bold text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                         ALL MEMBERS
                     </button>
                     <button onclick="filterMembers('gold', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-all">
@@ -879,7 +922,8 @@ $customerModel = new Customer();
                     <button onclick="filterMembers('diamond', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
                         DIAMOND CLUB
                     </button>
-                    <button onclick="filterMembers('platinum', this)" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all">
+                    <button onclick="filterMembers('platinum', this)"
+                        class="filter-btn px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-white/60 hover:text-[#E5E4E2] hover:border-[#E5E4E2]/50 hover:bg-[#E5E4E2]/5 transition-all">
                         PLATINUM CLUB
                     </button>
                 </div>
@@ -891,7 +935,7 @@ $customerModel = new Customer();
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="member-masonry">
 
-                <div class="member-card-wrapper cursor-pointer" data-rank="diamond" onclick="openVipEditor(this)">
+                <!-- <div class="member-card-wrapper cursor-pointer" data-rank="diamond" onclick="openVipEditor(this)">
                     <div class="member-card group relative bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-3xl p-5 hover:border-cyan-400 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]">
 
                         <div class="flex justify-between items-start mb-6">
@@ -999,15 +1043,20 @@ $customerModel = new Customer();
 
                         <div class="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-3xl bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]"></div>
                     </div>
-                </div>
-                    <?php
+                </div> -->
+                <?php
 
-                    $customers = $customerModel->get(); // Lấy danh sách từ DB
+                $customers = $customerModel->get(); // Lấy danh sách từ DB
+                if (isset($_GET['search'])) {
+                    $results = $customerModel->get($_GET['search']);
+                    echo json_encode($results);
+                    exit;
+                }
 
-                    foreach ($customers as $customer) {
-                        echo $customerModel->renderVipCard($customer);
-                    }
-                    ?>
+                foreach ($customers as $customer) {
+                    echo $customerModel->renderVipCard($customer);
+                }
+                ?>
 
                 <style>
                     @keyframes shimmer {
@@ -1020,7 +1069,7 @@ $customerModel = new Customer();
 
             </div>
         </section>
-        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+        <!-- <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
             <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
 
             <div id="editor-container" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
@@ -1060,11 +1109,11 @@ $customerModel = new Customer();
                             <div class="space-y-4">
                                 <div class="input-field-group">
                                     <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
-                                    <input type="text" value="Hoàng Nguyễn" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                                    <input type="text" id="editor-full-name" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
                                 </div>
                                 <div class="input-field-group">
                                     <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
-                                    <input type="text" value="+84 999 888" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
+                                    <input type="text" id="editor-phone" value="" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none">
                                 </div>
                             </div>
                         </div>
@@ -1073,10 +1122,10 @@ $customerModel = new Customer();
                             <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
                             <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
                                 <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
-                                <input type="range" class="w-full accent-[#D4AF37]" min="0" max="100" value="50">
+                                <input type="range" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000">
                                 <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
                                     <span>0</span>
-                                    <span id="limit-val">5.0B VND</span>
+                                    <span id="editor-limit-text">0B VND</span>
                                 </div>
                             </div>
                         </div>
@@ -1088,6 +1137,84 @@ $customerModel = new Customer();
                     <div class="flex gap-2 md:gap-4">
                         <button onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
                         <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px]">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div id="vip-editor-overlay" class="fixed inset-0 z-[2000] hidden items-center justify-center p-0 md:p-10">
+            <div id="editor-bg" class="absolute inset-0 bg-black/95 backdrop-blur-md opacity-0"></div>
+
+            <div id="editor-container" class="relative w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] bg-[#0a0a0a] rounded-none md:rounded-[2.5rem] border-x-0 md:border border-white/10 overflow-hidden opacity-0 scale-50 flex flex-col">
+
+                <input type="hidden" id="editor-customer-id" value="">
+                <input type="hidden" id="editor-rank-value" value="">
+                <input type="hidden" id="editor-avatar-url" value="">
+                <div class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
+                    <div class="flex items-center gap-2 md:gap-4">
+                        <div id="editor-rank-badge" class="px-2 py-1 rounded-full text-[3px] md:text-[9px] font-bold tracking-widest border">GOLD MEMBER</div>
+                        <h2 class="text-white/40 font-mono text-[8px] md:text-[10px] tracking-widest uppercase truncate max-w-[120px] md:max-w-none">
+                            Intelligence / <span id="editor-client-id" class="text-white">NEW</span>
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <button onclick="toggleEditMode()" id="edit-mode-btn" class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-[8px] md:text-[10px] uppercase font-bold transition-all">
+                            <i class="ri-pencil-line"></i> <span class="hidden sm:inline">Enter Edit Mode</span>
+                        </button>
+                        <button onclick="closeVipEditor()" class="p-1 text-white/20 hover:text-white transition-colors"><i class="ri-close-circle-line text-xl md:text-2xl"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row flex-1 overflow-y-auto custom-scrollbar">
+                    <div class="w-full md:w-1/4 p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col items-center gap-4 md:gap-6">
+                        <div class="relative group cursor-pointer">
+                            <div class="w-24 h-24 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-[#D4AF37]/30 overflow-hidden relative">
+                                <img id="editor-avatar" src="https://i.pravatar.cc/150" class="w-full h-full object-cover grayscale transition-all">
+                            </div>
+                        </div>
+                        <div class="text-left md:text-center">
+                            <h3 id="editor-name-display" class="text-lg md:text-2xl text-white font-light tracking-tight">VIP CLIENT</h3>
+                            <p class="text-[8px] md:text-[10px] text-white/30 uppercase mt-1">Status: Active</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-48 md:pb-40">
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-[#D4AF37] font-bold uppercase tracking-[4px]">Basic Intelligence</h4>
+                            <div class="space-y-4">
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Full Identity</label>
+                                    <input type="text" id="editor-full-name" placeholder="Enter name..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Email Secure</label>
+                                    <input type="email" id="editor-email" placeholder="email@example.com" readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                                <div class="input-field-group">
+                                    <label class="text-[9px] text-white/30 uppercase">Secure Contact</label>
+                                    <input type="text" id="editor-phone" placeholder="+84..." readonly class="vip-input w-full bg-transparent border-b border-white/10 py-2 text-white outline-none focus:border-[#D4AF37] transition-colors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 md:space-y-8">
+                            <h4 class="text-[9px] md:text-[10px] text-cyan-400 font-bold uppercase tracking-[4px]">Financial Matrix</h4>
+                            <div class="p-4 md:p-6 bg-white/5 rounded-2xl border border-white/5">
+                                <label class="text-[9px] text-white/30 uppercase block mb-4">Bidding Limit</label>
+                                <input type="range" id="editor-limit-range" class="w-full accent-[#D4AF37]" min="0" max="100000000000" step="1000000000" oninput="updateLimitText(this.value)">
+                                <div class="flex justify-between mt-2 font-mono text-[10px] md:text-xs text-cyan-400">
+                                    <span>0</span>
+                                    <span id="editor-limit-text">0B VND</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 flex justify-between items-center z-10">
+                    <button class="text-rose-900/60 hover:text-rose-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Suspend Account</button>
+                    <div class="flex gap-2 md:gap-4">
+                        <button onclick="closeVipEditor()" class="px-4 py-2 md:px-6 md:py-3 text-white/40 text-[8px] md:text-[10px] font-bold uppercase">Discard</button>
+                        <button onclick="saveAndEncrypt()" class="px-5 py-2 md:px-8 md:py-3 bg-[#D4AF37] text-black rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[1px] md:tracking-[2px] hover:bg-white transition-all">Save Matrix</button>
                     </div>
                 </div>
             </div>
@@ -1431,16 +1558,122 @@ $customerModel = new Customer();
                 suggestionsBox.style.display = 'none';
             }
         });
+        document.addEventListener('click', function(e) {
+            const searchContainer = document.querySelector('.relative.group'); // Thẻ cha của ô search
+            if (!searchContainer.contains(e.target)) {
+                document.getElementById('search-suggestions').classList.add('hidden');
+            }
+        });
 
-        function selectVIP(name) {
+        function selectVIP(id) {
             const searchInput = document.getElementById('deep-search');
             const suggestionsBox = document.getElementById('search-suggestions');
 
-            searchInput.value = name;
-            suggestionsBox.style.display = 'none';
-            console.log("Đã chọn thượng khách:", name);
-        }
+            // 1. Tìm thẻ Card (Wrapper) của khách hàng này trên giao diện
+            const targetWrapper = document.querySelector(`.member-card-wrapper[data-id="${id}"]`);
 
+            if (targetWrapper) {
+                // 2. Cuộn màn hình tới vị trí thẻ đó mượt mà
+                targetWrapper.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                // 3. Tìm thẻ card bên trong và kích hoạt sự kiện click để mở Modal Editor
+                const card = targetWrapper.querySelector('.member-card');
+                if (card) {
+                    card.click(); // Gọi hàm openVipEditor(card) mà bạn đã viết trước đó
+                }
+
+                // 4. Xóa nội dung search và ẩn gợi ý
+                searchInput.value = '';
+                suggestionsBox.classList.add('hidden');
+            } else {
+                // Trường hợp khách hàng không có trong danh sách hiện tại (đang bị lọc bởi Rank)
+                console.log("Không tìm thấy thẻ trên view hiện tại. Đang mở trực tiếp...");
+                // Nếu bạn muốn mở luôn dù không thấy thẻ, hãy gọi hàm open trực tiếp nếu có dữ liệu
+            }
+        }
+        document.getElementById('deep-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Chặn reload trang ngay lập tức
+
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const suggestionsContainer = document.getElementById('search-suggestions');
+                const allCards = document.querySelectorAll('.member-card-wrapper');
+                const allFilterBtns = document.querySelectorAll('.filter-btn');
+
+                // 1. Ẩn bảng gợi ý
+                if (suggestionsContainer) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+
+                // 2. Nếu ô search trống -> Quay về chế độ xem tất cả
+                if (searchTerm === "") {
+                    filterMembers('all', document.querySelector('.filter-btn[onclick*="all"]'));
+                    return;
+                }
+
+                // 3. Reset các nút filter rank về trạng thái "All" để người dùng không bị rối
+                allFilterBtns.forEach(btn => btn.classList.remove('active', 'bg-[#F1C40F]/20', 'text-[#F1C40F]'));
+                const allBtn = document.querySelector('.filter-btn[onclick*="all"]');
+                if (allBtn) allBtn.classList.add('active');
+
+                // 4. Thực hiện lọc thẻ
+                let matchCount = 0;
+                allCards.forEach(wrapper => {
+                    // Kiểm tra an toàn dữ liệu data-customer
+                    const rawData = wrapper.getAttribute('data-customer');
+                    if (!rawData) return;
+
+                    const customerData = JSON.parse(rawData);
+                    const fullName = (customerData.full_name || '').toLowerCase();
+                    const phone = (customerData.phone_number || '').toLowerCase();
+                    const id = (customerData.id || '').toString();
+
+                    // Tìm kiếm theo Tên, Số điện thoại hoặc ID
+                    if (fullName.includes(searchTerm) || phone.includes(searchTerm) || id.includes(searchTerm)) {
+                        wrapper.style.display = 'block';
+                        matchCount++;
+
+                        // Hiệu ứng GSAP: Thẻ hiện ra mượt mà
+                        gsap.fromTo(wrapper, {
+                            opacity: 0,
+                            y: 20,
+                            scale: 0.95
+                        }, {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 0.4,
+                            ease: "back.out(1.7)"
+                        });
+                    } else {
+                        wrapper.style.display = 'none';
+                    }
+                });
+
+                // 5. Xử lý khi không tìm thấy kết quả
+                if (matchCount === 0) {
+                    // Có thể hiện một thông báo nhỏ (Toast) thay vì chỉ log console
+                    console.log("No Matrix match found for: " + searchTerm);
+
+                    // Tùy chọn: Hiển thị thông báo "Không tìm thấy" vào container chính
+                    const container = document.querySelector('.grid-cols-1'); // ID container của bạn
+                    if (container && !document.getElementById('no-result-msg')) {
+                        const msg = document.createElement('div');
+                        msg.id = 'no-result-msg';
+                        msg.className = 'col-span-full text-center py-10 text-white/20 uppercase tracking-widest';
+                        msg.innerText = 'No Intelligence Found';
+                        container.appendChild(msg);
+                    }
+                } else {
+                    // Xóa thông báo "Không tìm thấy" nếu có kết quả
+                    const msg = document.getElementById('no-result-msg');
+                    if (msg) msg.remove();
+                }
+            }
+        });
         // 4. Liquid Metal Hover Effect chân trang
         const headerContainer = document.querySelector('.header-container');
         const track = document.getElementById('liquid-track');
@@ -1681,43 +1914,54 @@ $customerModel = new Customer();
             }
         });
     }
-    // scrip dưới section 2 
     let isEditMode = false;
 
     function openVipEditor(cardElement) {
+        const customerData = JSON.parse(cardElement.getAttribute('data-customer'));
+        const rank = cardElement.getAttribute('data-rank').toLowerCase();
+
+        // ID và Name
+        const idInput = document.getElementById('editor-customer-id');
+        // Lưu Rank vào input hidden để dùng cho toggleEditMode
+        const rankInput = document.getElementById('editor-rank-value');
+        if (rankInput) rankInput.value = rank;
+        if (idInput) idInput.value = customerData.id;
+
+        const nameDisplay = document.getElementById('editor-name-display'); // Đảm bảo ID này khớp với HTML của bạn
+        if (nameDisplay) nameDisplay.innerText = customerData.full_name;
+
+        document.getElementById('editor-client-id').innerText = customerData.id.toString().padStart(6, '0');
+
+        // --- SỬA TẠI ĐÂY: Dùng phone_number thay vì phone ---
+        document.getElementById('editor-full-name').value = customerData.full_name;
+        document.getElementById('editor-phone').value = customerData.phone_number || '';
+        document.getElementById('editor-email').value = customerData.email || '';
+
+        // --- SỬA TẠI ĐÂY: Dùng avatar thay vì avatar_url ---
+        const editorAvatar = document.getElementById('editor-avatar');
+        editorAvatar.src = customerData.avatar ? customerData.avatar : `https://i.pravatar.cc/150?u=${customerData.id}`;
+
+        // Financial Matrix
+        const limit = parseFloat(customerData.bidding_limit) || 0;
+        const limitRange = document.getElementById('editor-limit-range');
+        const limitText = document.getElementById('editor-limit-text');
+        if (limitRange) limitRange.value = limit;
+        if (limitText) limitText.innerText = (limit / 1000000000).toFixed(1) + 'B VND';
+
+        // Cập nhật Rank Badge
+        updateBadgeStyle(rank);
+
+        // Mở Modal (GSAP)
         const overlay = document.getElementById('vip-editor-overlay');
         const container = document.getElementById('editor-container');
         const bg = document.getElementById('editor-bg');
-        const rank = cardElement.getAttribute('data-rank');
-        const badge = document.getElementById('editor-rank-badge');
-        // Đổi màu badge trong Editor tùy theo hạng của thẻ vừa bấm
-        if (rank === 'gold') {
-            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
-            badge.innerText = "GOLD MEMBER";
-        } else if (rank === 'platinum') {
-            // Sử dụng màu Slate-200 hoặc Zinc-300 để giả lập màu kim loại trắng (Platinum)
-            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#E5E4E2] text-[#E5E4E2] bg-[#E5E4E2]/10 shadow-[0_0_5px_rgba(229,228,226,0.3)]";
-            badge.innerText = "PLATINUM MEMBER";
-        } else {
-            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
-            badge.innerText = "DIAMOND CLUB";
-        }
-
-        // Reset Edit Mode
-        isEditMode = false;
-        document.getElementById('edit-mode-btn').innerHTML = `<i class="ri-pencil-line"></i> Enter Edit Mode`;
-        document.querySelectorAll('.vip-input').forEach(input => input.readOnly = true);
-
-        // Lấy vị trí thẻ gốc để tạo hiệu ứng phóng to từ tâm
         const rect = cardElement.getBoundingClientRect();
 
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
 
-        // GSAP Animation
-        const tl = gsap.timeline();
-
-        tl.to(bg, {
+        gsap.timeline()
+            .to(bg, {
                 opacity: 1,
                 duration: 0.4
             })
@@ -1725,77 +1969,255 @@ $customerModel = new Customer();
                 x: rect.left - (window.innerWidth / 2 - rect.width / 2),
                 y: rect.top - (window.innerHeight / 2 - rect.height / 2),
                 scale: 0.2,
-                opacity: 0,
-                borderRadius: "50px"
+                opacity: 0
             }, {
                 x: 0,
                 y: 0,
                 scale: 1,
                 opacity: 1,
                 duration: 0.6,
-                ease: "expo.out",
-                borderRadius: "40px"
+                ease: "expo.out"
             });
-
-        // Haptic feedback
-        if (window.navigator.vibrate) window.navigator.vibrate([10, 30, 10]);
     }
 
     function toggleEditMode() {
-        isEditMode = !isEditMode;
+        isEditMode ? disableEditMode() : enableEditMode();
         const btn = document.getElementById('edit-mode-btn');
         const inputs = document.querySelectorAll('.vip-input');
         const container = document.getElementById('editor-container');
 
+        // 1. Lấy Rank hiện tại (chuyển về chữ thường để so sánh)
+        const currentRank = document.getElementById('editor-rank-value').value.toLowerCase();
+
+        // 2. Định nghĩa màu theo Rank
+        const rankColors = {
+            gold: {
+                hex: '#D4AF37',
+                rgba: 'rgba(212, 175, 55, 0.3)'
+            },
+            platinum: {
+                hex: '#E5E4E2',
+                rgba: 'rgba(229, 228, 226, 0.3)'
+            },
+            diamond: {
+                hex: '#b9f2ff',
+                rgba: 'rgba(185, 242, 255, 0.3)'
+            }
+        };
+
+        // Lấy màu tương ứng, nếu không khớp thì mặc định lấy màu Gold
+        const activeColor = rankColors[currentRank] || rankColors.gold;
+
         if (isEditMode) {
             btn.innerHTML = `<i class="ri-save-line text-emerald-400"></i> <span class="text-emerald-400">Viewing (Edit Active)</span>`;
-            container.classList.add('border-[#D4AF37]');
+
+            // 3. Đổi màu viền theo Rank
+            container.style.borderColor = activeColor.hex;
+
             inputs.forEach(input => {
                 input.readOnly = false;
                 input.classList.add('bg-white/5', 'px-2');
+                // Đổi màu gạch chân input khi focus (tùy chọn)
+                input.style.borderBottomColor = activeColor.hex;
             });
-            // Hiệu ứng Neon Gold viền
+
+            // 4. Hiệu ứng Neon theo màu của Rank đó
             gsap.to(container, {
-                boxShadow: "0 0 50px rgba(212, 175, 55, 0.2)",
+                boxShadow: `0 0 50px ${activeColor.rgba}`,
                 duration: 0.5
             });
+
         } else {
-            closeVipEditor(); // Hoặc xử lý lưu
+            // Khi tắt Edit Mode, trả lại trạng thái cũ
+            container.style.borderColor = "rgba(255,255,255,0.1)";
+            gsap.to(container, {
+                boxShadow: "none",
+                duration: 0.3
+            });
+            // Xử lý đóng hoặc lưu...
+        }
+    }
+
+    function disableEditMode() {
+        isEditMode = false;
+        const btn = document.getElementById('edit-mode-btn');
+        btn.innerHTML = `<i class="ri-pencil-line"></i> Enter Edit Mode`;
+        btn.classList.remove('bg-white', 'text-black');
+        document.querySelectorAll('.vip-input').forEach(i => i.readOnly = true);
+    }
+
+    function enableEditMode() {
+        isEditMode = true;
+        const btn = document.getElementById('edit-mode-btn');
+        btn.innerHTML = `<i class="ri-check-line"></i> Editing Mode`;
+        btn.classList.add('bg-white', 'text-black');
+        document.querySelectorAll('.vip-input').forEach(i => i.readOnly = false);
+    }
+    // --- HÀM 2: MỞ ĐỂ ADD (Dùng cho nút "Add New Member") ---
+    function openAddModal() {
+        // Xóa ID để biết là ADD
+        document.getElementById('editor-customer-id').value = "";
+
+        // Reset form trắng
+        document.getElementById('editor-client-id').innerText = "NEW";
+        document.getElementById('editor-name-display').innerText = "NEW CLIENT";
+        document.getElementById('editor-full-name').value = "";
+        document.getElementById('editor-email').value = "";
+        document.getElementById('editor-phone').value = "";
+        document.getElementById('editor-limit-range').value = 0;
+        updateLimitText(0);
+        document.getElementById('editor-avatar').src = "https://i.pravatar.cc/150?u=new";
+
+        // Mở là cho phép nhập luôn
+        enableEditMode();
+
+        // Mở từ giữa màn hình
+        showEditorAnimation();
+    }
+
+    function showEditorAnimation(rect = null) {
+        const overlay = document.getElementById('vip-editor-overlay');
+        const container = document.getElementById('editor-container');
+        const bg = document.getElementById('editor-bg');
+
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        const tl = gsap.timeline();
+        tl.to(bg, {
+            opacity: 1,
+            duration: 0.4
+        });
+
+        if (rect) {
+            tl.fromTo(container, {
+                x: rect.left - (window.innerWidth / 2 - rect.width / 2),
+                y: rect.top - (window.innerHeight / 2 - rect.height / 2),
+                scale: 0.2,
+                opacity: 0
+            }, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                duration: 0.6,
+                ease: "expo.out"
+            });
+        } else {
+            tl.fromTo(container, {
+                scale: 0.5,
+                opacity: 0
+            }, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.5
+            });
+        }
+    }
+
+    function updateLimitText(val) {
+        document.getElementById('editor-limit-text').innerText = (val / 1000000000).toFixed(1) + 'B VND';
+    }
+
+    function updateBadgeStyle(rank) {
+        const badge = document.getElementById('editor-rank-badge');
+        if (!badge) return;
+
+        if (rank === 'gold') {
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/10";
+            badge.innerText = "GOLD MEMBER";
+        } else if (rank === 'platinum') {
+            // Màu BẠC (Slate/Zinc)
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-slate-300 text-slate-300 bg-slate-300/10 shadow-[0_0_5px_rgba(203,213,225,0.3)]";
+            badge.innerText = "PLATINUM MEMBER";
+        } else {
+            badge.className = "px-3 py-1 rounded-full text-[6px] font-bold tracking-widest border border-cyan-500 text-cyan-500 bg-cyan-500/10";
+            badge.innerText = "DIAMOND CLUB";
         }
     }
 
     function closeVipEditor() {
         const container = document.getElementById('editor-container');
         const bg = document.getElementById('editor-bg');
+        const overlay = document.getElementById('vip-editor-overlay');
+        const btn = document.getElementById('edit-mode-btn');
+        const inputs = document.querySelectorAll('.vip-input');
 
+        // 1. ĐƯA MỌI THỨ VỀ TRẠNG THÁI XEM (Viewing Mode)
+        isEditMode = false;
+
+        // Reset nút bấm về trạng thái ban đầu
+        if (btn) {
+            btn.innerHTML = `<i class="ri-pencil-line"></i> <span>Enter Edit Mode</span>`;
+            btn.classList.remove('bg-emerald-500/20'); // Nếu bạn có thêm class màu
+        }
+
+        // Reset các ô input về ReadOnly
+        inputs.forEach(input => {
+            input.readOnly = true;
+            input.classList.remove('bg-white/5', 'px-2');
+            input.style.borderBottomColor = "rgba(255,255,255,0.1)";
+        });
+
+        // 2. HIỆU ỨNG GSAP ĐỂ ĐÓNG
+        // Thu nhỏ container và xóa bỏ Shadow (Neon)
         gsap.to(container, {
             scale: 0.8,
             opacity: 0,
+            boxShadow: "none", // Xóa hiệu ứng Neon ngay khi đóng
+            borderColor: "rgba(255,255,255,0.1)", // Trả về màu viền mặc định
             duration: 0.4,
             ease: "power2.in"
         });
+
         gsap.to(bg, {
             opacity: 0,
             duration: 0.4,
             onComplete: () => {
-                document.getElementById('vip-editor-overlay').classList.add('hidden');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+
+                // Xóa style inline để không bị lỗi màu cho lần mở sau
+                container.style.transform = "";
             }
         });
     }
 
+    // HÀM LƯU DỮ LIỆU (AJAX)
     function saveAndEncrypt() {
-        // Rung "Double Click" (Phần mô tả 4)
-        if (window.navigator.vibrate) window.navigator.vibrate([50, 100, 50]);
+        const id = document.getElementById('editor-customer-id').value;
+        const formData = new FormData();
 
-        // Hiệu ứng mã hóa giả lập
-        const btn = event.currentTarget;
-        btn.innerText = "ENCRYPTING...";
-        setTimeout(() => {
-            alert("VIP Profile Secured & Re-encrypted on Server.");
-            closeVipEditor();
-        }, 1500);
+        formData.append('action_type', 'save_customer');
+        formData.append('id', id);
+        formData.append('full_name', document.getElementById('editor-full-name').value);
+        formData.append('email', document.getElementById('editor-email').value);
+        formData.append('phone', document.getElementById('editor-phone').value);
+        formData.append('rank', document.getElementById('editor-rank-value').value);
+        formData.append('bidding_limit', document.getElementById('editor-limit-range').value);
+        formData.append('avatar', document.getElementById('editor-avatar').src);
+
+        fetch('VipVelations.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Mã lỗi HTTP: " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert("Matrix Intelligence Synchronized!");
+                    location.reload();
+                } else {
+                    alert("Lỗi database: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi: Không thể đọc JSON. Có thể PHP bị lỗi cú pháp hoặc in dư thẻ HTML.");
+            });
     }
-
     // ----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
         // 1. Hiệu ứng Biometric Scan khi vào section

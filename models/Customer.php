@@ -1,14 +1,29 @@
 <?php
 class Customer extends Db
 {
-    // Hàm lấy tất cả (đã có của bạn)
-    public function get()
+    public function get($keyword = null)
     {
-        $sql = "SELECT * FROM customers ORDER BY total_spent DESC";
-        $result = self::$connection->query($sql);
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
+        if ($keyword) {
+            // Nếu có từ khóa, thực hiện tìm kiếm (Deep Search)
+            $search = "%$keyword%";
+            $sql = "SELECT * FROM customers 
+                WHERE full_name LIKE ? 
+                OR email LIKE ? 
+                OR phone_number LIKE ? 
+                ORDER BY total_spent DESC";
 
+            $stmt = self::$connection->prepare($sql);
+            $stmt->bind_param("sss", $search, $search, $search);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            // Nếu không có từ khóa, lấy tất cả như cũ
+            $sql = "SELECT * FROM customers ORDER BY total_spent DESC";
+            $result = self::$connection->query($sql);
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+    }
     // HÀM MỚI: Lấy thông tin chi tiết của 1 người dùng theo ID
     public function getUserById($id)
     {
@@ -200,7 +215,9 @@ class Customer extends Db
         $id = $customer['id'];
         $spent = number_format($customer['total_spent'] / 1000000000, 1) . 'B';
         $limit = number_format($customer['bidding_limit'] / 1000000000, 1) . 'B';
-        $avatar = !empty($customer['avatar']) ? $customer['avatar'] : "https://i.pravatar.cc/150?u=" . $id;
+        // $avatar = !empty($customer['avatar']) ? $customer['avatar'] : "https://i.pravatar.cc/150?u=" . $id;
+        // Tìm dòng này trong Customer.php và sửa lại:
+        $avatar = htmlspecialchars($customer['avatar']);
 
         $configs = [
             'diamond' => [
@@ -211,7 +228,7 @@ class Customer extends Db
                 'tag_border' => 'border-cyan-500/20',
                 'tag_text' => 'text-cyan-400',
                 'label' => 'Diamond Club',
-                'led' => 'bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse',
+                'led' => 'bg-cyan-400 shadow-[0_0_10px_#001695] animate-pulse',
                 'limit_color' => 'text-cyan-400',
                 'texture' => 'radial-gradient(#0891B2 0.5px, transparent 0.5px)',
                 'texture_opacity' => 'group-hover:opacity-10'
@@ -224,7 +241,7 @@ class Customer extends Db
                 'tag_border' => 'border-[#E5E4E2]/20',
                 'tag_text' => 'text-[#E5E4E2]',
                 'label' => 'Platinum Member',
-                'led' => 'bg-cyan-400 shadow-[0_0_10px_#22d3ee]',
+                'led' => 'bg-emerald-500 shadow-[0_0_10px_#22d3ee]',
                 'limit_color' => 'text-[#E5E4E2]',
                 'texture' => "url('https://www.transparenttextures.com/patterns/brushed-alum.png')",
                 'texture_opacity' => 'group-hover:opacity-10'
@@ -302,5 +319,83 @@ class Customer extends Db
         </div>
 <?php
         return ob_get_clean();
+    }
+    public function add($data)
+    {
+        $sql = "INSERT INTO customers (full_name, email, rank, bidding_limit, total_spent, avatar_url, phone, password_hash) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = self::$connection->prepare($sql);
+
+        // Hash mật khẩu mặc định nếu không có
+        $password = password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT);
+
+        $stmt->bind_param(
+            "sssddsss",
+            $data['full_name'],
+            $data['email'],
+            $data['rank'],
+            $data['bidding_limit'],
+            $data['total_spent'],
+            $data['avatar_url'],
+            $data['phone'],
+            $password
+        );
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Hàm Cập nhật khách hàng
+     */
+    public function update($id, $data)
+    {
+        // Cập nhật tên cột đúng theo SQL: phone_number và avatar
+        $sql = "UPDATE customers SET 
+            full_name = ?, 
+            email = ?, 
+            rank = ?, 
+            bidding_limit = ?, 
+            avatar = ?, 
+            phone_number = ? 
+            WHERE id = ?";
+
+        $stmt = self::$connection->prepare($sql);
+
+        // Kiểu dữ liệu: sssds si
+        $stmt->bind_param(
+            "sssdssi",
+            $data['full_name'],
+            $data['email'],
+            $data['rank'],
+            $data['bidding_limit'],
+            $data['avatar'],
+            $data['phone_number'],
+            $id
+        );
+
+        return $stmt->execute();
+    }
+    public function search($keyword)
+    {
+        // Làm sạch từ khóa để tránh SQL Injection
+        $keyword = "%" . $keyword . "%";
+
+        $sql = "SELECT * FROM customers 
+            WHERE full_name LIKE ? 
+            OR email LIKE ? 
+            OR phone_number LIKE ? 
+            LIMIT 10"; // Giới hạn 10 kết quả cho gợi ý nhanh
+
+        $stmt = self::$connection->prepare($sql);
+        $stmt->bind_param("sss", $keyword, $keyword, $keyword);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
     }
 }
